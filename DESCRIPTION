@@ -1,10 +1,21 @@
 Package: ewoc
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Escalation With Overdose Control
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
-Description: More about what it does (maybe more than one line)
-License: What license is it under?
+Author: Marcio A. Diniz <marcio.diniz@cshs.org>
+Maintainer: Marcio A. Diniz <marcio.diniz@cshs.org>
+Description: An implementation of a variety of Escalation With Overdose Control
+    designs. It calculates the next dose as a clinical trial proceeds as well as
+    performs simulations to obtain operating characteristics.
+License: GPL(>= 2)
 LazyData: TRUE
+URL: https://github.com/dnzmarcio/ewoc/
+BugReports: https://github.com/dnzmarcio/ewoc/issues
+Imports:
+    Formula(>= 1.2-1),
+    ggplot2(>= 2.2.0),
+    distrEx(>= 2.6),
+    R2WinBUGS(>= 2.1-21),
+    rjags(>= 4-6),
+    coda(>= 0.18-1)
 RoxygenNote: 5.0.1
