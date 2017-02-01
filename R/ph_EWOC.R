@@ -270,22 +270,22 @@ ewoc_jags.d1ph <- function(data, n_adapt, burn_in,
   update(j, burn_in)
 
   if (distribution == "weibull"){
-    result <- coda.samples(j, variable.names =  c("gamma", "rho", "shape"),
-                           n.iter = n_mcmc, thin = n_thin, n.chains = n_chains)[[1]]
+    sample <- coda.samples(j, variable.names =  c("gamma", "rho", "shape"),
+                           n.iter = n_mcmc, thin = n_thin, n.chains = n_chains)
 
-    gamma <- result[, 1]
-    rho <- result[, 2]
-    shape <- result[, 3]
+    gamma <- sample[[1]][, 1]
+    rho <- sample[[1]][, 2]
+    shape <- sample[[1]][, 3]
 
-    out <- list(gamma = gamma, rho = rho, shape = shape)
+    out <- list(gamma = gamma, rho = rho, shape = shape, sample = sample)
   } else {
-    result <- coda.samples(j, variable.names =  c("gamma", "rho"),
-                           n.iter = n_mcmc, thin = n_thin, n.chains = n_chains)[[1]]
+    sample <- coda.samples(j, variable.names =  c("gamma", "rho"),
+                           n.iter = n_mcmc, thin = n_thin, n.chains = n_chains)
 
-    gamma <- result[, 1]
-    rho <- result[, 2]
+    gamma <- sample[[1]][, 1]
+    rho <- sample[[1]][, 2]
 
-    out <- list(gamma = gamma, rho = rho)
+    out <- list(gamma = gamma, rho = rho, sample = sample)
   }
   return(out)
 }
