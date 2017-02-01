@@ -1,9 +1,6 @@
 #'@export
 dmtd <- function(mtd, data) {
 
-  min_dose <- data$min_dose_np
-  max_dose <- data$max_dose_np
-
   #Posterior distribution of MTD without the constant of integration
   aux_dmtd <- function (mtd, data) {
 
@@ -13,8 +10,8 @@ dmtd <- function(mtd, data) {
 
       #Parameters
       theta <- data$theta
-      min_dose <- data$min_dose_np
-      max_dose <- data$max_dose_np
+      min_dose <- 0
+      max_dose <- 1
       rho_prior <- data$rho_prior
       mtd_prior <- data$mtd_prior
       design_matrix <- data$design_matrix
@@ -22,19 +19,17 @@ dmtd <- function(mtd, data) {
       npatients <- data$response[, 2]
 
       if (rho <= 0 | rho >= theta |
-          mtd <= min_dose | mtd >= max_dose) {
+          mtd <= 0 | mtd >= 1) {
         out <- 0
       } else {
 
         #Log-prior
         rho_prior <- theta*dbeta(rho, rho_prior[1], rho_prior[2], log = TRUE)
-        mtd01 <- (mtd - min_dose)/(max_dose - min_dose)
-        mtd_prior <- dbeta(mtd01, mtd_prior[2], mtd_prior[2], log = TRUE)
+        mtd_prior <- dbeta(mtd, mtd_prior[2], mtd_prior[2], log = TRUE)
 
         #Log-likelihood
-        beta_0 <- (mtd*qlogis(rho) - min_dose*qlogis(theta))/(mtd -
-                                                                  min_dose)
-        beta_1 <- (qlogis(theta) - qlogis(rho))/(mtd - min_dose)
+        beta_0 <- qlogis(rho)
+        beta_1 <- (qlogis(theta) - qlogis(rho))/mtd
         beta <- c(beta_0, beta_1)
         eta <- tcrossprod(beta, design_matrix)
         p <- plogis(eta)
@@ -62,7 +57,7 @@ dmtd <- function(mtd, data) {
 
   #Constant of integration of the bivariate distribution
   C <- distrExIntegrate(auxVec_dmtd,
-                 lower = min_dose, upper = max_dose,
+                 lower = 0, upper = 1,
                  data = data)
 
   out <- auxVec_dmtd(mtd, data)/C
@@ -73,13 +68,10 @@ dmtd <- function(mtd, data) {
 #'@export
 pmtd <- function(mtd, data) {
 
-  min_dose <- data$min_dose_np
-  max_dose <- data$max_dose_np
-
-  out <- ifelse(mtd > min_dose & mtd < max_dose,
+  out <- ifelse(mtd > 0 & mtd < 1,
                 distrExIntegrate(dmtd, lower = 0, upper = mtd,
                           data = data),
-                ifelse(mtd <= min_dose, 0, 1))
+                ifelse(mtd <= 0, 0, 1))
 
   return(out)
 }
@@ -93,9 +85,16 @@ qmtd <- function(data) {
     return(out)
   }
 
-  next_dose <- uniroot(aux_qmtd, lower = data$min_dose_np,
-                       upper = data$max_dose_np,
+  gamma <- uniroot(aux_qmtd, lower = 0,
+                       upper = 1,
                        alpha = data$alpha, data = data)$root
+
+  next_dose <-
+    inv_standard_dose(dose = gamma,
+                      min_dose = data$limits$min_dose(),
+                      max_dose = data$limits$max_dose())
+  out <-list(next_dose = next_dose)
+
   return(out)
 }
 

@@ -2,8 +2,39 @@
 limits_d1nocov <- function(first_dose, last_dose, min_dose, max_dose, type,
                            rounding, dose_set){
 
-  if (is.null(first_dose) & is.null(last_dose) & is.null(min_dose) & is.null(max_dose))
-    stop ("'min_dose' and 'max_dose' or 'first_dose' and 'last_dose' have to be defined.")
+  if (is.null(min_dose) & is.null(max_dose))
+    stop ("'min_dose' and 'max_dose have to be defined'")
+
+  if (is.function(min_dose)){
+    stop("'min_dose' can not be a function for this design.")
+  } else {
+    min_dose_value <- min_dose
+    min_dose <- function(covariable = NULL){
+      out <- min_dose_value
+      return(out)
+    }
+  }
+
+  if (!is.function(max_dose)) {
+    max_dose_value <- max_dose
+
+    if (type == "discrete" & rounding == "down"){
+      max_dose <- function(covariable = NULL){
+        out <- max_dose_value + 1
+        return(out)
+      }
+    } else {
+
+      max_dose <- function(covariable = NULL){
+        out <- max_dose_value
+        return(out)
+      }
+
+    }
+  }
+
+  if (any(min_dose() > max_dose()))
+    stop("'min_dose' should be smaller than the 'max_dose'.")
 
   if (is.null(first_dose) | is.null(last_dose)) {
     if (type == "continuous"){
@@ -38,44 +69,6 @@ limits_d1nocov <- function(first_dose, last_dose, min_dose, max_dose, type,
     }
   }
 
-  if (is.null(min_dose) | is.null(max_dose)) {
-    warning("'min_dose' and 'max_dose' were defined as the 'first_dose' and 'last_dose', respectively.")
-    min_dose <- first_dose
-    max_dose <- last_dose
-
-  } else {
-
-    if (is.function(min_dose)){
-      stop("'min_dose' can not be a function for this design.")
-    } else {
-      min_dose_value <- min_dose
-      min_dose <- function(covariable = NULL){
-        out <- min_dose_value
-        return(out)
-      }
-    }
-
-    if (!is.function(max_dose)) {
-      max_dose_value <- max_dose
-
-      if (type == "discrete" & rounding == "down"){
-        max_dose <- function(covariable = NULL){
-          out <- max_dose_value + 1
-          return(out)
-        }
-      } else {
-
-        max_dose <- function(covariable = NULL){
-          out <- max_dose_value
-          return(out)
-        }
-
-      }
-    }
-  }
-
-  if (any(min_dose() > max_dose()))
-    stop("'min_dose' should be smaller than the 'max_dose'.")
 
   out <- list(first_dose = first_dose, last_dose = last_dose,
               min_dose = min_dose, max_dose = max_dose)
@@ -86,9 +79,8 @@ limits_d1nocov <- function(first_dose, last_dose, min_dose, max_dose, type,
 limits_d1cov <- function(first_dose, last_dose, min_dose, max_dose, type,
                           rounding, dose_set, covariable){
 
-  if (is.null(first_dose) & is.null(last_dose) &
-      is.null(min_dose) & is.null(max_dose))
-    stop ("'min_dose' and 'max_dose' or 'first_dose' and 'last_dose' have to be defined.")
+  if (is.null(min_dose) & is.null(max_dose))
+    stop ("'min_dose' and 'max_dose' have to be defined.")
 
   if (is.null(first_dose) | is.null(last_dose)) {
     if (type == "continuous"){
