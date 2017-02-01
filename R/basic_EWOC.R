@@ -29,8 +29,6 @@
 #'the MTD.
 #'@param max_dose a numerical value defining the upper bound of the support of
 #'the MTD.
-#'@param method a character establishing which method should be applied to
-#'calculate the posterior distribution.
 #'@param rounding a character indicating how to round a continuous dose to the
 #'one of elements of the dose set. It is only necessary if type = 'discrete'.
 #'@param n_adapt the number of iterations for adaptation.
@@ -61,7 +59,6 @@ ewoc_d1basic <- function(formula, theta, alpha,
                          dose_set = NULL,
                          min_dose = NULL, max_dose = NULL,
                          rounding = c("down", "nearest"),
-                         method = c('exact', 'jags'),
                          n_adapt = 5000, burn_in = 1000,
                          n_mcmc = 1000, n_thin = 1, n_chains = 1) {
 
@@ -99,9 +96,6 @@ ewoc_d1basic <- function(formula, theta, alpha,
       stop("'rounding' should be either 'down' or 'nearest'.")
   }
 
-  if (length(method) > 1 | !(method == "jags" | method == "exact"))
-    stop("'method' should be either 'exact' or 'jags'.")
-
   if (!(alpha > 0 & alpha < 1))
     stop("'alpha' should be in the interval (0, 1).")
 
@@ -131,11 +125,7 @@ ewoc_d1basic <- function(formula, theta, alpha,
                   type = type[1], rounding = rounding)
   class(my_data) <- "d1basic"
 
-  if(method == "exact"){
-    out <- qmtd(my_data)
-  } else {
-    out <- qmtd_jags(my_data, n_adapt, burn_in, n_mcmc, n_thin, n_chains)
-  }
+  out <- qmtd_jags(my_data, n_adapt, burn_in, n_mcmc, n_thin, n_chains)
 
   out$next_dose <-
     ifelse(out$next_dose > limits$last_dose(),
@@ -149,7 +139,7 @@ ewoc_d1basic <- function(formula, theta, alpha,
                 min_dose = limits$min_dose, max_dose = limits$max_dose,
                 dose_set = dose_set,
                 rho_prior = rho_prior, mtd_prior = mtd_prior,
-                type = type, rounding = rounding, method = method,
+                type = type, rounding = rounding,
                 n_adapt = n_adapt, burn_in = burn_in, n_mcmc = n_mcmc,
                 n_thin = n_thin, n_chains = n_chains)
   out$trial <- trial
@@ -178,8 +168,8 @@ ewoc_jags.d1basic <- function(data, n_adapt, burn_in,
       lp[i] <- inprod(design_matrix[i, ], beta)
     }
 
-    beta[1] <- qlogis(rho)
-    beta[2] <- (qlogis(theta) - qlogis(rho))/gamma
+    beta[1] <-logit(rho)
+    beta[2] <- (logit(theta) - logit(rho))/gamma
 
     rho <- theta*v[1]
     v[1] ~ dbeta(rho_prior[1, 1], rho_prior[1, 2])

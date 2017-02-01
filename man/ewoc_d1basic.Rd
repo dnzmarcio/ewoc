@@ -7,9 +7,8 @@
 ewoc_d1basic(formula, theta, alpha, mtd_prior, rho_prior,
   type = c("continuous", "discrete"), first_dose = NULL, last_dose = NULL,
   dose_set = NULL, min_dose = NULL, max_dose = NULL,
-  rounding = c("down", "nearest"), method = c("exact", "jags"),
-  n_adapt = 5000, burn_in = 1000, n_mcmc = 1000, n_thin = 1,
-  n_chains = 1)
+  rounding = c("down", "nearest"), n_adapt = 5000, burn_in = 1000,
+  n_mcmc = 1000, n_thin = 1, n_chains = 1)
 }
 \arguments{
 \item{formula}{an object of class \code{\link[Formula]{Formula}}: a symbolic
@@ -50,9 +49,6 @@ the MTD.}
 
 \item{rounding}{a character indicating how to round a continuous dose to the
 one of elements of the dose set. It is only necessary if type = 'discrete'.}
-
-\item{method}{a character establishing which method should be applied to
-calculate the posterior distribution.}
 
 \item{n_adapt}{the number of iterations for adaptation.
 See \code{\link[rjags]{adapt}} for details.}

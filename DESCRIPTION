@@ -14,7 +14,6 @@ BugReports: https://github.com/dnzmarcio/ewoc/issues
 Imports:
     Formula(>= 1.2-1),
     ggplot2(>= 2.2.0),
-    distrEx(>= 2.6),
     R2WinBUGS(>= 2.1-21),
     rjags(>= 4-6),
     coda(>= 0.18-1)
