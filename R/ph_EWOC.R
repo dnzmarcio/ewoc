@@ -67,7 +67,7 @@ ewoc_d1ph <- function(formula, theta, alpha, tau,
                       n_adapt = 5000, burn_in = 1000,
                       n_mcmc = 1000, n_thin = 1, n_chains = 1) {
 
-  formula <- Formula(formula)
+  formula <- Formula::Formula(formula)
   if (class(formula)[2] != "formula")
     stop("Invalid formula! \n")
 
@@ -256,22 +256,24 @@ ewoc_jags.d1ph <- function(data, n_adapt, burn_in,
   }
 
   tc1 <- textConnection("jmod", "w")
-  write.model(jfun, tc1)
+  R2WinBUGS::write.model(jfun, tc1)
   close(tc1)
 
   # Calling JAGS
   tc2 <- textConnection(jmod)
-  j <- jags.model(tc2,
-                  data = data_base,
-                  inits = inits(),
-                  n.chains = n_chains,
-                  n.adapt = n_adapt)
+  j <- rjags::jags.model(tc2,
+                         data = data_base,
+                         inits = inits(),
+                         n.chains = n_chains,
+                         n.adapt = n_adapt)
   close(tc2)
   update(j, burn_in)
 
   if (distribution == "weibull"){
-    sample <- coda.samples(j, variable.names =  c("gamma", "rho", "shape"),
-                           n.iter = n_mcmc, thin = n_thin, n.chains = n_chains)
+    sample <- rjags::coda.samples(j,
+                                  variable.names =  c("gamma", "rho", "shape"),
+                                  n.iter = n_mcmc, thin = n_thin,
+                                  n.chains = n_chains)
 
     gamma <- sample[[1]][, 1]
     rho <- sample[[1]][, 2]
@@ -279,8 +281,9 @@ ewoc_jags.d1ph <- function(data, n_adapt, burn_in,
 
     out <- list(gamma = gamma, rho = rho, shape = shape, sample = sample)
   } else {
-    sample <- coda.samples(j, variable.names =  c("gamma", "rho"),
-                           n.iter = n_mcmc, thin = n_thin, n.chains = n_chains)
+    sample <- rjags::coda.samples(j, variable.names =  c("gamma", "rho"),
+                                  n.iter = n_mcmc, thin = n_thin,
+                                  n.chains = n_chains)
 
     gamma <- sample[[1]][, 1]
     rho <- sample[[1]][, 2]

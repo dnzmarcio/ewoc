@@ -67,7 +67,7 @@ ewoc_d1continuous <- function(formula, theta, alpha,
                                 n_adapt = 5000, burn_in = 1000,
                                 n_mcmc = 1000, n_thin = 1, n_chains = 1) {
 
-  formula <- Formula(formula)
+  formula <- Formula::Formula(formula)
   if (class(formula)[2] != "formula")
     stop("Invalid formula! \n")
 
@@ -251,7 +251,7 @@ ewoc_jags.d1continuous <- function(data, n_adapt, burn_in,
 
 
   tc1 <- textConnection("jmod", "w")
-  write.model(jfun, tc1)
+  R2WinBUGS::write.model(jfun, tc1)
   close(tc1)
 
   data_base <- list('dlt' = dlt, 'design_matrix' = design_matrix,
@@ -267,53 +267,21 @@ ewoc_jags.d1continuous <- function(data, n_adapt, burn_in,
 
   # Calling JAGS
   tc2 <- textConnection(jmod)
-  j <- jags.model(tc2,
-                  data = data_base,
-                  inits = inits(),
-                  n.chains = n_chains,
-                  n.adapt = n_adapt)
+  j <- rjags::jags.model(tc2,
+                         data = data_base,
+                         inits = inits(),
+                         n.chains = n_chains,
+                         n.adapt = n_adapt)
   close(tc2)
   update(j, burn_in)
-  sample <- coda.samples(j, variable.names = c("gamma", "rho"),
-                         n.iter = n_mcmc, thin = n_thin,
-                         n.chains = n_chains)[[1]]
-  gamma <- sample[, 1]
-  rho <- sample[, 2:3]
+  sample <- rjags::coda.samples(j, variable.names = c("gamma", "rho"),
+                                n.iter = n_mcmc, thin = n_thin,
+                                n.chains = n_chains)
+  gamma <- sample[[1]][, 1]
+  rho <- sample[[1]][, 2:3]
 
 
-  out <- list(gamma = gamma, rho = rho)
-
-  return(out)
-}
-
-
-response_continuous <- function(rho, dose, cov, min_cov, max_cov) {
-
-  beta <- rep(NA, 3)
-  beta[1] <- qlogis(rho[1]) - min_cov*(qlogis(rho[2]) - qlogis(rho[1]))/(max_cov - min_cov)
-  beta[2] <- qlogis(rho[3]) - qlogis(rho[1])
-  beta[3] <- (qlogis(rho[2]) - qlogis(rho[1]))/(max_cov - min_cov)
-
-  design_matrix <- cbind(1, dose, cov)
-  eta <- design_matrix%*%beta
-  p <- plogis(eta)
-
-  out <- rbinom(1, 1, p)
+  out <- list(gamma = gamma, rho = rho, sample = sample)
 
   return(out)
 }
-
-continuous_cov <- function(n, groups, prob_groups, cov_limits) {
-
-  index <- rmultinom(n, 1, prob = prob_groups)
-  index <- which(index == 1, arr.ind = TRUE)[, 1]
-  covariate <- apply(cov_limits[index, ], 1,
-                     function(x) out <- runif(1, x[1], x[2])) #
-  group <- groups[index]
-
-  out <- list(covariate = covariate, group = group)
-
-  return(out)
-}
-
-

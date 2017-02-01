@@ -195,7 +195,7 @@ ewoc_jags.d1multinomial <- function(data, n_adapt, burn_in,
   }
 
   tc1 <- textConnection("jmod", "w")
-  write.model(jfun, tc1)
+  R2WinBUGS::write.model(jfun, tc1)
   close(tc1)
 
   data_base <- list('dlt' = dlt, 'design_matrix' = design_matrix, 'theta' = theta,
@@ -212,45 +212,20 @@ ewoc_jags.d1multinomial <- function(data, n_adapt, burn_in,
 
   # Calling JAGS
   tc2 <- textConnection(jmod)
-  j <- jags.model(tc2,
-                  data = data_base,
-                  inits = inits(),
-                  n.chains = n_chains,
-                  n.adapt = n_adapt)
+  j <- rjags::jags.model(tc2,
+                         data = data_base,
+                         inits = inits(),
+                         n.chains = n_chains,
+                         n.adapt = n_adapt)
   close(tc2)
   update(j, burn_in)
-  sample <- coda.samples(j, variable.names =  c("gamma", "rho"),
-                         n.iter = n_mcmc, thin = n_thin,
-                         n.chains = n_chains)
+  sample <- rjags::coda.samples(j, variable.names =  c("gamma", "rho"),
+                                n.iter = n_mcmc, thin = n_thin,
+                                n.chains = n_chains)
   gamma <- sample[[1]][, 1:np]
   rho <- sample[[1]][, (np + 1)]
 
   out <- list(gamma = gamma, rho = rho, sample = sample)
-
-  return(out)
-}
-
-
-
-
-#'@export
-rho_multinomial <- function(rho11, true_mtd, min_dose, max_dose, theta) {
-
-  aux <- function(rho11, true_mtd, theta) {
-    rho0 <- rep(NA, length(true_mtd))
-    rho0[1] <- plogis((qlogis(theta) - true_mtd[1]*
-                         qlogis(rho11))/(1 - true_mtd[1]))
-    for(i in 2:length(true_mtd)) {
-      rho0[i] <- plogis(qlogis(theta) - true_mtd[i]*
-                          (qlogis(rho11) - qlogis(rho0[1])))
-    }
-    return(rho0)
-  }
-
-  true_mtd <- (true_mtd - min_dose)/(max_dose - min_dose)
-
-  rho0_Vec <- Vectorize(aux, vectorize.args = "rho11")
-  out <-  rho0_Vec(rho11, true_mtd, theta)
 
   return(out)
 }
