@@ -154,100 +154,43 @@ summary.ewoc_d1multinomial <- function(object, ..., next_covariable = NULL,
                                        pdlt = pdlt_d1multinomial,
                                        print = TRUE){
 
-  npat <- colSums(object$trial$covariable)
-  npat[1] <- npat[1] - sum(npat[2:length(npat)])
+  npatients <- colSums(object$trial$covariable)
+  npatients[1] <- npatients[1] - sum(npatients[2:length(npatients)])
   alpha <- object$trial$alpha
   theta <- object$trial$theta
   max_dose <- object$trial$max_dose
   min_dose <- object$trial$min_dose
 
-  if (is.null(next_covariable)){
-    tab00 <- data.frame(group = object$trial$levels_cov,
+  if (is.null(next_covariable))
+    next_covariable <- object$trial$levels_cov
+
+  tab00 <- data.frame(group = object$trial$levels_cov,
                       min_dose(object$trial$levels_cov),
                       max_dose(object$trial$levels_cov),
-                      theta, alpha, npat)
-    colnames(tab00) <- c("Group", "Minimum Dose", "Maximum Dose", "Theta",
-                         "Alpha", "Number of patients")
+                      theta, alpha, npatients)
+  colnames(tab00) <- c("Group", "Minimum Dose", "Maximum Dose", "Theta",
+                       "Alpha", "Number of patients")
 
-    next_dose <- rep(NA, length(object$trial$levels_cov))
+  next_dose <- rep(NA, length(next_covariable))
+  index <- which(object$trial$levels_cov ==  next_covariable)
+  counter <- 1
 
-    for (i in 1:length(object$trial$levels_cov)){
+  for (i in index){
 
-      hpd_dose <- coda::HPDinterval(as.mcmc(object$mtd[, i]))
-      hpd_dose <- round(as.numeric(hpd_dose), 2)
-      hpd_dose <- paste0("(", round(hpd_dose[1], 2), " ; ",
-                         round(hpd_dose[2], 2), ")")
-      next_dose[i] <- round(as.numeric(object$next_dose[i]), 2)
-
-      temp01 <- cbind(next_dose[i], hpd_dose)
-      covariable <- rep(0, length(object$trial$levels_cov))
-      covariable[c(1, i)] <- 1
-
-      prob_dlt <- pdlt(dose = object$next_dose[i], rho = object$rho,
-                       gamma = object$gamma, theta = theta,
-                       min_dose = min_dose(object$trial$levels_cov)[i],
-                       max_dose = max_dose(object$trial$levels_cov)[i],
-                       cov = covariable)
-      hpd_pdlt <- coda::HPDinterval(as.mcmc(prob_dlt))
-
-      hpd_pdlt <- round(as.numeric(hpd_pdlt), 2)
-      hpd_pdlt <- paste0("(", round(hpd_pdlt[1], 2), " ; ",
-                         round(hpd_pdlt[2], 2), ")")
-      prob_dlt <- round(median(prob_dlt), 2)
-
-      temp02 <- cbind(prob_dlt, hpd_pdlt)
-
-      if (i > 1){
-        temp01 <- rbind(tab01, temp01)
-        temp02 <- rbind(tab02, temp02)
-      }
-
-      tab01 <- temp01
-      tab02 <- temp02
-    }
-
-    if (print){
-      cat("Conditions\n")
-      print(tab00)
-      cat("\n")
-
-      cat("Next Dose\n")
-      tab01 <- data.frame(group = object$trial$levels_cov, tab01)
-      colnames(tab01) <- c("Group", "Estimate", "95% HPD")
-      print(tab01)
-      cat("\n")
-
-      cat("P(DLT| next dose)\n")
-      tab02 <- data.frame(group = object$trial$levels_cov, tab02)
-      colnames(tab02) <- c("Group", "Estimate", "95% HPD")
-      print(tab02)
-    }
-
-  } else {
-
-    tab00 <- data.frame(group = object$trial$levels_cov,
-                        min_dose(object$trial$levels_cov),
-                        max_dose(object$trial$levels_cov),
-                        theta, alpha, npat)
-    colnames(tab00) <- c("Group", "Minimum Dose", "Maximum Dose", "Theta",
-                         "Alpha", "Number of patients")
-
-    index <- which(next_covariable == object$trial$levels_cov)
-
-    hpd_dose <- coda::HPDinterval(as.mcmc(object$mtd[, index]))
+    hpd_dose <- coda::HPDinterval(as.mcmc(object$mtd[, i]))
     hpd_dose <- round(as.numeric(hpd_dose), 2)
     hpd_dose <- paste0("(", round(hpd_dose[1], 2), " ; ",
                        round(hpd_dose[2], 2), ")")
-    next_dose <- round(as.numeric(object$next_dose[index]), 2)
+    next_dose[i] <- round(as.numeric(object$next_dose[i]), 2)
 
-    tab01 <- cbind(next_dose, hpd_dose)
+    temp01 <- cbind(next_dose[i], hpd_dose)
     covariable <- rep(0, length(object$trial$levels_cov))
-    covariable[c(1, index)] <- 1
+    covariable[c(1, i)] <- 1
 
-    prob_dlt <- pdlt(dose = object$next_dose[index], rho = object$rho,
+    prob_dlt <- pdlt(dose = object$next_dose[i], rho = object$rho,
                      gamma = object$gamma, theta = theta,
-                     min_dose = min_dose(object$trial$levels_cov[index]),
-                     max_dose = max_dose(object$trial$levels_cov[index]),
+                     min_dose = min_dose(object$trial$levels_cov)[i],
+                     max_dose = max_dose(object$trial$levels_cov)[i],
                      cov = covariable)
     hpd_pdlt <- coda::HPDinterval(as.mcmc(prob_dlt))
 
@@ -256,24 +199,33 @@ summary.ewoc_d1multinomial <- function(object, ..., next_covariable = NULL,
                        round(hpd_pdlt[2], 2), ")")
     prob_dlt <- round(median(prob_dlt), 2)
 
-    tab02 <- cbind(prob_dlt, hpd_pdlt)
+    temp02 <- cbind(prob_dlt, hpd_pdlt)
 
-    if (print){
-      cat("Conditions\n")
-      print(tab00)
-      cat("\n")
-
-      cat("Next Dose\n")
-      tab01 <- data.frame(group = object$trial$levels_cov[index], tab01)
-      colnames(tab01) <- c("Group", "Estimate", "95% HPD")
-      print(tab01)
-      cat("\n")
-
-      cat("P(DLT| next dose)\n")
-      tab02 <- data.frame(group = object$trial$levels_cov[index], tab02)
-      colnames(tab02) <- c("Group", "Estimate", "95% HPD")
-      print(tab02)
+    if (counter > 1){
+      temp01 <- rbind(tab01, temp01)
+      temp02 <- rbind(tab02, temp02)
     }
+
+    tab01 <- temp01
+    tab02 <- temp02
+    counter <- counter + 1
+  }
+
+  if (print){
+    cat("Conditions\n")
+    print(tab00)
+    cat("\n")
+
+    cat("Next Dose\n")
+    tab01 <- data.frame(group = next_covariable, tab01)
+    colnames(tab01) <- c("Group", "Estimate", "95% HPD")
+    print(tab01)
+    cat("\n")
+
+    cat("P(DLT| next dose)\n")
+    tab02 <- data.frame(group = next_covariable, tab02)
+    colnames(tab02) <- c("Group", "Estimate", "95% HPD")
+    print(tab02)
   }
 
   out <- list(next_dose = next_dose, hpd_dose = hpd_dose,
@@ -286,100 +238,43 @@ summary.ewoc_d1ordinal <- function(object, ..., next_covariable = NULL,
                                    pdlt = pdlt_d1ordinal,
                                    print = TRUE){
 
-  npat <- colSums(object$trial$covariable)
-  npat[1] <- npat[1] - sum(npat[2:length(npat)])
+  npatients <- colSums(object$trial$covariable)
+  npatients[1] <- npatients[1] - sum(npatients[2:length(npatients)])
   alpha <- object$trial$alpha
   theta <- object$trial$theta
   max_dose <- object$trial$max_dose
   min_dose <- object$trial$min_dose
 
-  if (is.null(next_covariable)){
-    tab00 <- data.frame(group = object$trial$levels_cov,
-                        min_dose(object$trial$levels_cov),
-                        max_dose(object$trial$levels_cov),
-                        theta, alpha, npat)
-    colnames(tab00) <- c("Group", "Minimum Dose", "Maximum Dose", "Theta",
-                         "Alpha", "Number of patients")
+  if (is.null(next_covariable))
+    next_covariable <- object$trial$levels_cov
 
-    next_dose <- rep(NA, length(object$trial$levels_cov))
+  tab00 <- data.frame(group = object$trial$levels_cov,
+                      min_dose(object$trial$levels_cov),
+                      max_dose(object$trial$levels_cov),
+                      theta, alpha, npatients)
+  colnames(tab00) <- c("Group", "Minimum Dose", "Maximum Dose", "Theta",
+                       "Alpha", "Number of patients")
 
-    for (i in 1:length(object$trial$levels_cov)){
+  next_dose <- rep(NA, length(covariable))
+  index <- which(object$trial$levels_cov ==  next_covariable)
+  counter <- 1
 
-      hpd_dose <- coda::HPDinterval(as.mcmc(object$mtd[, i]))
-      hpd_dose <- round(as.numeric(hpd_dose), 2)
-      hpd_dose <- paste0("(", round(hpd_dose[1], 2), " ; ",
-                         round(hpd_dose[2], 2), ")")
-      next_dose[i] <- round(as.numeric(object$next_dose[i]), 2)
+  for (i in index){
 
-      temp01 <- cbind(next_dose[i], hpd_dose)
-      covariable <- rep(0, length(object$trial$levels_cov))
-      covariable[c(1, i)] <- 1
-
-      prob_dlt <- pdlt(dose = object$next_dose[i], rho = object$rho,
-                       gamma = object$gamma, theta = theta,
-                       min_dose = min_dose(object$trial$levels_cov)[i],
-                       max_dose = max_dose(object$trial$levels_cov)[i],
-                       cov = covariable)
-      hpd_pdlt <- coda::HPDinterval(as.mcmc(prob_dlt))
-
-      hpd_pdlt <- round(as.numeric(hpd_pdlt), 2)
-      hpd_pdlt <- paste0("(", round(hpd_pdlt[1], 2), " ; ",
-                         round(hpd_pdlt[2], 2), ")")
-      prob_dlt <- round(median(prob_dlt), 2)
-
-      temp02 <- cbind(prob_dlt, hpd_pdlt)
-
-      if (i > 1){
-        temp01 <- rbind(tab01, temp01)
-        temp02 <- rbind(tab02, temp02)
-      }
-
-      tab01 <- temp01
-      tab02 <- temp02
-    }
-
-    if (print){
-      cat("Conditions\n")
-      print(tab00)
-      cat("\n")
-
-      cat("Next Dose\n")
-      tab01 <- data.frame(group = object$trial$levels_cov, tab01)
-      colnames(tab01) <- c("Group", "Estimate", "95% HPD")
-      print(tab01)
-      cat("\n")
-
-      cat("P(DLT| next dose)\n")
-      tab02 <- data.frame(group = object$trial$levels_cov, tab02)
-      colnames(tab02) <- c("Group", "Estimate", "95% HPD")
-      print(tab02)
-    }
-
-  } else {
-
-    tab00 <- data.frame(group = object$trial$levels_cov,
-                        min_dose(object$trial$levels_cov),
-                        max_dose(object$trial$levels_cov),
-                        theta, alpha, npat)
-    colnames(tab00) <- c("Group", "Minimum Dose", "Maximum Dose", "Theta",
-                         "Alpha", "Number of patients")
-
-    index <- which(next_covariable == object$trial$levels_cov)
-
-    hpd_dose <- coda::HPDinterval(as.mcmc(object$mtd[, index]))
+    hpd_dose <- coda::HPDinterval(as.mcmc(object$mtd[, i]))
     hpd_dose <- round(as.numeric(hpd_dose), 2)
     hpd_dose <- paste0("(", round(hpd_dose[1], 2), " ; ",
                        round(hpd_dose[2], 2), ")")
-    next_dose <- round(as.numeric(object$next_dose[index]), 2)
+    next_dose[i] <- round(as.numeric(object$next_dose[i]), 2)
 
-    tab01 <- cbind(next_dose, hpd_dose)
+    temp01 <- cbind(next_dose[i], hpd_dose)
     covariable <- rep(0, length(object$trial$levels_cov))
-    covariable[c(1, index)] <- 1
+    covariable[c(1, i)] <- 1
 
-    prob_dlt <- pdlt(dose = object$next_dose[index], rho = object$rho,
+    prob_dlt <- pdlt(dose = object$next_dose[i], rho = object$rho,
                      gamma = object$gamma, theta = theta,
-                     min_dose = min_dose(object$trial$levels_cov[index]),
-                     max_dose = max_dose(object$trial$levels_cov[index]),
+                     min_dose = min_dose(object$trial$levels_cov)[i],
+                     max_dose = max_dose(object$trial$levels_cov)[i],
                      cov = covariable)
     hpd_pdlt <- coda::HPDinterval(as.mcmc(prob_dlt))
 
@@ -388,27 +283,35 @@ summary.ewoc_d1ordinal <- function(object, ..., next_covariable = NULL,
                        round(hpd_pdlt[2], 2), ")")
     prob_dlt <- round(median(prob_dlt), 2)
 
-    tab02 <- cbind(prob_dlt, hpd_pdlt)
+    temp02 <- cbind(prob_dlt, hpd_pdlt)
 
-    if (print){
-      cat("Conditions\n")
-      print(tab00)
-      cat("\n")
-
-      cat("Next Dose\n")
-      tab01 <- data.frame(group = object$trial$levels_cov[index], tab01)
-      colnames(tab01) <- c("Group", "Estimate", "95% HPD")
-      print(tab01)
-      cat("\n")
-
-      cat("P(DLT| next dose)\n")
-      tab02 <- data.frame(group = object$trial$levels_cov[index], tab02)
-      colnames(tab02) <- c("Group", "Estimate", "95% HPD")
-      print(tab02)
+    if (counter > 1){
+      temp01 <- rbind(tab01, temp01)
+      temp02 <- rbind(tab02, temp02)
     }
+
+    tab01 <- temp01
+    tab02 <- temp02
+    counter <- counter + 1
+  }
+
+  if (print){
+    cat("Conditions\n")
+    print(tab00)
+    cat("\n")
+
+    cat("Next Dose\n")
+    tab01 <- data.frame(group = next_covariable, tab01)
+    colnames(tab01) <- c("Group", "Estimate", "95% HPD")
+    print(tab01)
+    cat("\n")
+
+    cat("P(DLT| next dose)\n")
+    tab02 <- data.frame(group = next_covariable, tab02)
+    colnames(tab02) <- c("Group", "Estimate", "95% HPD")
+    print(tab02)
   }
 
   out <- list(next_dose = next_dose, hpd_dose = hpd_dose,
               prob_dlt = prob_dlt, hpd_pdlt = hpd_pdlt)
-
 }
