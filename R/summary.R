@@ -1,5 +1,5 @@
 #'@export
-summary.ewoc_d1basic <- function(object, pdlt = pdlt_d1basic){
+summary.ewoc_d1basic <- function(object, ..., pdlt = pdlt_d1basic){
 
   n <- nrow(object$trial$response)
   alpha <- object$trial$alpha
@@ -40,7 +40,7 @@ summary.ewoc_d1basic <- function(object, pdlt = pdlt_d1basic){
 }
 
 #'@export
-summary.ewoc_d1extended <- function(object, pdlt = pdlt_d1extended){
+summary.ewoc_d1extended <- function(object, ..., pdlt = pdlt_d1extended){
 
   n <- nrow(object$trial$response)
   alpha <- object$trial$alpha
@@ -81,7 +81,7 @@ summary.ewoc_d1extended <- function(object, pdlt = pdlt_d1extended){
 }
 
 #'@export
-summary.ewoc_d1ph <- function(object, pdlt = pdlt_d1ph){
+summary.ewoc_d1ph <- function(object, ..., pdlt = pdlt_d1ph){
 
   n <- nrow(object$trial$response)
   alpha <- object$trial$alpha
@@ -127,7 +127,7 @@ summary.ewoc_d1ph <- function(object, pdlt = pdlt_d1ph){
 }
 
 #'@export
-summary.ewoc_d1ordinal <- function(object, pdlt = pdlt_d1ordinal){
+summary.ewoc_d1ordinal <- function(object, ..., pdlt = pdlt_d1ordinal){
 
   npat <- colSums(object$trial$covariable)
   npat[1] <- npat[1] - sum(npat[2:length(npat)])
@@ -196,7 +196,7 @@ summary.ewoc_d1ordinal <- function(object, pdlt = pdlt_d1ordinal){
 
 
 #'@export
-summary.ewoc_d1multinomial <- function(object, pdlt = pdlt_d1multinomial){
+summary.ewoc_d1multinomial <- function(object, ..., pdlt = pdlt_d1multinomial){
 
   npat <- colSums(object$trial$covariable)
   npat[1] <- npat[1] - sum(npat[2:length(npat)])
