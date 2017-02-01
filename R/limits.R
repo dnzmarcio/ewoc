@@ -38,9 +38,9 @@ limits_d1nocov <- function(first_dose, last_dose, min_dose, max_dose, type,
 
   if (is.null(first_dose) | is.null(last_dose)) {
     if (type == "continuous"){
-      first_dose <- min_dose
-      last_dose <- max_dose
-      stop("'first_dose' and 'last_dose' were defined as the minimum and maximum doses, respectively.")
+      first_dose <- min_dose()
+      last_dose <- max_dose()
+      warning("'first_dose' and 'last_dose' were defined as the minimum and maximum doses, respectively.")
     }
     if (type == "discrete") {
       first_dose <- dose_set[1]
@@ -86,7 +86,7 @@ limits_d1cov <- function(first_dose, last_dose, min_dose, max_dose, type,
     if (type == "continuous"){
       first_dose <- min_dose
       last_dose <- max_dose
-      stop("'first_dose' and 'last_dose' were defined as the minimum and maximum doses, respectively.")
+      warning("'first_dose' and 'last_dose' were defined as the minimum and maximum doses, respectively.")
     }
     if (type == "discrete") {
       first_dose <- dose_set[1]

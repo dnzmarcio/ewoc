@@ -167,8 +167,8 @@ ewoc_jags.d1extended <- function(data, n_adapt, burn_in,
       lp[i] <- inprod(design_matrix[i, ], beta)
     }
 
-    beta[1] <- qlogis(rho[1])
-    beta[2] <- qlogis(rho[2]) - qlogis(rho[1])
+    beta[1] <- logit(rho[1])
+    beta[2] <- logit(rho[2]) - logit(rho[1])
 
     rho[1] <- min*v[1]
     min <- min(rho[2], limit)

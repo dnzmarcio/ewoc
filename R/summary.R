@@ -1,42 +1,49 @@
 #'@export
-summary.ewoc_d1basic <- function(object, ..., pdlt = pdlt_d1basic){
+summary.ewoc_d1basic <- function(object, ..., pdlt = pdlt_d1basic, print = TRUE){
 
-  n <- nrow(object$trial$response)
-  alpha <- object$trial$alpha
-  theta <- object$trial$theta
-  max_dose <- object$trial$max_dose
-  min_dose <- object$trial$min_dose
-
-  tab <- data.frame(min_dose(), max_dose(), theta, alpha, n)
+  tab <- data.frame(object$trial$min_dose(),
+                    object$trial$max_dose(),
+                    object$trial$theta, object$trial$alpha,
+                    nrow(object$trial$response))
   colnames(tab) <- c("Minimum Dose", "Maximum Dose", "Theta",
                      "Alpha", "Number of patients")
-  cat("Conditions\n")
-  print(tab)
-  cat("\n")
 
   hpd_dose <- HPDinterval(as.mcmc(object$mtd))
-  hpd <- round(as.numeric(hpd_dose), 2)
-  hpd <- paste0("(", round(hpd[1], 2), " ; ", round(hpd[2], 2), ")")
+  hpd_dose <- round(as.numeric(hpd_dose), 2)
+  hpd_dose <- paste0("(", round(hpd_dose[1], 2), " ; ",
+                     round(hpd_dose[2], 2), ")")
   next_dose <- round(as.numeric(object$next_dose), 2)
-  tab01 <- data.frame(next_dose, hpd)
+  tab01 <- data.frame(next_dose, hpd_dose)
 
   prob_dlt <- pdlt(dose = object$next_dose, rho = object$rho,
-                   gamma = gamma, theta = theta)
+                   gamma = object$gamma, theta = object$trial$theta,
+                   min_dose = object$trial$min_dose(),
+                   max_dose = object$trial$max_dose())
   hpd_pdlt <- HPDinterval(as.mcmc(prob_dlt))
 
-  hpd <- round(as.numeric(hpd_pdlt), 2)
-  hpd <- paste0("(", round(hpd[1], 2), " ; ", round(hpd[2], 2), ")")
+  hpd_pdlt <- round(as.numeric(hpd_pdlt), 2)
+  hpd_pdlt <- paste0("(", round(hpd_pdlt[1], 2), " ; ",
+                     round(hpd_pdlt[2], 2), ")")
   prob_dlt <- round(median(prob_dlt), 2)
-  tab02 <- data.frame(prob_dlt, hpd)
+  tab02 <- data.frame(prob_dlt, hpd_pdlt)
 
-  cat("Next Dose\n")
-  colnames(tab01) <- c("Group", "Estimate", "95% HPD")
-  print(tab01)
-  cat("\n")
+  if (print){
+    cat("Conditions\n")
+    print(tab)
+    cat("\n")
 
-  cat("P(DLT| next dose)\n")
-  colnames(tab02) <- c("Group", "Estimate", "95% HPD")
-  print(tab02)
+    cat("Next Dose\n")
+    colnames(tab01) <- c("Estimate", "95% HPD")
+    print(tab01)
+    cat("\n")
+
+    cat("P(DLT| next dose)\n")
+    colnames(tab02) <- c("Estimate", "95% HPD")
+    print(tab02)
+  }
+
+  out <- list(next_dose = next_dose, hpd_dose = hpd_dose,
+              prob_dlt = prob_dlt, hpd_pdlt = hpd_pdlt)
 }
 
 #'@export
