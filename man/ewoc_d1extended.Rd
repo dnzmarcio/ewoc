@@ -81,27 +81,4 @@ Finding the next dose for a phase I clinical trial based on the
 Escalation Over Dose Control (EWOC) design considering the
 extended parametrization for binary response and single agent.
 }
-\examples{
-DLT <- 0
-npatients <- 1
-dose <- 30
-
-test <- ewoc_d1extended(cbind(DLT, npatients) ~ dose, type = 'discrete',
-                       theta = 0.33, alpha = 0.25,
-                       dose_set = c(30, 40, 50),
-                       min_dose = 20, max_dose = 100,
-                       rho_prior = matrix(1, ncol = 2, nrow = 2),
-                       rounding = "nearest")
-summary(test)
-plot(test)
-
-test <- ewoc_d1extended(cbind(DLT, npatients) ~ dose, type = 'continuous',
-                       theta = 0.33, alpha = 0.25,
-                       first_dose = 30, last_dose = 50,
-                       rho_prior = matrix(1, ncol = 2, nrow = 2),
-                       rounding = "nearest")
-summary(test)
-plot(test)
-
-}
 

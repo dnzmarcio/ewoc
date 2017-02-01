@@ -46,28 +46,6 @@
 #'@return \code{sample} a list of the MCMC chains distribution.
 #'@return \code{trial} a list of trial conditions.
 #'
-#'@examples
-#'DLT <- 0
-#'npatients <- 1
-#'dose <- 30
-#'
-#'test <- ewoc_d1extended(cbind(DLT, npatients) ~ dose, type = 'discrete',
-#'                        theta = 0.33, alpha = 0.25,
-#'                        dose_set = c(30, 40, 50),
-#'                        min_dose = 20, max_dose = 100,
-#'                        rho_prior = matrix(1, ncol = 2, nrow = 2),
-#'                        rounding = "nearest")
-#'summary(test)
-#'plot(test)
-#'
-#'test <- ewoc_d1extended(cbind(DLT, npatients) ~ dose, type = 'continuous',
-#'                        theta = 0.33, alpha = 0.25,
-#'                        first_dose = 30, last_dose = 50,
-#'                        rho_prior = matrix(1, ncol = 2, nrow = 2),
-#'                        rounding = "nearest")
-#'summary(test)
-#'plot(test)
-#'
 #'@export
 ewoc_d1extended <- function(formula, theta, alpha,
                             rho_prior,
@@ -189,15 +167,15 @@ ewoc_jags.d1extended <- function(data, n_adapt, burn_in,
       lp[i] <- inprod(design_matrix[i, ], beta)
     }
 
-    beta[1] <- logit(rho[1])
-    beta[2] <- logit(rho[2]) - logit(rho[1])
+    beta[1] <- qlogis(rho[1])
+    beta[2] <- qlogis(rho[2]) - qlogis(rho[1])
 
     rho[1] <- min*v[1]
     min <- min(rho[2], limit)
     v[1] ~ dbeta(rho_prior[1, 1], rho_prior[1, 2])
 
     limit <- plogis(numerator/denominator, 0, 1)
-    numerator <- logit(theta) - lb*logit(rho[2])
+    numerator <- qlogis(theta) - lb*qlogis(rho[2])
     denominator <- 1 - lb
 
     rho[2] <- v[2]

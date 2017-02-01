@@ -53,31 +53,6 @@
 #'Cancer phase I clinical trials: efficient dose escalation with overdose
 #'control. Statistics in medicine, 17(10), pp.1103-1120.
 #'
-#'@examples
-#'DLT <- 0
-#'npatients <- 1
-#'dose <- 30
-#'test <- ewoc_d1basic(cbind(DLT, npatients) ~ dose, type = 'discrete',
-#'                        theta = 0.33, alpha = 0.25,
-#'                        dose_set = c(30, 40, 50),
-#'                        rho_prior = matrix(1, ncol = 2, nrow = 1),
-#'                        mtd_prior = matrix(1, ncol = 2, nrow = 1),
-#'                        rounding = "nearest", method = "exact")
-#'summary(test)
-#'plot(test)
-#'
-#'DLT <- 0
-#'npatients <- 1
-#'dose <- 30
-#'test <- ewoc_d1basic(cbind(DLT, npatients) ~ dose, type = 'continuous',
-#'                        theta = 0.33, alpha = 0.25,
-#'                        first_dose = 30, last_dose = 50,
-#'                        rho_prior = matrix(1, ncol = 2, nrow = 1),
-#'                        mtd_prior = matrix(1, ncol = 2, nrow = 1),
-#'                        rounding = "nearest",  method = "jags")
-#'summary(test)
-#'plot(test)
-#'
 #'@export
 ewoc_d1basic <- function(formula, theta, alpha,
                          mtd_prior, rho_prior,
@@ -203,8 +178,8 @@ ewoc_jags.d1basic <- function(data, n_adapt, burn_in,
       lp[i] <- inprod(design_matrix[i, ], beta)
     }
 
-    beta[1] <- logit(rho)
-    beta[2] <- (logit(theta) - logit(rho))/gamma
+    beta[1] <- qlogis(rho)
+    beta[2] <- (qlogis(theta) - qlogis(rho))/gamma
 
     rho <- theta*v[1]
     v[1] ~ dbeta(rho_prior[1, 1], rho_prior[1, 2])

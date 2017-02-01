@@ -52,22 +52,6 @@
 #'@return \code{sample} a list of the MCMC chains distribution.
 #'@return \code{trial} a list of trial conditions.
 #'
-#'@examples
-#'DLT <- 0
-#'npatients <- 1
-#'dose <- 30
-#'tumor_size <- 2
-#'test <- ewoc1d_continuous(cbind(DLT, npatients) ~ dose | tumor_size,
-#'                          type = 'continuous',
-#'                          theta = 0.33, alpha = 0.25, direction = 'positive',
-#'                          dose_set = seq(30, 50, 5),
-#'                          first_dose = 30, last_dose = 50,
-#'                          min_dose = 30, max_dose = 50,
-#'                          next_patient_cov = 2, min_cov = 1, max_cov = 4,
-#'                          mtd_prior = matrix(1, nrow = 1, ncol = 2),
-#'                          rho_prior = matrix(1, nrow = 2, ncol = 2))
-#'summary(test)
-#'
 #'@references Babb JS, Rogatko A. Patient specific dosing in a cancer phase I clinical trial. Statistics in medicine. 2001 Jul 30;20(14):2079-90.
 #'
 #'@export
@@ -253,9 +237,9 @@ ewoc_jags.d1continuous <- function(data, n_adapt, burn_in,
       lp[i] <- inprod(design_matrix[i, ], beta)
     }
 
-    beta[1] <- logit(rho[1]) - min_cov*(logit(rho[2]) - logit(rho[1]))/(max_cov - min_cov)
-    beta[2] <- (logit(theta) - logit(rho[2]))/gamma
-    beta[3] <- (logit(rho[2]) - logit(rho[1]))/(max_cov - min_cov)
+    beta[1] <- qlogis(rho[1]) - min_cov*(qlogis(rho[2]) - qlogis(rho[1]))/(max_cov - min_cov)
+    beta[2] <- (qlogis(theta) - qlogis(rho[2]))/gamma
+    beta[3] <- (qlogis(rho[2]) - qlogis(rho[1]))/(max_cov - min_cov)
 
     rho[1] <- theta*r[1]
     r[1] ~ dbeta(rho_prior[1, 1], rho_prior[1, 2])
@@ -306,9 +290,9 @@ ewoc_jags.d1continuous <- function(data, n_adapt, burn_in,
 response_continuous <- function(rho, dose, cov, min_cov, max_cov) {
 
   beta <- rep(NA, 3)
-  beta[1] <- logit(rho[1]) - min_cov*(logit(rho[2]) - logit(rho[1]))/(max_cov - min_cov)
-  beta[2] <- logit(rho[3]) - logit(rho[1])
-  beta[3] <- (logit(rho[2]) - logit(rho[1]))/(max_cov - min_cov)
+  beta[1] <- qlogis(rho[1]) - min_cov*(qlogis(rho[2]) - qlogis(rho[1]))/(max_cov - min_cov)
+  beta[2] <- qlogis(rho[3]) - qlogis(rho[1])
+  beta[3] <- (qlogis(rho[2]) - qlogis(rho[1]))/(max_cov - min_cov)
 
   design_matrix <- cbind(1, dose, cov)
   eta <- design_matrix%*%beta

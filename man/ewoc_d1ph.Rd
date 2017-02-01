@@ -92,50 +92,6 @@ Finding the next dose for a phase I clinical trial based on Escalation Over
 Dose Control (EWOC) design considering extended parametrization for time
 to event response and single agent.
 }
-\examples{
-time <- 9
-status <- 0
-dose <- 30
-
-test <- ewoc_d1ph(cbind(time, status) ~ dose, type = 'discrete',
-                 theta = 0.33, alpha = 0.25, tau = 10,
-                 dose_set = seq(30, 50, 5),
-                 rho_prior = matrix(1, ncol = 2, nrow = 1),
-                 mtd_prior = matrix(1, ncol = 2, nrow = 1),
-                 distribution = 'exponential',
-                 rounding = 'down')
-summary(test)
-
-test <- ewoc_d1ph(cbind(time, status) ~ dose, type = 'discrete',
-                 theta = 0.33, alpha = 0.25, tau = 10,
-                 dose_set = seq(30, 50, 5),
-                 rho_prior = matrix(1, ncol = 2, nrow = 1),
-                 mtd_prior = matrix(1, ncol = 2, nrow = 1),
-                 shape_prior = matrix(1, ncol = 2, nrow = 1),
-                 distribution = 'weibull',
-                 rounding = 'down')
-summary(test)
-
-test <- ewoc_d1ph(cbind(time, status) ~ dose, type = 'continuous',
-                 theta = 0.33, alpha = 0.25, tau = 10,
-                 first_dose = 30, last_dose = 50,
-                 rho_prior = matrix(1, ncol = 2, nrow = 1),
-                 mtd_prior = matrix(1, ncol = 2, nrow = 1),
-                 distribution = 'exponential')
-summary(test)
-plot(test)
-
-test <- ewoc_d1ph(cbind(time, status) ~ dose, type = 'continuous',
-                 theta = 0.33, alpha = 0.25, tau = 10,
-                 first_dose = 30, last_dose = 50,
-                 rho_prior = matrix(1, ncol = 2, nrow = 1),
-                 mtd_prior = matrix(1, ncol = 2, nrow = 1),
-                 shape_prior = matrix(1, ncol = 2, nrow = 1),
-                 distribution = 'weibull')
-summary(test)
-plot(test)
-
-}
 \references{
 Tighiouart M, Liu Y, Rogatko A. Escalation with overdose control using time to toxicity for cancer phase I clinical trials. PloS one. 2014 Mar 24;9(3):e93070.
 }

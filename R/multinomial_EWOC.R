@@ -52,33 +52,6 @@
 #'@return \code{sample} a list of the MCMC chains distribution.
 #'@return \code{trial} a list of trial conditions.
 #'
-#'@examples
-#'DLT <- rep(0, 1)
-#'npatients <- rep(1, 1)
-#'group <- "B"
-#'group <- factor(group, levels = c("A", "B", "C"))
-#'dose <- rep(30, 1)
-#'test <- ewoc_d1multinomial(cbind(DLT, npatients) ~ dose | group, type = 'continuous',
-#'                           theta = 0.33, alpha = 0.25,
-#'                           first_dose = 30, last_dose = 50,
-#'                           min_dose = 30, max_dose = 50,
-#'                           levels_cov = c("A", "B", "C"),
-#'                           mtd_prior = matrix(1, nrow = 3, ncol = 2),
-#'                           rho_prior = matrix(1, nrow = 1, ncol = 2))
-#'summary(test)
-#'plot(test)
-#'
-#'test <- ewoc_d1multinomial(cbind(DLT, npatients) ~ dose | group, type = 'discrete',
-#'                           theta = 0.33, alpha = 0.25,
-#'                           dose_set = seq(30, 50, 5),
-#'                           first_dose = 30, last_dose = 50,
-#'                           levels_cov = c("A", "B", "C"),
-#'                           mtd_prior = matrix(1, nrow = 3, ncol = 2),
-#'                           rho_prior = matrix(1, nrow = 1, ncol = 2),
-#'                           rouding = "nearest")
-#'summary(test)
-#'plot(test)
-#'
 #'@references Tighiouart M, Cook-Wiens G, Rogatko A. Incorporating a patient dichotomous characteristic in cancer phase I clinical trials using escalation with overdose control. Journal of Probability and Statistics. 2012 Oct 2;2012.
 #'
 #'@export
@@ -206,10 +179,10 @@ ewoc_jags.d1multinomial <- function(data, n_adapt, burn_in,
     }
 
     for (i in 3:(np+1)) {
-      beta[i] <- logit(theta) - logit(rho[1]) - gamma[i-1]*(logit(theta) - beta[1])/gamma[i-2]
+      beta[i] <- qlogis(theta) - qlogis(rho[1]) - gamma[i-1]*(qlogis(theta) - beta[1])/gamma[i-2]
     }
-    beta[2] <- (logit(theta) - logit(rho[1]))/gamma[1]
-    beta[1] <- logit(rho[1])
+    beta[2] <- (qlogis(theta) - qlogis(rho[1]))/gamma[1]
+    beta[1] <- qlogis(rho[1])
 
     rho[1] <- theta*h[1]
     h[1] ~ dbeta(rho_prior[1, 1], rho_prior[1, 2])
@@ -264,11 +237,11 @@ rho_multinomial <- function(rho11, true_mtd, min_dose, max_dose, theta) {
 
   aux <- function(rho11, true_mtd, theta) {
     rho0 <- rep(NA, length(true_mtd))
-    rho0[1] <- plogis((logit(theta) - true_mtd[1]*
-                         logit(rho11))/(1 - true_mtd[1]))
+    rho0[1] <- plogis((qlogis(theta) - true_mtd[1]*
+                         qlogis(rho11))/(1 - true_mtd[1]))
     for(i in 2:length(true_mtd)) {
-      rho0[i] <- plogis(logit(theta) - true_mtd[i]*
-                          (logit(rho11) - logit(rho0[1])))
+      rho0[i] <- plogis(qlogis(theta) - true_mtd[i]*
+                          (qlogis(rho11) - qlogis(rho0[1])))
     }
     return(rho0)
   }

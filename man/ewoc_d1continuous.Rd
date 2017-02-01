@@ -92,23 +92,6 @@ Finding the next dose for a phase I clinical trial based on Escalation Over
 Dose Control (EWOC) design considering extended parametrization
 for binary response with continuous covariable.
 }
-\examples{
-DLT <- 0
-npatients <- 1
-dose <- 30
-tumor_size <- 2
-test <- ewoc1d_continuous(cbind(DLT, npatients) ~ dose | tumor_size,
-                         type = 'continuous',
-                         theta = 0.33, alpha = 0.25, direction = 'positive',
-                         dose_set = seq(30, 50, 5),
-                         first_dose = 30, last_dose = 50,
-                         min_dose = 30, max_dose = 50,
-                         next_patient_cov = 2, min_cov = 1, max_cov = 4,
-                         mtd_prior = matrix(1, nrow = 1, ncol = 2),
-                         rho_prior = matrix(1, nrow = 2, ncol = 2))
-summary(test)
-
-}
 \references{
 Babb JS, Rogatko A. Patient specific dosing in a cancer phase I clinical trial. Statistics in medicine. 2001 Jul 30;20(14):2079-90.
 }
