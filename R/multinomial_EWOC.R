@@ -66,7 +66,7 @@ ewoc_d1multinomial <- function(formula, theta, alpha,
                                n_adapt = 5000, burn_in = 1000,
                                n_mcmc = 1000, n_thin = 1, n_chains = 1) {
 
-  formula <- Formula(formula)
+  formula <- Formula::Formula(formula)
   if (class(formula)[2] != "formula")
     stop("Invalid formula! \n")
 
@@ -80,7 +80,8 @@ ewoc_d1multinomial <- function(formula, theta, alpha,
   } else {
     nlc <- length(levels_cov)
     covariable_matrix <- model.matrix(formula, data_base, rhs = 2)
-    covariable <- levels_cov[rowSums(covariable_matrix)]
+    index <- apply(covariable_matrix, 1, function(x) max(which(x != 0)))
+    covariable <- levels_cov[index]
   }
 
   design_matrix <- cbind(dose_matrix,
@@ -179,10 +180,10 @@ ewoc_jags.d1multinomial <- function(data, n_adapt, burn_in,
     }
 
     for (i in 3:(np+1)) {
-      beta[i] <- qlogis(theta) - qlogis(rho[1]) - gamma[i-1]*(qlogis(theta) - beta[1])/gamma[i-2]
+      beta[i] <- logit(theta) - logit(rho[1]) - gamma[i-1]*(logit(theta) - beta[1])/gamma[i-2]
     }
-    beta[2] <- (qlogis(theta) - qlogis(rho[1]))/gamma[1]
-    beta[1] <- qlogis(rho[1])
+    beta[2] <- (logit(theta) - logit(rho[1]))/gamma[1]
+    beta[1] <- logit(rho[1])
 
     rho[1] <- theta*h[1]
     h[1] ~ dbeta(rho_prior[1, 1], rho_prior[1, 2])
@@ -220,11 +221,11 @@ ewoc_jags.d1multinomial <- function(data, n_adapt, burn_in,
   update(j, burn_in)
   sample <- coda.samples(j, variable.names =  c("gamma", "rho"),
                          n.iter = n_mcmc, thin = n_thin,
-                         n.chains = n_chains)[[1]]
-  gamma <- sample[, 1:np]
-  rho <- sample[, (np + 1)]
+                         n.chains = n_chains)
+  gamma <- sample[[1]][, 1:np]
+  rho <- sample[[1]][, (np + 1)]
 
-  out <- list(gamma = gamma, rho = rho)
+  out <- list(gamma = gamma, rho = rho, sample = sample)
 
   return(out)
 }

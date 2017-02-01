@@ -175,7 +175,7 @@ ewoc_jags.d1extended <- function(data, n_adapt, burn_in,
     v[1] ~ dbeta(rho_prior[1, 1], rho_prior[1, 2])
 
     limit <- plogis(numerator/denominator, 0, 1)
-    numerator <- qlogis(theta) - lb*qlogis(rho[2])
+    numerator <- logit(theta) - lb*logit(rho[2])
     denominator <- 1 - lb
 
     rho[2] <- v[2]
@@ -206,11 +206,12 @@ ewoc_jags.d1extended <- function(data, n_adapt, burn_in,
                   n.adapt = n_adapt)
   close(tc2)
   update(j, burn_in)
-  rho <- coda.samples(j, variable.names = c("rho"),
+  sample <- coda.samples(j, variable.names = c("rho"),
                          n.iter = n_mcmc, thin = n_thin,
-                         n.chains = n_chains)[[1]]
+                         n.chains = n_chains)
+  rho <- sample[[1]]
 
-  out <- list(rho = rho)
+  out <- list(rho = rho, sample = sample)
 
   return(out)
 }
