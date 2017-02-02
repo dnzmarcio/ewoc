@@ -157,22 +157,11 @@ ewoc_d1ordinal <- function(formula, theta, alpha,
 ewoc_jags.d1ordinal <- function(data, n_adapt, burn_in,
                               n_mcmc, n_thin, n_chains) {
 
-  theta <- data$theta
-  min_dose <- data$limits$min_dose
-  max_dose <- data$limits$max_dose
-  rho_prior <- data$rho_prior
-  mtd_prior <- data$mtd_prior
-  design_matrix <- data$design_matrix
-  np <- ncol(design_matrix) - 1
-  dose <- data$design_matrix
-  dlt <- data$response[, 1]
-  npatients <- data$response[, 2]
-
   # JAGS model function
   jfun <- function() {
 
     for(i in 1:nobs) {
-      dlt[i] ~ dbin(p[i], 1)
+      dlt[i] ~ dbin(p[i], npatients)
       p[i] <- ifelse(1/(1 + exp(-eta[i])) == 1, 0.99, 1/(1 + exp(-eta[i])))
       eta[i] <- inprod(design_matrix[i, ], beta)
     }
@@ -200,15 +189,20 @@ ewoc_jags.d1ordinal <- function(data, n_adapt, burn_in,
   R2WinBUGS::write.model(jfun, tc1)
   close(tc1)
 
-  data_base <- list('dlt' = dlt, 'design_matrix' = design_matrix, 'theta' = theta,
-                    'nobs' = length(dlt), 'np' = np,
-                    'rho_prior' = rho_prior, 'mtd_prior' = mtd_prior)
+  data_base <- list('dlt' = data$response[, 1],
+                    'npatients' = data$response[, 2],
+                    'design_matrix' = data$design_matrix,
+                    'theta' = data$theta,
+                    'nobs' = length(data$response[, 1]),
+                    'np' = ncol(data$design_matrix) - 1,
+                    'rho_prior' = data$rho_prior,
+                    'mtd_prior' = data$mtd_prior)
 
   inits <- function() {
-    out <- list(r = rbeta(nrow(rho_prior),
-                          rho_prior[, 1], rho_prior[, 2]),
-                v = rbeta(nrow(mtd_prior),
-                            mtd_prior[, 1], mtd_prior[, 2]))
+    out <- list(r = rbeta(nrow(data$rho_prior),
+                          data$rho_prior[, 1], data$rho_prior[, 2]),
+                v = rbeta(nrow(data$mtd_prior),
+                          data$mtd_prior[, 1], data$mtd_prior[, 2]))
     return(out)
   }
 
@@ -224,8 +218,8 @@ ewoc_jags.d1ordinal <- function(data, n_adapt, burn_in,
   sample <- rjags::coda.samples(j, variable.names =  c("gamma", "rho"),
                                 n.iter = n_mcmc, thin = n_thin,
                                 n.chains = n_chains)[[1]]
-  gamma <- sample[, 1:np]
-  rho <- sample[, (np + 1)]
+  gamma <- sample[, 1:(ncol(data$design_matrix) - 1)]
+  rho <- sample[, ncol(data$design_matrix)]
 
   out <- list(gamma = gamma, rho = rho)
 

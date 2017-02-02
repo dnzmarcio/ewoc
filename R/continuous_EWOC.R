@@ -77,7 +77,7 @@ ewoc_d1continuous <- function(formula, theta, alpha,
   dose_matrix <- model.matrix(formula, data_base, rhs = 1)
 
   if (length(formula)[2] == 1) {
-    stop("This design requires a multinomial covariable.")
+    stop("This design requires a continuous covariable.")
   } else {
     covariable_matrix <- model.matrix(formula, data_base, rhs = 2)
     covariable <- covariable_matrix[, 2]

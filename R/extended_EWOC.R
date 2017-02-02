@@ -149,20 +149,15 @@ ewoc_d1extended <- function(formula, theta, alpha,
 ewoc_jags.d1extended <- function(data, n_adapt, burn_in,
                                  n_mcmc, n_thin, n_chains) {
 
-  theta <- data$theta
   min_dose <- data$limits$min_dose
   max_dose <- data$limits$max_dose
   lb <- - min_dose()/(max_dose() - min_dose())
-  rho_prior <- data$rho_prior
-  design_matrix <- data$design_matrix
-  dlt <- data$response[, 1]
-  npatients <- data$response[, 2]
 
   # JAGS model function
   jfun <- function() {
 
     for(i in 1:nobs) {
-      dlt[i] ~ dbin(p[i], 1)
+      dlt[i] ~ dbin(p[i], npatients)
       p[i] <- ifelse(1/(1 + exp(-lp[i])) == 1, 0.99, 1/(1 + exp(-lp[i])))
       lp[i] <- inprod(design_matrix[i, ], beta)
     }
@@ -186,13 +181,16 @@ ewoc_jags.d1extended <- function(data, n_adapt, burn_in,
   R2WinBUGS::write.model(jfun, tc1)
   close(tc1)
 
-  data_base <- list('dlt' = dlt, 'design_matrix' = design_matrix,
-                    'nobs' = length(dlt), 'rho_prior' = rho_prior,
-                    'theta' = theta, 'lb' = lb)
+  data_base <- list('dlt' = data$response[, 1],
+                    'npatients' = data$response[, 2],
+                    'design_matrix' = data$design_matrix,
+                    'nobs' = length(data$response[, 1]),
+                    'rho_prior' = data$rho_prior,
+                    'lb' = lb)
 
   inits <- function() {
     v <- rep(NA, 2)
-    v <- rbeta(2, rho_prior[, 1], rho_prior[, 2])
+    v <- rbeta(2, data$rho_prior[, 1], data$rho_prior[, 2])
     out <- list(v = v)
     return(v)
   }

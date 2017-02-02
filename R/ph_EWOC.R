@@ -164,24 +164,15 @@ ewoc_d1ph <- function(formula, theta, alpha, tau,
 ewoc_jags.d1ph <- function(data, n_adapt, burn_in,
                          n_mcmc, n_thin, n_chains) {
 
-  theta <- data$theta
-  rho_prior <- data$rho_prior
-  mtd_prior <- data$mtd_prior
-  shape_prior <- data$shape_prior
-  design_matrix <- data$design_matrix
-  dose <- data$design_matrix
   time_cens <- data$response[, 1]
   status <- data$response[, 2]
-  distribution <- data$distribution
-  tau <- data$tau
-
   time_mod <- time_cens
   time_mod[status == 0] <- NA
   censored <- as.numeric(!status)
 
   # JAGS model function
 
-  if (distribution == "weibull") {
+  if (data$distribution == "weibull") {
     jfun <- function() {
 
       for(i in 1:nobs) {
@@ -203,21 +194,23 @@ ewoc_jags.d1ph <- function(data, n_adapt, burn_in,
       time_init <- rep(NA, length(time_mod))
       time_init[which(!status)] <- time_cens[which(!status)] + 1
 
-      out <- list(r = rbeta(nrow(rho_prior),
-                            rho_prior[, 1], rho_prior[, 2]),
-                  gamma = rbeta(nrow(rho_prior),
-                                mtd_prior[, 1], mtd_prior[, 2]),
-                  shape = rgamma(1, shape_prior[1], shape_prior[2]),
+      out <- list(r = rbeta(nrow(data$rho_prior),
+                            data$rho_prior[, 1], data$rho_prior[, 2]),
+                  gamma = rbeta(nrow(data$mtd_prior),
+                                data$mtd_prior[, 1], data$mtd_prior[, 2]),
+                  shape = rgamma(1, data$shape_prior[1], data$shape_prior[2]),
                   time_mod = time_init)
       return(out)
     }
 
     data_base <- list('time_mod' = time_mod, 'time_cens' = time_cens,
-                      'censored' = censored, 'tau' = tau,
-                      'design_matrix' = design_matrix, 'theta' = theta,
+                      'censored' = censored, 'tau' = data$tau,
+                      'design_matrix' = data$design_matrix,
+                      'theta' = data$theta,
                       'nobs' = length(time_cens[!is.na(time_cens)]),
-                      'rho_prior' = rho_prior,
-                      'mtd_prior' = mtd_prior,'shape_prior' = shape_prior)
+                      'rho_prior' = data$rho_prior,
+                      'mtd_prior' = data$mtd_prior,
+                      'shape_prior' = data$shape_prior)
   } else {
     jfun <- function() {
 
@@ -239,19 +232,21 @@ ewoc_jags.d1ph <- function(data, n_adapt, burn_in,
       time_init <- rep(NA, length(time_mod))
       time_init[which(!status)] <- time_cens[which(!status)] + 1
 
-      out <- list(r = rbeta(nrow(rho_prior),
-                            rho_prior[, 1], rho_prior[, 2]),
+      out <- list(r = rbeta(nrow(data$rho_prior),
+                            data$rho_prior[, 1], data$rho_prior[, 2]),
                   gamma = rbeta(nrow(rho_prior),
-                                mtd_prior[, 1], mtd_prior[, 2]),
+                                data$mtd_prior[, 1], data$mtd_prior[, 2]),
                   time_mod = time_init)
       return(out)
     }
 
     data_base <- list('time_mod' = time_mod, 'time_cens' = time_cens,
-                      'censored' = censored, 'tau' = tau,
-                      'design_matrix' = design_matrix, 'theta' = theta,
+                      'censored' = censored, 'tau' = data$tau,
+                      'design_matrix' = data$design_matrix,
+                      'theta' = data$theta,
                       'nobs' = length(time_cens[!is.na(time_cens)]),
-                      'rho_prior' = rho_prior, 'mtd_prior' = mtd_prior)
+                      'rho_prior' = data$rho_prior,
+                      'mtd_prior' = data$mtd_prior)
 
   }
 
@@ -269,7 +264,7 @@ ewoc_jags.d1ph <- function(data, n_adapt, burn_in,
   close(tc2)
   update(j, burn_in)
 
-  if (distribution == "weibull"){
+  if (data$distribution == "weibull"){
     sample <- rjags::coda.samples(j,
                                   variable.names =  c("gamma", "rho", "shape"),
                                   n.iter = n_mcmc, thin = n_thin,
