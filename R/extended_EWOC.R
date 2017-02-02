@@ -157,7 +157,7 @@ ewoc_jags.d1extended <- function(data, n_adapt, burn_in,
   jfun <- function() {
 
     for(i in 1:nobs) {
-      dlt[i] ~ dbin(p[i], npatients)
+      dlt[i] ~ dbin(p[i], npatients[i])
       p[i] <- ifelse(1/(1 + exp(-lp[i])) == 1, 0.99, 1/(1 + exp(-lp[i])))
       lp[i] <- inprod(design_matrix[i, ], beta)
     }

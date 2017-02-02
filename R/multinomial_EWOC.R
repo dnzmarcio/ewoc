@@ -163,7 +163,7 @@ ewoc_jags.d1multinomial <- function(data, n_adapt, burn_in,
   jfun <- function() {
 
     for(i in 1:nobs) {
-      dlt[i] ~ dbin(p[i], npatients)
+      dlt[i] ~ dbin(p[i], npatients[i])
       p[i] <- ifelse(1/(1 + exp(-eta[i])) == 1, 0.99, 1/(1 + exp(-eta[i])))
       eta[i] <- inprod(design_matrix[i, ], beta)
     }
