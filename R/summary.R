@@ -15,8 +15,8 @@ summary.ewoc_d1basic <- function(object, ..., pdlt = pdlt_d1basic, print = TRUE)
 
   prob_dlt <- pdlt(dose = next_dose, rho = object$rho,
                    gamma = object$gamma, theta = object$trial$theta,
-                   min_dose = object$trial$min_dose(),
-                   max_dose = object$trial$max_dose())
+                   min_dose = object$trial$min_dose,
+                   max_dose = object$trial$max_dose)
   hpd_pdlt <- coda::HPDinterval(coda::as.mcmc(prob_dlt))
 
   hpd_pdlt <- round(as.numeric(hpd_pdlt), 2)
@@ -149,18 +149,16 @@ summary.ewoc_d1multinomial <- function(object, ..., next_covariable = NULL,
                                        pdlt = pdlt_d1multinomial,
                                        print = TRUE){
 
-  npatients <- colSums(object$trial$covariable)
-  npatients[1] <- npatients[1] - sum(npatients[2:length(npatients)])
-
   if (is.null(next_covariable))
     next_covariable <- object$trial$levels_cov
 
   p00 <- data.frame(group = object$trial$levels_cov,
                     object$trial$min_dose(object$trial$levels_cov),
                     object$trial$max_dose(object$trial$levels_cov),
-                      object$trial$theta, object$trial$alpha, npatients)
+                    object$trial$theta, object$trial$alpha,
+                    as.numeric(table(object$trial$covariable)))
   colnames(p00) <- c("Group", "Minimum Dose", "Maximum Dose", "Theta",
-                       "Alpha", "Number of patients")
+                     "Alpha", "Number of patients")
 
   index <- which(object$trial$levels_cov ==  next_covariable)
   counter <- 1
@@ -224,16 +222,14 @@ summary.ewoc_d1ordinal <- function(object, ..., next_covariable = NULL,
                                    pdlt = pdlt_d1ordinal,
                                    print = TRUE){
 
-  npatients <- colSums(object$trial$covariable)
-  npatients[1] <- npatients[1] - sum(npatients[2:length(npatients)])
-
   if (is.null(next_covariable))
     next_covariable <- object$trial$levels_cov
 
   p00 <- data.frame(group = object$trial$levels_cov,
                     object$trial$min_dose(object$trial$levels_cov),
                     object$trial$max_dose(object$trial$levels_cov),
-                      object$trial$theta, object$trial$alpha, npatients)
+                    object$trial$theta, object$trial$alpha,
+                    as.numeric(table(object$trial$covariable)))
   colnames(p00) <- c("Group", "Minimum Dose", "Maximum Dose", "Theta",
                        "Alpha", "Number of patients")
 
@@ -292,4 +288,70 @@ summary.ewoc_d1ordinal <- function(object, ..., next_covariable = NULL,
 
   out <- list(next_dose = tab01[, 1], hpd_dose = tab01[, 2:3],
               prob_dlt = tab02[, 1], hpd_pdlt = tab02[, 2:3])
+}
+
+#'@export
+summary.ewoc_d1continuous <- function(object, ..., next_covariable = NULL,
+                                      pdlt = pdlt_d1continuous,
+                                      print = TRUE){
+
+  if (is.null(next_covariable))
+    next_covariable <- object$trial$max_cov
+
+  p00 <- data.frame(unique(object$trial$covariable),
+                    object$trial$min_dose(unique(object$trial$covariable)),
+                    object$trial$max_dose(unique(object$trial$covariable)),
+                    object$trial$theta, object$trial$alpha,
+                    as.numeric(table(object$trial$covariable)))
+  colnames(p00) <- c("Covariable", "Minimum Dose", "Maximum Dose", "Theta",
+                     "Alpha", "Number of patients")
+
+  c01 <- qlogis(object$trial$theta) - qlogis(object$rho[, 1])
+  c02 <- (next_covariable - object$trial$min_cov)/
+            (object$trial$max_cov - object$trial$min_cov)
+  c03 <- qlogis(object$rho[, 2]) - qlogis(object$rho[, 1])
+  c04 <- qlogis(object$trial$theta) - qlogis(object$rho[, 2])
+
+  mtd_c <- object$mtd*(c01 - c02*c03)/c04
+
+  hpd_dose <- coda::HPDinterval(coda::as.mcmc(mtd_c))
+  hpd_dose <- round(as.numeric(hpd_dose), 2)
+  next_dose <- round(quantile(mtd_c, probs = object$trial$alpha), 2)
+  tab01 <- data.frame(next_dose, hpd_dose[1], hpd_dose[2])
+
+  prob_dlt <- pdlt(dose = next_dose, rho = object$rho,
+                   gamma = object$gamma,
+                   theta = object$trial$theta,
+                   min_dose = object$trial$min_dose(next_covariable),
+                   max_dose = object$trial$max_dose(next_covariable),
+                   min_cov = object$trial$min_cov,
+                   max_cov = object$trial$max_cov,
+                   cov = next_covariable)
+  hpd_pdlt <- coda::HPDinterval(coda::as.mcmc(prob_dlt))
+
+  hpd_pdlt <- round(as.numeric(hpd_pdlt), 2)
+  prob_dlt <- round(median(prob_dlt), 2)
+  tab02 <- data.frame(prob_dlt, hpd_pdlt[1], hpd_pdlt[2])
+
+  if (print){
+    cat("Conditions\n")
+    print(p00)
+    cat("\n")
+
+    cat("Next Dose\n")
+    p01 <- data.frame(estimate = tab01[, 1],
+                      hpd = paste0("(", tab01[, 2], " ; ", tab01[, 3], ")"))
+    colnames(p01) <- c("Estimate", "95% HPD")
+    print(p01)
+    cat("\n")
+
+    cat("P(DLT| next dose)\n")
+    p02 <- data.frame(estimate = tab01[, 1],
+                      hpd = paste0("(", tab02[, 2], " ; ", tab02[, 3], ")"))
+    colnames(p02) <- c("Estimate", "95% HPD")
+    print(p02)
+  }
+
+  out <- list(next_dose = next_dose, hpd_dose = hpd_dose,
+              prob_dlt = prob_dlt, hpd_pdlt = hpd_pdlt)
 }

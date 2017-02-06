@@ -140,7 +140,7 @@ pdlt_d1multinomial <- function(dose, rho, gamma, theta, min_dose, max_dose, cov)
 }
 
 #'@export
-pdlt_d1ordinal <- function(dose, gamma, rho, theta,  min_dose, max_dose, cov) {
+pdlt_d1ordinal <- function(dose, rho, gamma, theta, min_dose, max_dose, cov) {
 
   dose <- standard_dose(dose = dose,
                         min_dose = min_dose,
@@ -149,7 +149,7 @@ pdlt_d1ordinal <- function(dose, gamma, rho, theta,  min_dose, max_dose, cov) {
   parm <- cbind(gamma, rho)
   parm.names <- c(rep("mtd", ncol(gamma)), "rho")
 
-  aux_pdlt <- function(parm, dose, mtd, theta, cov, parm.names) {
+  aux_pdlt <- function(parm, dose, theta, cov, parm.names) {
 
     rho <- parm[which(parm.names == "rho")]
     mtd <- parm[which(parm.names == "mtd")]
@@ -168,8 +168,43 @@ pdlt_d1ordinal <- function(dose, gamma, rho, theta,  min_dose, max_dose, cov) {
     return(out)
   }
 
-  out <- apply(parm, 1, aux_pdlt, mtd = mtd, dose = dose, theta = theta,
+  out <- apply(parm, 1, aux_pdlt, dose = dose, theta = theta,
                cov = cov, parm.names = parm.names)
+  return(out)
+}
+
+#'@export
+pdlt_d1continuous <- function(dose, gamma, rho, theta,
+                              min_dose, max_dose, min_cov, max_cov, cov) {
+
+  dose <- standard_dose(dose = dose,
+                        min_dose = min_dose,
+                        max_dose = max_dose)
+
+  parm <- cbind(gamma, rho)
+  parm.names <- c("mtd", "rho", "rho")
+
+  aux_pdlt <- function(parm, dose, mtd, theta, cov, min_cov, max_cov,
+                       parm.names) {
+
+    rho <- parm[which(parm.names == "rho")]
+    mtd <- parm[which(parm.names == "mtd")]
+
+    beta <- rep(NA, 3)
+    beta[1] <- logit(rho[1]) - min_cov*(logit(rho[2]) - logit(rho[1]))/
+      (max_cov - min_cov)
+    beta[2] <- (logit(theta) - logit(rho[1]))/mtd
+    beta[3] <- (logit(rho[2]) - logit(rho[1]))/(max_cov - min_cov)
+
+    design_matrix <- cbind(1, dose, cov)
+    lp <- design_matrix%*%beta
+    out <- as.numeric(plogis(lp))
+    return(out)
+  }
+
+  out <- apply(parm, 1, aux_pdlt, mtd = mtd, dose = dose, theta = theta,
+               cov = cov, min_cov = min_cov, max_cov = max_cov,
+               parm.names = parm.names)
   return(out)
 }
 

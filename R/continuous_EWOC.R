@@ -57,12 +57,12 @@
 #'@export
 ewoc_d1continuous <- function(formula, theta, alpha,
                                 mtd_prior, rho_prior,
-                                next_patient_cov, min_cov, max_cov,
+                                min_dose, max_dose,
+                                min_cov, max_cov,
                                 direction = c('positive', 'negative'),
                                 type = c('continuous', 'discrete'),
                                 first_dose = NULL, last_dose = NULL,
                                 dose_set = NULL,
-                                min_dose = NULL, max_dose = NULL,
                                 rounding = c("down", "nearest"),
                                 n_adapt = 5000, burn_in = 1000,
                                 n_mcmc = 1000, n_thin = 1, n_chains = 1) {
@@ -83,7 +83,7 @@ ewoc_d1continuous <- function(formula, theta, alpha,
     covariable <- covariable_matrix[, 2]
 
     if (direction == "negative") {
-      covariable <- -covariable_matrix
+      covariable <- -covariable_matrix[, 2]
       min_cov <- -max_cov
       max_cov <- -min_cov
     }
@@ -117,98 +117,41 @@ ewoc_d1continuous <- function(formula, theta, alpha,
   if (covariable < min_cov | covariable > max_cov)
     stop("'covariable' in formula has to be between 'min_cov' and 'max_cov'.")
 
-  if (next_patient_cov < min_cov | next_patient_cov > max_cov)
-    stop("'covariable' in formula has to be between 'min_cov' and 'max_cov'.")
+  limits <- limits_d1cov(first_dose = first_dose, last_dose = last_dose,
+                         min_dose = min_dose, max_dose = max_dose,
+                         type = type, rounding = rounding,
+                         dose_set = dose_set,
+                         covariable = covariable)
 
-  if (is.null(first_dose) | is.null(last_dose)) {
-
-    if (type == "continuous")
-      stop("'first_dose' and the 'last_dose' should be informed since
-           type = 'continuous'.")
-
-    if (type == "discrete") {
-      first_dose_np <- dose_set[1]
-      last_dose_np <- dose_set[length(dose_set)]
-      warning("'first_dose' and the 'last_dose' were defined as the first and last element of 'dose_set', respectively..")
-    }
-
-  } else {
-
-    if (is.function(first_dose)){
-      first_dose_np <- first_dose(next_patient_cov)
-
-    } else {
-      first_dose_np <- first_dose
-    }
-
-    if (is.function(last_dose)) {
-      last_dose_np <- upper_dose(next_patient_cov)
-
-    } else {
-      last_dose_np <- last_dose
-    }
-
-    if (first_dose_np > last_dose_np)
-      stop("'first_dose' should be smaller than the 'last_dose'.")
-  }
-
-  if (is.null(min_dose) | is.null(max_dose)) {
-    min_dose_np <- first_dose_np
-    min_dose_sp <- first_dose_np
-    max_dose_np <- last_dose_np
-    max_dose_sp <- last_dose_np
-
-    if (type == "discrete")
-      if (rounding == "down")
-        max_dose_sp <- last_dose_np + 1
-  } else {
-
-    if (is.function(min_dose)){
-      min_dose_sp <- min_dose(covariable)
-      min_dose_np <- min_dose(next_patient_cov)
-
-    } else {
-      min_dose_sp <- min_dose
-      min_dose_np <- min_dose
-    }
-
-    if (is.function(max_dose)) {
-      max_dose_sp <- max_dose(covariable)
-      max_dose_np <- max_dose(next_patient_cov)
-
-    } else {
-      max_dose_sp <- max_dose
-      max_dose_np <- max_dose
-    }
-
-    if (any(min_dose_sp > max_dose_sp))
-      stop("'min_dose' should be smaller than the 'max_dose'.")
-
-    if (min_dose_np > max_dose_np)
-      stop("'min_dose' should be smaller than the 'max_dose'.")
-  }
+  design_matrix[, 2] <-
+    standard_dose(dose = design_matrix[, 2],
+                  min_dose = limits$min_dose(covariable),
+                  max_dose = limits$max_dose(covariable))
 
   my_data <- list(response = response, design_matrix = design_matrix,
-                  theta = theta, alpha = alpha,
-                  first_dose_np = first_dose_np, last_dose_np = last_dose_np,
-                  min_dose_np = min_dose_np, max_dose_np = max_dose_np,
-                  min_dose_sp = min_dose_sp, max_dose_sp = max_dose_sp,
+                  theta = theta, alpha = alpha, limits = limits,
                   dose_set = dose_set,
-                  mtd_prior = mtd_prior, rho_prior = rho_prior,
-                  next_patient_cov = next_patient_cov,
+                  rho_prior = rho_prior, mtd_prior = mtd_prior,
                   max_cov = max_cov, min_cov = min_cov,
                   type = type, rounding = rounding)
-  class(my_data) <- "continuous"
+  class(my_data) <- "d1continuous"
 
   out <- qmtd_jags(my_data, n_adapt, burn_in, n_mcmc, n_thin, n_chains)
 
-  out$n <- nrow(response)
-  out$alpha <- alpha
-  out$theta <- theta
-  out$max_dose <- max_dose_np
-  out$min_dose <- min_dose_np
+  trial <- list(response = response, design_matrix = design_matrix,
+                theta = theta, alpha = alpha,
+                first_dose = limits$first_dose, last_dose = limits$last_dose,
+                min_dose = limits$min_dose, max_dose = limits$max_dose,
+                dose_set = dose_set,
+                rho_prior = rho_prior, mtd_prior = mtd_prior,
+                covariable = covariable,
+                min_cov = min_cov, max_cov = max_cov,
+                type = type, rounding = rounding,
+                n_adapt = n_adapt, burn_in = burn_in, n_mcmc = n_mcmc,
+                n_thin = n_thin, n_chains = n_chains)
+  out$trial <- trial
 
-  class(out) <- "ewoc"
+  class(out) <- c("ewoc_d1continuous", "d1continuous")
   return(out)
 }
 
@@ -216,32 +159,21 @@ ewoc_d1continuous <- function(formula, theta, alpha,
 ewoc_jags.d1continuous <- function(data, n_adapt, burn_in,
                                    n_mcmc, n_thin, n_chains) {
 
-  theta <- data$theta
-  min_dose <- data$min_dose_np
-  max_dose <- data$max_dose_np
-  lb <- - min_dose/(max_dose - min_dose)
-  rho_prior <- data$rho_prior
-  mtd_prior <- data$mtd_prior
-  design_matrix <- data$design_matrix
-  min_cov <- data$min_cov
-  max_cov <- data$max_cov
-  dlt <- data$response[, 1]
-  npatients <- data$response[, 2]
-
   # JAGS model function
   jfun <- function() {
 
     for(i in 1:nobs) {
-      dlt[i] ~ dbin(p[i], 1)
+      dlt[i] ~ dbin(p[i], npatients[i])
       p[i] <- 1/(1 + exp(-lp[i]))
       lp[i] <- inprod(design_matrix[i, ], beta)
     }
 
-    beta[1] <- qlogis(rho[1]) - min_cov*(qlogis(rho[2]) - qlogis(rho[1]))/(max_cov - min_cov)
-    beta[2] <- (qlogis(theta) - qlogis(rho[2]))/gamma
-    beta[3] <- (qlogis(rho[2]) - qlogis(rho[1]))/(max_cov - min_cov)
+    beta[1] <- logit(rho[1]) -
+      min_cov*(logit(rho[2]) - logit(rho[1]))/(max_cov - min_cov)
+    beta[2] <- (logit(theta) - logit(rho[2]))/gamma
+    beta[3] <- (logit(rho[2]) - logit(rho[1]))/(max_cov - min_cov)
 
-    rho[1] <- theta*r[1]
+    rho[1] <- rho[2]*r[1]
     r[1] ~ dbeta(rho_prior[1, 1], rho_prior[1, 2])
     rho[2] <- theta*r[2]
     r[2] ~ dbeta(rho_prior[2, 1], rho_prior[2, 2])
@@ -249,19 +181,22 @@ ewoc_jags.d1continuous <- function(data, n_adapt, burn_in,
     g[1] ~ dbeta(mtd_prior[1, 1], mtd_prior[1, 2])
   }
 
-
   tc1 <- textConnection("jmod", "w")
   R2WinBUGS::write.model(jfun, tc1)
   close(tc1)
 
-  data_base <- list('dlt' = dlt, 'design_matrix' = design_matrix,
-                    'theta' = theta, 'nobs' = length(dlt),
-                    'mtd_prior' = mtd_prior, 'rho_prior' = rho_prior,
-                    'min_cov' = min_cov, 'max_cov' = max_cov)
+  data_base <- list('dlt' = data$response[, 1],
+                    'npatients' = data$response[, 2],
+                    'design_matrix' = data$design_matrix,
+                    'theta' = data$theta, 'nobs' = length(data$response[, 1]),
+                    'mtd_prior' = data$mtd_prior, 'rho_prior' = data$rho_prior,
+                    'min_cov' = data$min_cov, 'max_cov' = data$max_cov)
 
   inits <- function() {
-    out <- list(r = rbeta(nrow(rho_prior), rho_prior[, 1], rho_prior[, 2]),
-                g = rbeta(nrow(mtd_prior), mtd_prior[, 1], mtd_prior[, 2]))
+    out <- list(r = rbeta(nrow(data$rho_prior),
+                          data$rho_prior[, 1], data$rho_prior[, 2]),
+                g = rbeta(nrow(data$mtd_prior),
+                          data$mtd_prior[, 1], data$mtd_prior[, 2]))
     return(out)
   }
 
