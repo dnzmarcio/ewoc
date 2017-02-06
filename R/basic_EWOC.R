@@ -115,8 +115,8 @@ ewoc_d1basic <- function(formula, theta, alpha,
 
   design_matrix[, 2] <-
     standard_dose(dose = design_matrix[, 2],
-                  min_dose = limits$min_dose(),
-                  max_dose = limits$max_dose())
+                  min_dose = limits$min_dose,
+                  max_dose = limits$max_dose)
 
   my_data <- list(response = response, design_matrix = design_matrix,
                   theta = theta, alpha = alpha, limits = limits,
@@ -128,10 +128,10 @@ ewoc_d1basic <- function(formula, theta, alpha,
   out <- qmtd_jags(my_data, n_adapt, burn_in, n_mcmc, n_thin, n_chains)
 
   out$next_dose <-
-    ifelse(out$next_dose > limits$last_dose(),
-           limits$last_dose(),
-           ifelse(out$next_dose < limits$first_dose(),
-                  limits$first_dose(), out$next_dose))
+    ifelse(out$next_dose > limits$last_dose,
+           limits$last_dose,
+           ifelse(out$next_dose < limits$first_dose,
+                  limits$first_dose, out$next_dose))
 
   trial <- list(response = response, design_matrix = design_matrix,
                 theta = theta, alpha = alpha,
@@ -179,7 +179,8 @@ ewoc_jags.d1basic <- function(data, n_adapt, burn_in,
                     'npatients' = data$response[, 2],
                     'design_matrix' = data$design_matrix,
                     'theta' = data$theta,
-                    'nobs' = length(dlt), 'rho_prior' = data$rho_prior,
+                    'nobs' = length(data$response[, 1]),
+                    'rho_prior' = data$rho_prior,
                     'mtd_prior' = data$mtd_prior)
 
   inits <- function() {

@@ -5,42 +5,23 @@ limits_d1nocov <- function(first_dose, last_dose, min_dose, max_dose, type,
   if (is.null(min_dose) | is.null(max_dose))
     stop ("'min_dose' and 'max_dose have to be defined'")
 
-  if (is.function(min_dose)){
+  if (is.function(min_dose))
     stop("'min_dose' cannot be a function for this design.")
-  } else {
-    min_dose_value <- min_dose
-    min_dose <- function(covariable = NULL){
-      out <- min_dose_value
-      return(out)
-    }
-  }
 
-  if (!is.function(max_dose)) {
-    max_dose_value <- max_dose
+  if (is.function(max_dose))
+    stop("'max_dose' cannot be a function for this design.")
 
-    if (type == "discrete"){
-      if (rounding == "down")
-        max_dose <- function(covariable = NULL){
-          out <- max_dose_value + 1
-          return(out)
-        }
-    } else {
+  if (type == "discrete")
+    if (rounding == "down")
+      max_dose <- max_dose + 1
 
-      max_dose <- function(covariable = NULL){
-        out <- max_dose_value
-        return(out)
-      }
-
-    }
-  }
-
-  if (any(min_dose() > max_dose()))
+  if (min_dose > max_dose)
     stop("'min_dose' should be smaller than the 'max_dose'.")
 
   if (is.null(first_dose) | is.null(last_dose)) {
     if (type == "continuous"){
-      first_dose <- min_dose()
-      last_dose <- max_dose()
+      first_dose <- min_dose
+      last_dose <- max_dose
       warning("'first_dose' and 'last_dose' were defined as the minimum and maximum doses, respectively.")
     }
     if (type == "discrete") {
@@ -50,26 +31,12 @@ limits_d1nocov <- function(first_dose, last_dose, min_dose, max_dose, type,
     }
   }
 
-  if (is.function(first_dose)) {
+  if (is.function(first_dose))
     stop("'first_dose' cannot be a function for this design.")
-  } else {
-    first_dose_value <- first_dose
-    first_dose <- function(covariable = NULL){
-      out <- first_dose_value
-      return(out)
-    }
-  }
 
-  if (is.function(last_dose)) {
+
+  if (is.function(last_dose))
     stop("'last_dose' cannot be a function for this design.")
-  } else {
-    last_dose_value <- last_dose
-    last_dose <- function(covariable = NULL){
-      out <- last_dose_value
-      return(out)
-    }
-  }
-
 
   out <- list(first_dose = first_dose, last_dose = last_dose,
               min_dose = min_dose, max_dose = max_dose)
