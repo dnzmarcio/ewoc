@@ -4,7 +4,7 @@
 \alias{optimal_mtd_interval}
 \title{Percent of optimal doses}
 \usage{
-optimal_mtd_interval(dose_matrix, true_mtd, margin)
+optimal_mtd_interval(dose_matrix, true_mtd, margin, digits = 2)
 }
 \arguments{
 \item{dose_matrix}{a numerical matrix of assigned doses for each step of the trial (column)

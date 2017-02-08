@@ -4,7 +4,7 @@
 \alias{overdose_percent}
 \title{Percent of dose greater than an upper bound}
 \usage{
-overdose_percent(dose_matrix, true_mtd, margin = NULL)
+overdose_percent(dose_matrix, true_mtd, margin = NULL, digits = 2)
 }
 \arguments{
 \item{margin}{a numerical value of the acceptable upper margin of distance from the

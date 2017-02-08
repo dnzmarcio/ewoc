@@ -4,7 +4,7 @@
 \alias{stop_rule}
 \title{Evaluation of the stop rule}
 \usage{
-stop_rule(dlt_matrix, sample_size)
+stop_rule(dlt_matrix, sample_size, digits = 2)
 }
 \arguments{
 \item{dose}{Matrix of the number of DLT for each step of the trial (column)

@@ -4,7 +4,7 @@
 \alias{underdose_percent}
 \title{Percent of dose smaller than a lower bound}
 \usage{
-underdose_percent(dose_matrix, true_mtd, margin)
+underdose_percent(dose_matrix, true_mtd, margin, digits = 2)
 }
 \arguments{
 \item{margin}{a numerical Value of the acceptable lower margin of distance from the
