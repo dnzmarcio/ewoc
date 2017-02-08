@@ -44,7 +44,7 @@ overdose_loss <- function (mtd_estimate, true_mtd, alpha) {
 #'\code{target_rate != NULL}.
 #'
 #'@export
-dlt_rate <- function(dlt_matrix, target_rate = NULL, margin = NULL) {
+dlt_rate <- function(dlt_matrix, target_rate = NULL, margin = NULL, digits = 2) {
 
   dlt_matrix <- as.matrix(dlt_matrix)
 
@@ -58,17 +58,17 @@ dlt_rate <- function(dlt_matrix, target_rate = NULL, margin = NULL) {
     return(out)
   }
 
-  dlt_trial <- round(rowMeans(dlt_matrix, na.rm = TRUE), 2)
-  dlt_average <- round(mean(dlt_trial, na.rm = TRUE), 2)
+  dlt_trial <- round(rowMeans(dlt_matrix, na.rm = TRUE), digits)
+  dlt_average <- round(mean(dlt_trial, na.rm = TRUE), digits)
 
   if (!is.null(margin) & !is.null(target_rate)){
     dlt_upper <- apply(dlt_matrix, 1, aux_upper,
                     target_rate = target_rate, margin = margin)
-    dlt_upper <- round(mean(dlt_upper, na.rm = TRUE)*100, 2)
+    dlt_upper <- round(mean(dlt_upper, na.rm = TRUE)*100, digits)
 
     dlt_lower <- apply(dlt_matrix, 1, aux_lower,
                          target_rate = target_rate, margin = margin)
-    dlt_lower <- round(mean(dlt_lower, na.rm = TRUE)*100, 2)
+    dlt_lower <- round(mean(dlt_lower, na.rm = TRUE)*100, digits)
 
     dlt_interval <- dlt_upper + dlt_lower
 
@@ -96,7 +96,7 @@ dlt_rate <- function(dlt_matrix, target_rate = NULL, margin = NULL) {
 #' \item{\code{nstop}: }{Percent of stopped trials}.
 #'}
 #'@export
-stop_rule <- function(dlt_matrix, sample_size) {
+stop_rule <- function(dlt_matrix, sample_size, digits = 2) {
 
   index <- which(rowSums(!is.na(dlt_matrix)) < sample_size, arr.ind = TRUE)
 
@@ -109,7 +109,7 @@ stop_rule <- function(dlt_matrix, sample_size) {
   out <- list(average = mean(result), min = min(result),
               max = max(result),
               nstop = round(100*length(index)/
-                              nrow(dlt_matrix), 2))
+                              nrow(dlt_matrix), digits))
   return(out)
 }
 
@@ -130,19 +130,19 @@ stop_rule <- function(dlt_matrix, sample_size) {
 #' greater than \code{true_MTD + margin}.
 #'
 #'@export
-overdose_percent <- function(dose_matrix, true_mtd,  margin = NULL) {
+overdose_percent <- function(dose_matrix, true_mtd,  margin = NULL, digits = 2) {
 
   dose_matrix <- as.matrix(dose_matrix)
 
   aux <- function(dose, true_mtd,  margin) {
     observed_number <- sum(dose > true_mtd + margin)
-    out <- round(100*observed_number/length(dose), 2)
+    out <- round(100*observed_number/length(dose), digits)
     return(out)
   }
 
   percent <- apply(dose_matrix, 1, aux,
                true_mtd = true_mtd,  margin = margin)
-  average <- round(mean(percent, na.rm = TRUE), 2)
+  average <- round(mean(percent, na.rm = TRUE), digits)
   out <- list(trial = percent, average = average)
 
   return(out)
@@ -164,19 +164,19 @@ overdose_percent <- function(dose_matrix, true_mtd,  margin = NULL) {
 #' greater than \code{true_MTD - margin}.
 #'
 #'@export
-underdose_percent <- function(dose_matrix, true_mtd,  margin) {
+underdose_percent <- function(dose_matrix, true_mtd,  margin, digits = 2) {
 
   dose_matrix <- as.matrix(dose_matrix)
 
   aux <- function(dose, true_mtd,  margin) {
     observed_number <- sum(dose < true_mtd - margin)
-    out <- round(100*observed_number/length(dose), 2)
+    out <- round(100*observed_number/length(dose), digits)
     return(out)
   }
 
   percent <- apply(dose_matrix, 1, aux,
                    true_mtd = true_mtd,  margin = margin)
-  average <- round(mean(percent, na.rm = TRUE), 2)
+  average <- round(mean(percent, na.rm = TRUE), digits)
   out <- list(trial = percent, average = average)
 
   return(out)
@@ -197,19 +197,19 @@ underdose_percent <- function(dose_matrix, true_mtd,  margin) {
 #'@return \code{average} the average percent of optimal doses.
 #'
 #'@export
-optimal_mtd_interval <- function(dose_matrix, true_mtd, margin) {
+optimal_mtd_interval <- function(dose_matrix, true_mtd, margin, digits = 2) {
 
   dose_matrix <- as.matrix(dose_matrix)
 
   aux <- function(dose, true_mtd,  margin) {
     observed_number <- sum(dose > true_mtd - margin & dose < true_mtd + margin)
-    out <- round(100*observed_number/length(dose), 2)
+    out <- round(100*observed_number/length(dose), digits)
     return(out)
   }
 
   percent <- apply(dose_matrix, 1, aux,
                    true_mtd = true_mtd,  margin = margin)
-  average <- round(mean(percent, na.rm = TRUE), 2)
+  average <- round(mean(percent, na.rm = TRUE), digits)
   out <- list(trial = percent, average = average)
 
   return(out)
@@ -217,20 +217,20 @@ optimal_mtd_interval <- function(dose_matrix, true_mtd, margin) {
 
 
 #'@export
-optimal_toxicity_interval <- function(dose_matrix, theta, margin, pdlt) {
+optimal_toxicity_interval <- function(dose_matrix, theta, margin, pdlt, digits = 2) {
 
   dose_matrix <- as.matrix(dose_matrix)
 
   aux <- function(dose, theta,  margin) {
     prob <- pdlt(dose)
     observed_number <- sum(prob > theta - margin & prob < theta + margin)
-    out <- round(100*observed_number/length(dose), 2)
+    out <- round(100*observed_number/length(dose), digits)
     return(out)
   }
 
   percent <- apply(dose_matrix, 1, aux,
                    theta = theta,  margin = margin)
-  average <- round(mean(percent, na.rm = TRUE), 2)
+  average <- round(mean(percent, na.rm = TRUE), digits)
   out <- list(trial = percent, average = average)
 
   return(out)
@@ -269,7 +269,7 @@ mtd_mse <- function(mtd_estimate, true_mtd) {
 #'@export
 accuracy_index <- function (mtd_estimate, dose_set, true_prob, theta,
                             loss = c("squared", "absolute", "classification",
-                                     "overdose"), alpha = NULL) {
+                                     "overdose"), alpha = NULL, digits = 5) {
 
   mtd_estimate <- factor(mtd_estimate, levels = dose_set)
   estimate_prob <- prop.table(table(mtd_estimate))
@@ -279,7 +279,7 @@ accuracy_index <- function (mtd_estimate, dose_set, true_prob, theta,
   if (loss == "absolute")
     dist <- abs(true_prob -  theta)
   if (loss == "classification")
-    dist <- as.numeric(round(true_prob, 5) !=  theta)
+    dist <- as.numeric(round(true_prob, digits) !=  theta)
   if (loss == "overdose") {
     if (!is.null(alpha)) {
       dist <- overdose_loss(true_prob, theta, alpha)
