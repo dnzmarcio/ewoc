@@ -5,10 +5,11 @@
 \title{Escalation Over with Dose Control}
 \usage{
 ewoc_d1continuous(formula, theta, alpha, mtd_prior, rho_prior, min_dose,
-  max_dose, min_cov, max_cov, direction = c("positive", "negative"),
-  type = c("continuous", "discrete"), first_dose = NULL, last_dose = NULL,
-  dose_set = NULL, rounding = c("down", "nearest"), n_adapt = 5000,
-  burn_in = 1000, n_mcmc = 1000, n_thin = 1, n_chains = 1)
+  max_dose, min_cov, max_cov, next_patient_cov, direction = c("positive",
+  "negative"), type = c("continuous", "discrete"), first_dose = NULL,
+  last_dose = NULL, dose_set = NULL, rounding = c("down", "nearest"),
+  n_adapt = 5000, burn_in = 1000, n_mcmc = 1000, n_thin = 1,
+  n_chains = 1)
 }
 \arguments{
 \item{formula}{an object of class \code{\link[Formula]{Formula}}: a symbolic
@@ -36,6 +37,9 @@ the MTD.}
 \item{max_dose}{a numerical value defining the upper bound of the support of
 the MTD.}
 
+\item{next_patient_cov}{a character value indicating the covariable associated to
+next patient.}
+
 \item{type}{a character describing the type of the Maximum Tolerable Dose
 (MTD) variable.}
 
@@ -61,9 +65,6 @@ See \code{\link[rjags]{adapt}} for details.}
 \item{n_thin}{thinning interval for monitors.}
 
 \item{n_chains}{the number of parallel chains for the model.}
-
-\item{next_patient_cov}{a character value indicating the covariable associated to
-next patient.}
 
 \item{levels_cov}{a character vector of the possible values for the ordinal covariable.}
 }

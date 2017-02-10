@@ -58,7 +58,7 @@
 ewoc_d1continuous <- function(formula, theta, alpha,
                                 mtd_prior, rho_prior,
                                 min_dose, max_dose,
-                                min_cov, max_cov,
+                                min_cov, max_cov, next_patient_cov,
                                 direction = c('positive', 'negative'),
                                 type = c('continuous', 'discrete'),
                                 first_dose = NULL, last_dose = NULL,
@@ -117,6 +117,9 @@ ewoc_d1continuous <- function(formula, theta, alpha,
   if (covariable < min_cov | covariable > max_cov)
     stop("'covariable' in formula has to be between 'min_cov' and 'max_cov'.")
 
+  if (next_patient_cov < min_cov | next_patient_cov > max_cov)
+    stop("'next_patient_cov' has to be between 'min_cov' and 'max_cov'.")
+
   limits <- limits_d1cov(first_dose = first_dose, last_dose = last_dose,
                          min_dose = min_dose, max_dose = max_dose,
                          type = type, rounding = rounding,
@@ -129,6 +132,7 @@ ewoc_d1continuous <- function(formula, theta, alpha,
                   max_dose = limits$max_dose(covariable))
 
   my_data <- list(response = response, design_matrix = design_matrix,
+                  next_patient_cov = next_patient_cov,
                   theta = theta, alpha = alpha, limits = limits,
                   dose_set = dose_set,
                   rho_prior = rho_prior, mtd_prior = mtd_prior,
@@ -144,7 +148,7 @@ ewoc_d1continuous <- function(formula, theta, alpha,
                 min_dose = limits$min_dose, max_dose = limits$max_dose,
                 dose_set = dose_set,
                 rho_prior = rho_prior, mtd_prior = mtd_prior,
-                covariable = covariable,
+                covariable = covariable, next_patient_cov = next_patient_cov,
                 min_cov = min_cov, max_cov = max_cov,
                 type = type, rounding = rounding,
                 n_adapt = n_adapt, burn_in = burn_in, n_mcmc = n_mcmc,
@@ -168,8 +172,9 @@ ewoc_jags.d1continuous <- function(data, n_adapt, burn_in,
       lp[i] <- inprod(design_matrix[i, ], beta)
     }
 
-    beta[1] <- logit(rho[1]) -
-      min_cov*(logit(rho[2]) - logit(rho[1]))/(max_cov - min_cov)
+    beta[1] <- logit(theta) - logit(rho[1]) +
+      ((next_patient_cov - max_cov)/(max_cov - min_cov))*(logit(rho[2]) -
+                                                            logit(rho[1]))
     beta[2] <- (logit(theta) - logit(rho[2]))/gamma
     beta[3] <- (logit(rho[2]) - logit(rho[1]))/(max_cov - min_cov)
 
@@ -190,7 +195,8 @@ ewoc_jags.d1continuous <- function(data, n_adapt, burn_in,
                     'design_matrix' = data$design_matrix,
                     'theta' = data$theta, 'nobs' = length(data$response[, 1]),
                     'mtd_prior' = data$mtd_prior, 'rho_prior' = data$rho_prior,
-                    'min_cov' = data$min_cov, 'max_cov' = data$max_cov)
+                    'min_cov' = data$min_cov, 'max_cov' = data$max_cov,
+                    'next_patient_cov' = data$next_patient_cov)
 
   inits <- function() {
     out <- list(r = rbeta(nrow(data$rho_prior),

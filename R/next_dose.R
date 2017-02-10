@@ -107,8 +107,8 @@ next_dose.d1continuous <- function(data){
 
   mtd <-
     inv_standard_dose(dose = gamma,
-                      min_dose = data$limits$min_dose(data$max_cov),
-                      max_dose = data$limits$max_dose(data$max_cov))
+                      min_dose = data$limits$min_dose(data$next_patient_cov),
+                      max_dose = data$limits$max_dose(data$next_patient_cov))
 
   next_dose <- quantile(mtd, probs = data$alpha)
 
