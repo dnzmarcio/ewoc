@@ -57,7 +57,7 @@
 #'@export
 ewoc_d1ordinal <- function(formula, theta, alpha,
                            rho_prior, mtd_prior,
-                           levels_cov,
+                           levels_cov, next_patient_cov,
                            type = c('continuous', 'discrete'),
                            first_dose = NULL, last_dose = NULL,
                            dose_set = NULL,
@@ -141,7 +141,8 @@ ewoc_d1ordinal <- function(formula, theta, alpha,
                 min_dose = limits$min_dose, max_dose = limits$max_dose,
                 dose_set = dose_set,
                 rho_prior = rho_prior, mtd_prior = mtd_prior,
-                levels_cov = levels_cov, covariable = covariable_matrix,
+                levels_cov = levels_cov, covariable = covariable,
+                next_patient_cov = next_patient_cov,
                 type = type, rounding = rounding,
                 n_adapt = n_adapt, burn_in = burn_in, n_mcmc = n_mcmc,
                 n_thin = n_thin, n_chains = n_chains)
