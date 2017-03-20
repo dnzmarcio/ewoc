@@ -109,8 +109,8 @@ pdlt_d1ph <- function(dose, rho, gamma, shape = NULL, theta, min_dose, max_dose,
 pdlt_d1multinomial <- function(dose, rho, gamma, theta, min_dose, max_dose, cov) {
 
   dose <- standard_dose(dose = dose,
-                        min_dose = min_dose,
-                        max_dose = max_dose)
+                        min_dose = min_dose(dose),
+                        max_dose = max_dose(dose))
 
   parm <- cbind(gamma, rho)
   parm.names <- c(rep("mtd", ncol(gamma)), "rho")
@@ -143,8 +143,8 @@ pdlt_d1multinomial <- function(dose, rho, gamma, theta, min_dose, max_dose, cov)
 pdlt_d1ordinal <- function(dose, rho, gamma, theta, min_dose, max_dose, cov) {
 
   dose <- standard_dose(dose = dose,
-                        min_dose = min_dose,
-                        max_dose = max_dose)
+                        min_dose = min_dose(dose),
+                        max_dose = max_dose(dose))
 
   parm <- cbind(gamma, rho)
   parm.names <- c(rep("mtd", ncol(gamma)), "rho")
@@ -179,8 +179,8 @@ pdlt_d1continuous <- function(dose, gamma, rho, theta,
                               cov, direction) {
 
   dose <- standard_dose(dose = dose,
-                        min_dose = min_dose,
-                        max_dose = max_dose)
+                        min_dose = min_dose(dose),
+                        max_dose = max_dose(dose))
 
   parm <- cbind(gamma, rho)
   parm.names <- c("mtd", "rho", "rho")
@@ -217,8 +217,8 @@ pdlt_d1excontinuous <- function(dose, rho, theta,
                                 cov, direction) {
 
   dose <- standard_dose(dose = dose,
-                        min_dose = min_dose,
-                        max_dose = max_dose)
+                        min_dose = min_dose(dose),
+                        max_dose = max_dose(dose))
 
   parm <- cbind(rho)
   parm.names <- c("rho", "rho", "rho")
