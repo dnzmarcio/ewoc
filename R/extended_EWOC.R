@@ -17,16 +17,14 @@
 #'distribution associated with each rho. Each row corresponds to a paramater.
 #'@param type a character describing the type of the Maximum Tolerable Dose
 #'(MTD) variable.
-#'@param first_dose a numerical value for the first allowable dose in the trial.
-#'It is only necessary if type = 'continuous'.
-#'@param last_dose a numerical value for the last allowable dose in the trial.
-#'It is only necessary if type = 'continuous'.
-#'@param dose_set a numerical vector of allowable doses in the trial. It is only
-#'necessary if type = "discrete".
 #'@param min_dose a numerical value defining the lower bound of the support of
 #'the MTD.
 #'@param max_dose a numerical value defining the upper bound of the support of
 #'the MTD.
+#'@param first_dose a numerical value for the first allowable dose in the trial.
+#'@param last_dose a numerical value for the last allowable dose in the trial.
+#'@param dose_set a numerical vector of allowable doses in the trial. It is only
+#'necessary if type = "discrete".
 #'@param rounding a character indicating how to round a continuous dose to the
 #'one of elements of the dose set.
 #'It is only necessary if type = "discrete".
@@ -38,21 +36,18 @@
 #'@param n_chains the number of parallel chains for the model.
 #'
 #'@return \code{next_dose} the next recommend dose.
-#'@return \code{hpd_dose} a numerical vector containing  the 95\% HPD for the next dose.
-#'@return \code{pdlt} a numerical value corresponding to the probability of DLT for the next dose.
-#'@return \code{hpd_pdlt} a numerical vector containing  the 95\% HPD for the probability of DLT for the next dose.
 #'@return \code{mtd} a numerical vector for the posterior MTD distribution considering the next patient covariable.
 #'@return \code{rho} a matrix for the posterior rho_0 and rho_1 distributions.
 #'@return \code{sample} a list of the MCMC chains distribution.
-#'@return \code{trial} a list of trial conditions.
+#'@return \code{trial} a list of the trial conditions.
 #'
 #'@export
 ewoc_d1extended <- function(formula, theta, alpha,
                             rho_prior,
+                            min_dose, max_dose,
                             type = c('continuous', 'discrete'),
                             first_dose = NULL, last_dose = NULL,
                             dose_set = NULL,
-                            min_dose = NULL, max_dose = NULL,
                             rounding = c("down", "nearest"),
                             n_adapt = 5000, burn_in = 1000,
                             n_mcmc = 1000, n_thin = 1, n_chains = 1) {

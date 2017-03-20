@@ -18,21 +18,24 @@
 #'associated with each rho. Each row corresponds to a paramater.
 #'@param mtd_prior a matrix of hyperparameters for the Beta prior distribution
 #'associated with the MTD. Each row corresponds to a paramater.
+#'@param min_cov a numerical value defining the minimum value for the covariate.
+#'@param max_cov a numerical value defining the maximum value for the covariate.
 #'@param next_patient_cov a character value indicating the covariable associated to
 #'next patient.
-#'@param levels_cov a character vector of the possible values for the ordinal covariable.
+#'@param direction a character defining the relationship between the covariate and the
+#'probability of DLT.
+#'@param min_dose either a numerical value or a function of the covariable
+#'defining the lower bound of the support of the MTD used to standardize the doses.
+#'@param max_dose either a numerical value or a function of the covariable
+#'defining the upper bound of the support of the MTD used to standardize the doses.
+#'@param type a character describing the type of the Maximum Tolerable Dose
+#'(MTD) variable.
 #'@param first_dose a numerical value for the first allowable dose in the trial.
 #'It is only necessary if type = 'continuous'.
 #'@param last_dose a numerical value for the last allowable dose in the trial.
 #'It is only necessary if type = 'continuous'.
 #'@param dose_set a numerical vector of allowable doses in the trial. It is only
 #'necessary if type = 'discrete'.
-#'@param min_dose a numerical value defining the lower bound of the support of
-#'the MTD.
-#'@param max_dose a numerical value defining the upper bound of the support of
-#'the MTD.
-#'@param type a character describing the type of the Maximum Tolerable Dose
-#'(MTD) variable.
 #'@param rounding a character indicating how to round a continuous dose to the
 #'one of elements of the dose set. It is only necessary if type = 'discrete'.
 #'@param n_adapt the number of iterations for adaptation.
@@ -43,14 +46,11 @@
 #'@param n_chains the number of parallel chains for the model.
 #'
 #'@return \code{next_dose} a numerical value corresponding to the next recommend dose.
-#'@return \code{hpd_dose} a numerical vector containing  the 95\% HPD for the next dose.
-#'@return \code{pdlt} a numerical value corresponding to the probability of DLT for the next dose.
-#'@return \code{hpd_pdlt} a numerical vector containing  the 95\% HPD for the probability of DLT for the next dose.
 #'@return \code{mtd} a numerical vector for the posterior MTD distribution considering the next patient covariable.
 #'@return \code{rho} a matrix for the posterior rho_00 and rho_01 distributions.
-#'@return \code{gamma} a numerical vector for the posterior standardized MTD distribution considering the maximum value of the covariable.
+#'@return \code{gamma} a numerical vector for the posterior standardized MTD distribution considering the next patient covariable.
 #'@return \code{sample} a list of the MCMC chains distribution.
-#'@return \code{trial} a list of trial conditions.
+#'@return \code{trial} a list of the trial conditions.
 #'
 #'@references Babb JS, Rogatko A. Patient specific dosing in a cancer phase I clinical trial. Statistics in medicine. 2001 Jul 30;20(14):2079-90.
 #'
@@ -81,12 +81,6 @@ ewoc_d1continuous <- function(formula, theta, alpha,
   } else {
     covariable_matrix <- model.matrix(formula, data_base, rhs = 2)
     covariable <- covariable_matrix[, 2]
-
-    if (direction == "negative") {
-      covariable <- -covariable_matrix[, 2]
-      min_cov <- -max_cov
-      max_cov <- -min_cov
-    }
   }
 
   design_matrix <- cbind(dose_matrix, covariable)
@@ -114,7 +108,7 @@ ewoc_d1continuous <- function(formula, theta, alpha,
   if (!(theta > 0 & theta < 1))
     stop("'theta' should be in the interval (0, 1).")
 
-  if (covariable < min_cov | covariable > max_cov)
+  if (any(covariable < min_cov | covariable > max_cov))
     stop("'covariable' in formula has to be between 'min_cov' and 'max_cov'.")
 
   if (next_patient_cov < min_cov | next_patient_cov > max_cov)
@@ -133,6 +127,7 @@ ewoc_d1continuous <- function(formula, theta, alpha,
 
   my_data <- list(response = response, design_matrix = design_matrix,
                   next_patient_cov = next_patient_cov,
+                  direction = direction,
                   theta = theta, alpha = alpha, limits = limits,
                   dose_set = dose_set,
                   rho_prior = rho_prior, mtd_prior = mtd_prior,
@@ -149,6 +144,7 @@ ewoc_d1continuous <- function(formula, theta, alpha,
                 dose_set = dose_set,
                 rho_prior = rho_prior, mtd_prior = mtd_prior,
                 covariable = covariable, next_patient_cov = next_patient_cov,
+                direction = direction,
                 min_cov = min_cov, max_cov = max_cov,
                 type = type, rounding = rounding,
                 n_adapt = n_adapt, burn_in = burn_in, n_mcmc = n_mcmc,
@@ -164,26 +160,53 @@ ewoc_jags.d1continuous <- function(data, n_adapt, burn_in,
                                    n_mcmc, n_thin, n_chains) {
 
   # JAGS model function
-  jfun <- function() {
+  if(data$direction == "positive"){
+    jfun <- function() {
 
-    for(i in 1:nobs) {
-      dlt[i] ~ dbin(p[i], npatients[i])
-      p[i] <- 1/(1 + exp(-lp[i]))
-      lp[i] <- inprod(design_matrix[i, ], beta)
+      for(i in 1:nobs) {
+        dlt[i] ~ dbin(p[i], npatients[i])
+        p[i] <- 1/(1 + exp(-lp[i]))
+        lp[i] <- inprod(design_matrix[i, ], beta)
+      }
+
+      beta[1] <- logit(rho[1]) - (min_cov/(max_cov - min_cov))*(logit(rho[2]) -
+                                                                  logit(rho[1]))
+      beta[2] <- logit(theta) - logit(rho[1]) -
+        ((next_patient_cov - max_cov)/(max_cov - min_cov))*(logit(rho[2]) -
+                                                              logit(rho[1]))
+      beta[3] <- (logit(rho[2]) - logit(rho[1]))/(max_cov - min_cov)
+
+      rho[1] <- rho[2]*r[1]
+      r[1] ~ dbeta(rho_prior[1, 1], rho_prior[1, 2])
+      rho[2] <- theta*r[2]
+      r[2] ~ dbeta(rho_prior[2, 1], rho_prior[2, 2])
+      gamma <- g[1]
+      g[1] ~ dbeta(mtd_prior[1, 1], mtd_prior[1, 2])
     }
+  } else {
 
-    beta[1] <- logit(theta) - logit(rho[1]) +
-      ((next_patient_cov - max_cov)/(max_cov - min_cov))*(logit(rho[2]) -
-                                                            logit(rho[1]))
-    beta[2] <- (logit(theta) - logit(rho[2]))/gamma
-    beta[3] <- (logit(rho[2]) - logit(rho[1]))/(max_cov - min_cov)
+    jfun <- function() {
 
-    rho[1] <- rho[2]*r[1]
-    r[1] ~ dbeta(rho_prior[1, 1], rho_prior[1, 2])
-    rho[2] <- theta*r[2]
-    r[2] ~ dbeta(rho_prior[2, 1], rho_prior[2, 2])
-    gamma <- g[1]
-    g[1] ~ dbeta(mtd_prior[1, 1], mtd_prior[1, 2])
+      for(i in 1:nobs) {
+        dlt[i] ~ dbin(p[i], npatients[i])
+        p[i] <- 1/(1 + exp(-lp[i]))
+        lp[i] <- inprod(design_matrix[i, ], beta)
+      }
+
+      beta[1] <- logit(rho[1]) - (min_cov/(max_cov - min_cov))*(logit(rho[2]) -
+                                                                  logit(rho[1]))
+      beta[2] <- logit(theta) - logit(rho[1]) +
+        ((next_patient_cov - max_cov)/(max_cov - min_cov))*(logit(rho[2]) -
+                                                              logit(rho[1]))
+      beta[3] <- -(logit(rho[2]) - logit(rho[1]))/(max_cov - min_cov)
+
+      rho[1] <- rho[2]*r[1]
+      r[1] ~ dbeta(rho_prior[1, 1], rho_prior[1, 2])
+      rho[2] <- theta*r[2]
+      r[2] ~ dbeta(rho_prior[2, 1], rho_prior[2, 2])
+      gamma <- g[1]
+      g[1] ~ dbeta(mtd_prior[1, 1], mtd_prior[1, 2])
+    }
   }
 
   tc1 <- textConnection("jmod", "w")

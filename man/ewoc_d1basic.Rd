@@ -4,11 +4,10 @@
 \alias{ewoc_d1basic}
 \title{Escalation Over with Dose Control}
 \usage{
-ewoc_d1basic(formula, theta, alpha, mtd_prior, rho_prior,
+ewoc_d1basic(formula, theta, alpha, mtd_prior, rho_prior, min_dose, max_dose,
   type = c("continuous", "discrete"), first_dose = NULL, last_dose = NULL,
-  dose_set = NULL, min_dose = NULL, max_dose = NULL,
-  rounding = c("down", "nearest"), n_adapt = 5000, burn_in = 1000,
-  n_mcmc = 1000, n_thin = 1, n_chains = 1)
+  dose_set = NULL, rounding = c("down", "nearest"), n_adapt = 5000,
+  burn_in = 1000, n_mcmc = 1000, n_thin = 1, n_chains = 1)
 }
 \arguments{
 \item{formula}{an object of class \code{\link[Formula]{Formula}}: a symbolic
@@ -29,6 +28,12 @@ distribution associated with the MTD.}
 \item{rho_prior}{a matrix 1 x 2 of hyperparameters for the Beta prior distribution
 associated with each rho. Each row corresponds to a paramater.}
 
+\item{min_dose}{a numerical value defining the lower bound of the support of
+the MTD.}
+
+\item{max_dose}{a numerical value defining the upper bound of the support of
+the MTD.}
+
 \item{type}{a character describing the type of the Maximum Tolerable Dose
 (MTD) variable.}
 
@@ -40,12 +45,6 @@ It is only necessary if type = 'continuous'.}
 
 \item{dose_set}{a numerical vector of allowable doses in the trial.
 It is only necessary if type = 'discrete'.}
-
-\item{min_dose}{a numerical value defining the lower bound of the support of
-the MTD.}
-
-\item{max_dose}{a numerical value defining the upper bound of the support of
-the MTD.}
 
 \item{rounding}{a character indicating how to round a continuous dose to the
 one of elements of the dose set. It is only necessary if type = 'discrete'.}
@@ -64,19 +63,13 @@ See \code{\link[rjags]{adapt}} for details.}
 \value{
 \code{next_dose} the next recommend dose.
 
-\code{hpd_dose} the 95\% HPD for the next dose.
-
-\code{pdlt} the probability of DLT for the next dose.
-
-\code{hpd_pdlt} the 95\% HPD for the probability of DLT for the next dose.
-
 \code{mtd} the posterior MTD distribution.
 
 \code{rho} the posterior rho_0 distribution.
 
 \code{sample} a list of the MCMC chains distribution.
 
-\code{trial} a list of trial conditions.
+\code{trial} a list of the trial conditions.
 }
 \description{
 Finding the next dose for a phase I clinical trial based on the

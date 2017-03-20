@@ -19,16 +19,16 @@
 #'distribution associated with the MTD.
 #'@param rho_prior a matrix 1 x 2 of hyperparameters for the Beta prior distribution
 #'associated with each rho. Each row corresponds to a paramater.
+#'@param min_dose a numerical value defining the lower bound of the support of
+#'the MTD.
+#'@param max_dose a numerical value defining the upper bound of the support of
+#'the MTD.
 #'@param first_dose a numerical value for the first allowable dose in the trial.
 #'It is only necessary if type = 'continuous'.
 #'@param last_dose a numerical value for the last allowable dose in the trial.
 #'It is only necessary if type = 'continuous'.
 #'@param dose_set a numerical vector of allowable doses in the trial.
 #'It is only necessary if type = 'discrete'.
-#'@param min_dose a numerical value defining the lower bound of the support of
-#'the MTD.
-#'@param max_dose a numerical value defining the upper bound of the support of
-#'the MTD.
 #'@param rounding a character indicating how to round a continuous dose to the
 #'one of elements of the dose set. It is only necessary if type = 'discrete'.
 #'@param n_adapt the number of iterations for adaptation.
@@ -39,13 +39,10 @@
 #'@param n_chains numerical value indicating the number of parallel chains for the model.
 #'
 #'@return \code{next_dose} the next recommend dose.
-#'@return \code{hpd_dose} the 95\% HPD for the next dose.
-#'@return \code{pdlt} the probability of DLT for the next dose.
-#'@return \code{hpd_pdlt} the 95\% HPD for the probability of DLT for the next dose.
 #'@return \code{mtd} the posterior MTD distribution.
 #'@return \code{rho} the posterior rho_0 distribution.
 #'@return \code{sample} a list of the MCMC chains distribution.
-#'@return \code{trial} a list of trial conditions.
+#'@return \code{trial} a list of the trial conditions.
 #'
 #'@references Babb, J., Rogatko, A. and Zacks, S., 1998.
 #'Cancer phase I clinical trials: efficient dose escalation with overdose
@@ -54,10 +51,10 @@
 #'@export
 ewoc_d1basic <- function(formula, theta, alpha,
                          mtd_prior, rho_prior,
+                         min_dose, max_dose,
                          type = c('continuous', 'discrete'),
                          first_dose = NULL, last_dose = NULL,
                          dose_set = NULL,
-                         min_dose = NULL, max_dose = NULL,
                          rounding = c("down", "nearest"),
                          n_adapt = 5000, burn_in = 1000,
                          n_mcmc = 1000, n_thin = 1, n_chains = 1) {

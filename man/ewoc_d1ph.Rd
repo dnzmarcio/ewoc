@@ -5,8 +5,8 @@
 \title{Escalation Over with Dose Control}
 \usage{
 ewoc_d1ph(formula, theta, alpha, tau, type = c("continuous", "discrete"),
-  rho_prior, mtd_prior, shape_prior = NULL, first_dose = NULL,
-  last_dose = NULL, dose_set = NULL, min_dose = NULL, max_dose = NULL,
+  rho_prior, mtd_prior, shape_prior = NULL, min_dose, max_dose,
+  first_dose = NULL, last_dose = NULL, dose_set = NULL,
   distribution = c("exponential", "weibull"), rounding = c("down",
   "nearest"), n_adapt = 5000, burn_in = 1000, n_mcmc = 1000, n_thin = 1,
   n_chains = 1)
@@ -33,10 +33,16 @@ toxicity be observed.}
 \item{rho_prior}{a matrix 2x2 of hyperparameters for the Beta prior
 distribution associated with each rho. Each row corresponds to a paramater.}
 
-\item{shape_prior}{a vector of hyperparameters for the Gamma prior
+\item{shape_prior}{a matrix 1x2 of hyperparameters for the Gamma prior
 distribution associated with the shape parameter r for the Weibull
 distribution.
 It is only necessary if distribution = 'weibull'.}
+
+\item{min_dose}{a numerical value defining the lower bound of the support of
+the MTD.}
+
+\item{max_dose}{a numerical value defining the upper bound of the support of
+the MTD.}
 
 \item{first_dose}{a numerical value for the first allowable dose in the trial.
 It is only necessary if type = 'continuous'.}
@@ -46,12 +52,6 @@ It is only necessary if type = 'continuous'.}
 
 \item{dose_set}{a numerical vector of allowable doses in the trial. It is only
 necessary if type = 'discrete'.}
-
-\item{min_dose}{a numerical value defining the lower bound of the support of
-the MTD.}
-
-\item{max_dose}{a numerical value defining the upper bound of the support of
-the MTD.}
 
 \item{distribution}{a character establishing the distribution for the time of
 events.}
@@ -73,19 +73,13 @@ See \code{\link[rjags]{adapt}} for details.}
 \value{
 \code{next_dose} the next recommend dose.
 
-\code{hpd_dose} the 95\% HPD for the next dose.
+\code{mtd} the posterior MTD distribution.
 
-\code{pdlt} the probability of DLT for the next dose.
-
-\code{hpd_pdlt} the 95\% HPD for the probability of DLT for the next dose.
-
-\code{mtd} the posterior MTD distribution considering the next patient covariable.
-
-\code{rho} the posterior rho_0 and rho_1 distributions.
+\code{rho} the posterior rho_0 distribution.
 
 \code{sample} a list of the MCMC chains distribution.
 
-\code{trial} a list of trial conditions.
+\code{trial} a list of the trial conditions.
 }
 \description{
 Finding the next dose for a phase I clinical trial based on Escalation Over

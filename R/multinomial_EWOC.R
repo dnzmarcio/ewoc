@@ -23,16 +23,16 @@
 #'@param levels_cov a character vector of the possible values for the ordinal covariable.
 #'@param type a character describing the type of the Maximum Tolerable Dose
 #'(MTD) variable.
+#'@param min_dose either a numerical value or a function of the covariable
+#'defining the lower bound of the support of the MTD used to standardize the doses.
+#'@param max_dose either a numerical value or a function of the covariable
+#'defining the upper bound of the support of the MTD used to standardize the doses.
 #'@param first_dose a numerical value for the first allowable dose in the trial.
 #'It is only necessary if type = 'continuous'.
 #'@param last_dose a numerical value for the last allowable dose in the trial.
 #'It is only necessary if type = 'continuous'.
 #'@param dose_set a numerical vector of allowable doses in the trial. It is only
 #'necessary if type = 'discrete'.
-#'@param min_dose a numerical value defining the lower bound of the support of
-#'the MTD used to standardize the doses.
-#'@param max_dose a numerical value defining the upper bound of the support of
-#'the MTD used to standardize the doses.
 #'@param rounding a character indicating how to round a continuous dose to the
 #'one of elements of the dose set. It is only necessary if type = 'discrete'.
 #'@param n_adapt the number of iterations for adaptation.
@@ -43,14 +43,11 @@
 #'@param n_chains the number of parallel chains for the model.
 #'
 #'@return \code{next_dose} the next recommend dose.
-#'@return \code{hpd_dose} the 95\% HPD for the next dose.
-#'@return \code{pdlt} the probability of DLT for the next dose.
-#'@return \code{hpd_pdlt} the 95\% HPD for the probability of DLT for the next dose.
-#'@return \code{mtd} the posterior MTD distribution considering the next patient covariable.
+#'@return \code{mtd} the posterior MTD distribution for all levels of the covariable.
 #'@return \code{rho} the posterior rho_01 distribution.
 #'@return \code{gamma} the posterior standardized MTD distributions for all levels of the covariable.
 #'@return \code{sample} a list of the MCMC chains distribution.
-#'@return \code{trial} a list of trial conditions.
+#'@return \code{trial} a list of the trial conditions.
 #'
 #'@references Tighiouart M, Cook-Wiens G, Rogatko A. Incorporating a patient dichotomous characteristic in cancer phase I clinical trials using escalation with overdose control. Journal of Probability and Statistics. 2012 Oct 2;2012.
 #'
@@ -58,10 +55,10 @@
 ewoc_d1multinomial <- function(formula, theta, alpha,
                                mtd_prior, rho_prior,
                                levels_cov, next_patient_cov,
+                               min_dose, max_dose,
                                type = c('continuous', 'discrete'),
                                first_dose = NULL, last_dose = NULL,
                                dose_set = NULL,
-                               min_dose = NULL, max_dose = NULL,
                                rounding = c("down", "nearest"),
                                n_adapt = 5000, burn_in = 1000,
                                n_mcmc = 1000, n_thin = 1, n_chains = 1) {
@@ -114,6 +111,9 @@ ewoc_d1multinomial <- function(formula, theta, alpha,
 
   if(nrow(rho_prior) != 1 | ncol(mtd_prior) != 2)
     stop(paste0("'rho_prior' should be a matrix with 2 columns and 1 row."))
+
+  if(!(next_patient_cov %in% levels_cov))
+    stop(paste0("'next_patient_cov' should be choose from 'levels_cov'."))
 
   limits <- limits_d1cov(first_dose = first_dose, last_dose = last_dose,
                          min_dose = min_dose, max_dose = max_dose,

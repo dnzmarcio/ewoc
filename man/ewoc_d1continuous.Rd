@@ -31,14 +31,21 @@ associated with the MTD. Each row corresponds to a paramater.}
 \item{rho_prior}{a matrix of hyperparameters for the Beta prior distribution
 associated with each rho. Each row corresponds to a paramater.}
 
-\item{min_dose}{a numerical value defining the lower bound of the support of
-the MTD.}
+\item{min_dose}{either a numerical value or a function of the covariable
+defining the lower bound of the support of the MTD used to standardize the doses.}
 
-\item{max_dose}{a numerical value defining the upper bound of the support of
-the MTD.}
+\item{max_dose}{either a numerical value or a function of the covariable
+defining the upper bound of the support of the MTD used to standardize the doses.}
+
+\item{min_cov}{a numerical value defining the minimum value for the covariate.}
+
+\item{max_cov}{a numerical value defining the maximum value for the covariate.}
 
 \item{next_patient_cov}{a character value indicating the covariable associated to
 next patient.}
+
+\item{direction}{a character defining the relationship between the covariate and the
+probability of DLT.}
 
 \item{type}{a character describing the type of the Maximum Tolerable Dose
 (MTD) variable.}
@@ -65,27 +72,19 @@ See \code{\link[rjags]{adapt}} for details.}
 \item{n_thin}{thinning interval for monitors.}
 
 \item{n_chains}{the number of parallel chains for the model.}
-
-\item{levels_cov}{a character vector of the possible values for the ordinal covariable.}
 }
 \value{
 \code{next_dose} a numerical value corresponding to the next recommend dose.
-
-\code{hpd_dose} a numerical vector containing  the 95\% HPD for the next dose.
-
-\code{pdlt} a numerical value corresponding to the probability of DLT for the next dose.
-
-\code{hpd_pdlt} a numerical vector containing  the 95\% HPD for the probability of DLT for the next dose.
 
 \code{mtd} a numerical vector for the posterior MTD distribution considering the next patient covariable.
 
 \code{rho} a matrix for the posterior rho_00 and rho_01 distributions.
 
-\code{gamma} a numerical vector for the posterior standardized MTD distribution considering the maximum value of the covariable.
+\code{gamma} a numerical vector for the posterior standardized MTD distribution considering the next patient covariable.
 
 \code{sample} a list of the MCMC chains distribution.
 
-\code{trial} a list of trial conditions.
+\code{trial} a list of the trial conditions.
 }
 \description{
 Finding the next dose for a phase I clinical trial based on Escalation Over

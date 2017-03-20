@@ -76,6 +76,17 @@ limits_d1cov <- function(first_dose, last_dose, min_dose, max_dose, type,
       }
     }
     max_dose <- Vectorize(max_dose)
+  } else {
+
+    if (type == "discrete"){
+      if (rounding == "down"){
+        aux_max_dose <- max_dose
+        max_dose <- function(covariable){
+          out <- aux_max_dose(covariable) + 1
+          return(out)
+        }
+      }
+    }
   }
 
 

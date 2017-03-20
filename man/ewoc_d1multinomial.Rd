@@ -5,8 +5,8 @@
 \title{Escalation Over with Dose Control}
 \usage{
 ewoc_d1multinomial(formula, theta, alpha, mtd_prior, rho_prior, levels_cov,
-  type = c("continuous", "discrete"), first_dose = NULL, last_dose = NULL,
-  dose_set = NULL, min_dose = NULL, max_dose = NULL,
+  next_patient_cov, min_dose, max_dose, type = c("continuous", "discrete"),
+  first_dose = NULL, last_dose = NULL, dose_set = NULL,
   rounding = c("down", "nearest"), n_adapt = 5000, burn_in = 1000,
   n_mcmc = 1000, n_thin = 1, n_chains = 1)
 }
@@ -32,6 +32,15 @@ associated with each rho. Each row corresponds to a paramater.}
 
 \item{levels_cov}{a character vector of the possible values for the ordinal covariable.}
 
+\item{next_patient_cov}{a character value indicating the covariable associated to
+next patient.}
+
+\item{min_dose}{either a numerical value or a function of the covariable
+defining the lower bound of the support of the MTD used to standardize the doses.}
+
+\item{max_dose}{either a numerical value or a function of the covariable
+defining the upper bound of the support of the MTD used to standardize the doses.}
+
 \item{type}{a character describing the type of the Maximum Tolerable Dose
 (MTD) variable.}
 
@@ -43,12 +52,6 @@ It is only necessary if type = 'continuous'.}
 
 \item{dose_set}{a numerical vector of allowable doses in the trial. It is only
 necessary if type = 'discrete'.}
-
-\item{min_dose}{a numerical value defining the lower bound of the support of
-the MTD used to standardize the doses.}
-
-\item{max_dose}{a numerical value defining the upper bound of the support of
-the MTD used to standardize the doses.}
 
 \item{rounding}{a character indicating how to round a continuous dose to the
 one of elements of the dose set. It is only necessary if type = 'discrete'.}
@@ -63,20 +66,11 @@ See \code{\link[rjags]{adapt}} for details.}
 \item{n_thin}{thinning interval for monitors.}
 
 \item{n_chains}{the number of parallel chains for the model.}
-
-\item{next_patient_cov}{a character value indicating the covariable associated to
-next patient.}
 }
 \value{
 \code{next_dose} the next recommend dose.
 
-\code{hpd_dose} the 95\% HPD for the next dose.
-
-\code{pdlt} the probability of DLT for the next dose.
-
-\code{hpd_pdlt} the 95\% HPD for the probability of DLT for the next dose.
-
-\code{mtd} the posterior MTD distribution considering the next patient covariable.
+\code{mtd} the posterior MTD distribution for all levels of the covariable.
 
 \code{rho} the posterior rho_01 distribution.
 
@@ -84,7 +78,7 @@ next patient.}
 
 \code{sample} a list of the MCMC chains distribution.
 
-\code{trial} a list of trial conditions.
+\code{trial} a list of the trial conditions.
 }
 \description{
 Finding the next dose for a phase I clinical trial based on Escalation Over

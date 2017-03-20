@@ -17,22 +17,22 @@
 #'toxicity be observed.
 #'@param rho_prior a matrix 2x2 of hyperparameters for the Beta prior
 #'distribution associated with each rho. Each row corresponds to a paramater.
-#'@param shape_prior a vector of hyperparameters for the Gamma prior
+#'@param shape_prior a matrix 1x2 of hyperparameters for the Gamma prior
 #'distribution associated with the shape parameter r for the Weibull
 #'distribution.
 #'It is only necessary if distribution = 'weibull'.
 #'@param type a character describing the type of the Maximum Tolerable Dose
 #'(MTD) variable.
+#'@param min_dose a numerical value defining the lower bound of the support of
+#'the MTD.
+#'@param max_dose a numerical value defining the upper bound of the support of
+#'the MTD.
 #'@param first_dose a numerical value for the first allowable dose in the trial.
 #'It is only necessary if type = 'continuous'.
 #'@param last_dose a numerical value for the last allowable dose in the trial.
 #'It is only necessary if type = 'continuous'.
 #'@param dose_set a numerical vector of allowable doses in the trial. It is only
 #'necessary if type = 'discrete'.
-#'@param min_dose a numerical value defining the lower bound of the support of
-#'the MTD.
-#'@param max_dose a numerical value defining the upper bound of the support of
-#'the MTD.
 #'@param distribution a character establishing the distribution for the time of
 #'events.
 #'@param rounding a character indicating how to round a continuous dose to the
@@ -45,13 +45,10 @@
 #'@param n_chains the number of parallel chains for the model.
 #'
 #'@return \code{next_dose} the next recommend dose.
-#'@return \code{hpd_dose} the 95\% HPD for the next dose.
-#'@return \code{pdlt} the probability of DLT for the next dose.
-#'@return \code{hpd_pdlt} the 95\% HPD for the probability of DLT for the next dose.
-#'@return \code{mtd} the posterior MTD distribution considering the next patient covariable.
-#'@return \code{rho} the posterior rho_0 and rho_1 distributions.
+#'@return \code{mtd} the posterior MTD distribution.
+#'@return \code{rho} the posterior rho_0 distribution.
 #'@return \code{sample} a list of the MCMC chains distribution.
-#'@return \code{trial} a list of trial conditions.
+#'@return \code{trial} a list of the trial conditions.
 #'
 #'@references Tighiouart M, Liu Y, Rogatko A. Escalation with overdose control using time to toxicity for cancer phase I clinical trials. PloS one. 2014 Mar 24;9(3):e93070.
 #'
@@ -59,9 +56,9 @@
 ewoc_d1ph <- function(formula, theta, alpha, tau,
                       type = c('continuous', 'discrete'),
                       rho_prior, mtd_prior, shape_prior = NULL,
+                      min_dose, max_dose,
                       first_dose = NULL, last_dose = NULL,
                       dose_set = NULL,
-                      min_dose = NULL, max_dose = NULL,
                       distribution = c('exponential', 'weibull'),
                       rounding = c("down", "nearest"),
                       n_adapt = 5000, burn_in = 1000,
@@ -127,8 +124,8 @@ ewoc_d1ph <- function(formula, theta, alpha, tau,
 
   design_matrix[, 2] <-
     standard_dose(dose = design_matrix[, 2],
-                  min_dose = limits$min_dose(),
-                  max_dose = limits$max_dose())
+                  min_dose = limits$min_dose,
+                  max_dose = limits$max_dose)
 
   my_data <- list(response = response, design_matrix = design_matrix,
                   theta = theta, alpha = alpha,
@@ -234,7 +231,7 @@ ewoc_jags.d1ph <- function(data, n_adapt, burn_in,
 
       out <- list(r = rbeta(nrow(data$rho_prior),
                             data$rho_prior[, 1], data$rho_prior[, 2]),
-                  gamma = rbeta(nrow(rho_prior),
+                  gamma = rbeta(nrow(data$rho_prior),
                                 data$mtd_prior[, 1], data$mtd_prior[, 2]),
                   time_mod = time_init)
       return(out)
