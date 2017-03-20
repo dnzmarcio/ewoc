@@ -212,7 +212,7 @@ pdlt_d1continuous <- function(dose, gamma, rho, theta,
 }
 
 #'@export
-pdlt_d1excontinuous <- function(dose, gamma, rho, theta,
+pdlt_d1excontinuous <- function(dose, rho, theta,
                                 min_dose, max_dose, min_cov, max_cov,
                                 cov, direction) {
 
