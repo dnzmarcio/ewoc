@@ -130,6 +130,11 @@ ewoc_d1basic <- function(formula, theta, alpha,
            ifelse(out$next_dose < limits$first_dose,
                   limits$first_dose, out$next_dose))
 
+  design_matrix[, 2] <-
+    inv_standard_dose(dose = design_matrix[, 2],
+                      min_dose = limits$min_dose,
+                      max_dose = limits$max_dose)
+
   trial <- list(response = response, design_matrix = design_matrix,
                 theta = theta, alpha = alpha,
                 first_dose = limits$first_dose, last_dose = limits$last_dose,
