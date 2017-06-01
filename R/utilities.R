@@ -69,18 +69,18 @@ ewoc_jags <- function(data, n_adapt, burn_in, n_mcmc, n_thin, n_chains) {
 }
 
 #'@export
-feasibility <- function(current_alpha, strategy, dlt, resolution){
+feasibility <- function(current_alpha, strategy, dlt, resolution, rate){
 
   next_alpha <- current_alpha
 
   index <- max(which(!is.na(resolution)))
 
   if (strategy == "increasing")
-    next_alpha <- ifelse(next_alpha > 0.49, 0.5, next_alpha + 0.05)
+    next_alpha <- ifelse(next_alpha > 0.49, 0.5, next_alpha + rate)
   if (strategy == "conditional" & is.finite(index))
     next_alpha <- ifelse(next_alpha > 0.49, 0.5,
                          ifelse(dlt[index] == 0,
-                                next_alpha + 0.05, next_alpha))
+                                next_alpha + rate, next_alpha))
   out <- next_alpha
   return(out)
 }
