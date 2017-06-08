@@ -35,14 +35,15 @@ trial_simulation.d1ph <- function(step_zero, n_sim, sample_size,
     j <- 1
 
     while ((current_time - initial_time[sample_size]) <=
-           step_zero$trial$tau & j <= sample_size) {
-
-      j <- j + 1
+           step_zero$trial$tau) {
 
       current_time <- current_time + rexp(1, 1)
 
-      if (j <= sample_size)
+      if (j <= sample_size){
+        j <- j + 1
         initial_time[j:sample_size] <- current_time
+      }
+
 
       time_cens <- ifelse(event_time > (current_time - initial_time),
                           ifelse((current_time - initial_time) >
