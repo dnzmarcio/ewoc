@@ -175,11 +175,13 @@ ewoc_jags.d1ph <- function(data, n_adapt, burn_in,
       for(i in 1:nobs) {
         censored[i] ~ dinterval(time_mod[i], time_cens[i])
         time_mod[i] ~ dweib(shape, rate[i])
-        rate[i] <- exp(inprod(design_matrix[i, ], beta))
+        rate[i] <- exp(inprod(design_matrix[i, ], beta)) + 10^(-3)
       }
 
-      beta[1] <- log(-log(1 - rho[1])/(tau^shape))
-      beta[2] <- log(log(1 - theta)/log(1 - rho[1]))/gamma
+      beta[1] <- log(-log(1 - rho[1])) - shape*log(tau)
+      beta[2] <- (log(-log(1 - theta)) -
+        log(-log(1 - rho[1])))*
+        exp(-log(gamma + 10^(-2)))
 
       rho[1] <- theta*r
       r ~ dbeta(rho_prior[1, 1], rho_prior[1, 2])
@@ -196,7 +198,7 @@ ewoc_jags.d1ph <- function(data, n_adapt, burn_in,
                   gamma = rbeta(nrow(data$mtd_prior),
                                 data$mtd_prior[, 1], data$mtd_prior[, 2]),
                   shape = rgamma(1, data$shape_prior[1], data$shape_prior[2]),
-                  time_mod = time_init)
+                  time_mod = (time_init + 1))
       return(out)
     }
 
@@ -214,25 +216,27 @@ ewoc_jags.d1ph <- function(data, n_adapt, burn_in,
       for(i in 1:nobs) {
         censored[i] ~ dinterval(time_mod[i], time_cens[i])
         time_mod[i] ~ dexp(rate[i])
-        rate[i] <- exp(inprod(design_matrix[i, ], beta))
+        rate[i] <- exp(inprod(design_matrix[i, ], beta) + 10^(-3))
       }
 
-      beta[1] <- log(-log(1 - rho[1])/(tau^1))
-      beta[2] <- log(log(1 - theta)/log(1 - rho[1]))/gamma
+      beta[1] <- log(-log(1 - rho[1])) - log(tau)
+      beta[2] <- (log(-log(1 - theta)) -
+                    log(-log(1 - rho[1])))*
+        exp(-log(gamma + 10^(-2)))
 
       rho[1] <- theta*r
       r ~ dbeta(rho_prior[1, 1], rho_prior[1, 2])
       gamma ~ dbeta(mtd_prior[1, 1], mtd_prior[1, 2])
     }
 
-    inits <- function() {
+      inits <- function() {
       time_init <- rep(NA, length(time_mod))
       time_init[which(!status)] <- time_cens[which(!status)] + 1
 
       out <- list(r = rbeta(nrow(data$rho_prior),
                             data$rho_prior[, 1], data$rho_prior[, 2]),
-                  gamma = rbeta(nrow(data$rho_prior),
-                                data$mtd_prior[, 1], data$mtd_prior[, 2]),
+                  gamma = rbeta(nrow(data$mtd_prior),
+                            data$mtd_prior[, 1], data$mtd_prior[, 2]),
                   time_mod = time_init)
       return(out)
     }
@@ -244,18 +248,18 @@ ewoc_jags.d1ph <- function(data, n_adapt, burn_in,
                       'nobs' = length(time_cens[!is.na(time_cens)]),
                       'rho_prior' = data$rho_prior,
                       'mtd_prior' = data$mtd_prior)
-
   }
 
   tc1 <- textConnection("jmod", "w")
   R2WinBUGS::write.model(jfun, tc1)
   close(tc1)
 
+  initial <- inits()
   # Calling JAGS
   tc2 <- textConnection(jmod)
   j <- rjags::jags.model(tc2,
                          data = data_base,
-                         inits = inits(),
+                         inits = initial,
                          n.chains = n_chains,
                          n.adapt = n_adapt)
   close(tc2)
