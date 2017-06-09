@@ -78,6 +78,7 @@ trial_simulation.d1ph <- function(step_zero, n_sim, sample_size,
                             dose_set = step_zero$trial$dose_set,
                             rho_prior = step_zero$trial$rho_prior,
                             mtd_prior = step_zero$trial$mtd_prior,
+                            shape_prior = step_zero$trial$shape_prior,
                             distribution = step_zero$trial$distribution,
                             rounding = step_zero$trial$rounding)
 
