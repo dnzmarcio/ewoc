@@ -53,12 +53,6 @@ rounding_system <- function(dose, grid, rounding) {
 }
 
 #'@export
-trial_simulation <- function(object, n_sim, sample_size, alpha_strategy,
-                             response_sim, pdlt_sim, rcovariate){
-  UseMethod("trial_simulation")
-}
-
-#'@export
 next_dose <- function(data) {
   UseMethod("next_dose")
 }
@@ -69,21 +63,19 @@ ewoc_jags <- function(data, n_adapt, burn_in, n_mcmc, n_thin, n_chains) {
 }
 
 #'@export
-feasibility <- function(current_alpha, strategy, dlt, resolution, rate){
-
-  next_alpha <- current_alpha
-
-  index <- max(which(!is.na(resolution)))
-
+feasibility <- function(alpha, strategy, rate, dlt, resolution){
+  if (strategy == "constant")
+    next_alpha <- alpha[1]
   if (strategy == "increasing")
-    next_alpha <- ifelse(next_alpha > 0.49, 0.5, next_alpha + rate)
-  if (strategy == "conditional" & is.finite(index))
-    next_alpha <- ifelse(next_alpha > 0.49, 0.5,
-                         ifelse(dlt[index] == 0,
-                                next_alpha + rate, next_alpha))
+    next_alpha <- ifelse(round(alpha[length(alpha)], 3) >= 0.5, 0.5,
+                         round((alpha[length(alpha)] + rate), 3))
+  if (strategy == "conditional")
+    next_alpha <-
+      ifelse(round(alpha[length(alpha)], 3) >= 0.5, 0.5,
+             ifelse(round((alpha[1] + sum(resolution*(1 - dlt))*rate), 1) >= 0.5,
+                    0.5, round((alpha[1] + sum(resolution*(1 - dlt))*rate), 3)))
+
   out <- next_alpha
   return(out)
 }
-
-
 
