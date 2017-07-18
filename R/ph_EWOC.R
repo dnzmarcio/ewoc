@@ -36,7 +36,7 @@
 #'@param distribution a character establishing the distribution for the time of
 #'events.
 #'@param rounding a character indicating how to round a continuous dose to the
-#'one of elements of the dose set. It is only necessary if type = discrete'.
+#'one of elements of the dose set. It is only necessary if type = 'discrete'.
 #'@param n_adapt the number of iterations for adaptation.
 #'See \code{\link[rjags]{adapt}} for details.
 #'@param burn_in the number of iterations before to start monitoring.
@@ -49,6 +49,24 @@
 #'@return \code{rho} the posterior rho_0 distribution.
 #'@return \code{sample} a list of the MCMC chains distribution.
 #'@return \code{trial} a list of the trial conditions.
+#'
+#'@examples
+#'\dontrun{
+#'time <- 9
+#'status <- 0
+#'dose <- 30
+#'
+#'test <- ewoc_d1ph(cbind(time, status) ~ dose, type = 'discrete',
+#'                  theta = 0.33, alpha = 0.25, tau = 10,
+#'                  min_dose = 30, max_dose = 50,
+#'                  dose_set = seq(30, 50, 5),
+#'                  rho_prior = matrix(1, ncol = 2, nrow = 1),
+#'                  mtd_prior = matrix(1, ncol = 2, nrow = 1),
+#'                  distribution = 'exponential',
+#'                  rounding = 'nearest')
+#'summary(test)
+#'plot(test)
+#'}
 #'
 #'@references Tighiouart M, Liu Y, Rogatko A. Escalation with overdose control using time to toxicity for cancer phase I clinical trials. PloS one. 2014 Mar 24;9(3):e93070.
 #'
