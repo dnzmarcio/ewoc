@@ -1,4 +1,45 @@
-#'Generator of a response function based on the EWOC PH model
+#'Generating a response function based on the EWOC basic model
+#
+#'@param rho a numerical value indicating the true value of the parameter rho.
+#'@param mtd a numerical value indicating the true value of the parameter mtd.
+#'@param theta a numerical value defining the proportion of expected patients
+#'to experience a medically unacceptable, dose-limiting toxicity (DLT) if
+#'administered the MTD.
+#'@param min_dose a numerical value defining the lower bound of the support of
+#'the MTD.
+#'@param max_dose a numerical value defining the upper bound of the support of
+#'the MTD.
+#'@export
+response_d1basic <- function(rho, mtd, theta, min_dose, max_dose) {
+
+  gamma <- standard_dose(dose = mtd,
+                         min_dose = min_dose,
+                         max_dose = max_dose)
+
+  response_sim <- function(dose){
+
+    dose <- standard_dose(dose = dose,
+                          min_dose = min_dose,
+                          max_dose = max_dose)
+
+    beta <- rep(NA, 2)
+    beta[1] <- logit(rho)
+    beta[2] <- (logit(theta) - logit(rho))/gamma
+
+    design_matrix <- cbind(1, dose)
+    lp <- design_matrix %*% beta
+    p <- as.numeric(plogis(lp))
+    out <- rbinom(n = length(dose), size = 1, prob = p)
+    return(out)
+  }
+
+  out <- response_sim
+  return(out)
+}
+
+
+
+#'Generating a response function based on the EWOC PH model
 #
 #'@param rho a numerical value indicating the true value of the parameter rho.
 #'@param mtd a numerical value indicating the true value of the parameter mtd.
@@ -14,10 +55,10 @@
 #'@param distribution a character establishing the distribution for the time of
 #'events.
 #'@param shape a numerical value indicating the true value of the parameter shape.
-#'It is only necessary if 'distribution' = "weibul".
+#'It is only necessary if 'distribution' = "weibull".
 #'@export
-response_ph <- function(rho, mtd, theta, min_dose, max_dose,
-                        tau, distribution, shape = NULL) {
+response_d1ph <- function(rho, mtd, theta, min_dose, max_dose,
+                          tau, distribution, shape = NULL) {
 
   gamma <- standard_dose(dose = mtd,
                          min_dose = min_dose,
@@ -29,7 +70,7 @@ response_ph <- function(rho, mtd, theta, min_dose, max_dose,
                           min_dose = min_dose,
                           max_dose = max_dose)
 
-    if (distribution == "Weibull") {
+    if (distribution == "weibull") {
       if (is.null(shape))
         stop("Weibull distribution requires a shape parameter.")
     } else {
