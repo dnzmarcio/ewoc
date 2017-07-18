@@ -63,8 +63,8 @@ summary.ewoc_d1extended <- function(object, ..., pdlt = pdlt_d1extended,
   tab01 <- data.frame(next_dose, hpd_dose[1], hpd_dose[2])
 
   prob_dlt <- pdlt(dose = next_dose, rho = object$rho,
-                   min_dose = object$trial$min_dose(),
-                   max_dose = object$trial$max_dose())
+                   min_dose = object$trial$min_dose,
+                   max_dose = object$trial$max_dose)
   hpd_pdlt <- coda::HPDinterval(coda::as.mcmc(prob_dlt))
 
   hpd_pdlt <- round(as.numeric(hpd_pdlt), 2)

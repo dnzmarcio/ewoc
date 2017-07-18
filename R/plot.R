@@ -29,9 +29,8 @@ plot.ewoc_d1basic <- function(x, ...){
 }
 
 #'@export
-plot.ewoc_d1extended <- function(x, ...){
+plot.ewoc_d1extended <- function(object, ...){
 
-  object <- x
   sm <- summary(object, print = FALSE)
 
   mtd <- as.numeric(object$mtd)
@@ -46,8 +45,8 @@ plot.ewoc_d1extended <- function(x, ...){
     geom_vline(xintercept = as.numeric(sm$next_dose),
                linetype = 2, size = 1.2) +
     geom_ribbon(data =
-                subset(shade, x > max(sm$hpd_dose[1], object$trial$min_dose()) &
-                         x < min(sm$hpd_dose[2], object$trial$max_dose())),
+                subset(shade, x > max(sm$hpd_dose[1], object$trial$min_dose) &
+                         x < min(sm$hpd_dose[2], object$trial$max_dose)),
                 aes(ymax = y, x = x), ymin = 0, fill = "red", alpha = 0.3) +
     labs(y = "Density", x = "MTD") +
     annotate("text", x = sm$next_dose + 0.30*sm$next_dose,

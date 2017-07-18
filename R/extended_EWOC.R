@@ -41,6 +41,22 @@
 #'@return \code{sample} a list of the MCMC chains distribution.
 #'@return \code{trial} a list of the trial conditions.
 #'
+#'@examples
+#'
+#'\dontrun{
+#'DLT <- 0
+#'npatients <- 1
+#'dose <- 30
+#'
+#'test <- ewoc_d1extended(cbind(DLT, npatients) ~ dose, type = 'discrete',
+#'                        theta = 0.33, alpha = 0.25,
+#'                        dose_set = c(30, 40, 50),
+#'                        min_dose = 20, max_dose = 100,
+#'                        rho_prior = matrix(1, ncol = 2, nrow = 2),
+#'                        rounding = "nearest")
+#'summary(test)
+#'plot(test)}
+#'
 #'@export
 ewoc_d1extended <- function(formula, theta, alpha,
                             rho_prior,
@@ -52,7 +68,7 @@ ewoc_d1extended <- function(formula, theta, alpha,
                             n_adapt = 5000, burn_in = 1000,
                             n_mcmc = 1000, n_thin = 1, n_chains = 1) {
 
-  Formula::formula <- Formula(formula)
+  formula <- Formula::Formula(formula)
   if (class(formula)[2] != "formula")
     stop("Invalid formula! \n")
 
@@ -103,8 +119,8 @@ ewoc_d1extended <- function(formula, theta, alpha,
 
   design_matrix[, 2] <-
     standard_dose(dose = design_matrix[, 2],
-                  min_dose = limits$min_dose(),
-                  max_dose = limits$max_dose())
+                  min_dose = limits$min_dose,
+                  max_dose = limits$max_dose)
 
   my_data <- list(response = response, design_matrix = design_matrix,
                   theta = theta, alpha = alpha,
@@ -137,16 +153,13 @@ ewoc_d1extended <- function(formula, theta, alpha,
   return(out)
 }
 
-
-
-
 #'@export
 ewoc_jags.d1extended <- function(data, n_adapt, burn_in,
                                  n_mcmc, n_thin, n_chains) {
 
   min_dose <- data$limits$min_dose
   max_dose <- data$limits$max_dose
-  lb <- - min_dose()/(max_dose() - min_dose())
+  lb <- - min_dose/(max_dose - min_dose)
 
   # JAGS model function
   jfun <- function() {
@@ -181,6 +194,7 @@ ewoc_jags.d1extended <- function(data, n_adapt, burn_in,
                     'design_matrix' = data$design_matrix,
                     'nobs' = length(data$response[, 1]),
                     'rho_prior' = data$rho_prior,
+                    'theta' = data$theta,
                     'lb' = lb)
 
   inits <- function() {

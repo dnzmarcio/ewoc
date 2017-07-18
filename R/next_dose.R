@@ -26,8 +26,8 @@ next_dose.d1extended <- function(data){
   gamma <- (logit(data$theta) - logit(rho[, 1]))/scale
   mtd <-
     inv_standard_dose(dose = gamma,
-                      min_dose = data$limits$min_dose(data$covariable),
-                      max_dose = data$limits$max_dose(data$covariable))
+                      min_dose = data$limits$min_dose,
+                      max_dose = data$limits$max_dose)
 
   next_dose <- quantile(mtd, probs = data$alpha)
 
