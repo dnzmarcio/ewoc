@@ -23,9 +23,6 @@ summary.ewoc_d1basic <- function(object, ..., pdlt = pdlt_d1basic, print = TRUE)
   prob_dlt <- round(median(prob_dlt), 2)
   tab02 <- data.frame(prob_dlt, hpd_pdlt[1], hpd_pdlt[2])
 
-  out <- list(next_dose = next_dose, hpd_dose = hpd_dose,
-              prob_dlt = prob_dlt, hpd_pdlt = hpd_pdlt)
-
   if (print){
     cat("Conditions\n")
     print(p00)
@@ -43,8 +40,12 @@ summary.ewoc_d1basic <- function(object, ..., pdlt = pdlt_d1basic, print = TRUE)
                         hpd = paste0("(", tab02[, 2], " ; ", tab02[, 3], ")"))
     colnames(p02) <- c("Estimate", "95% HPD")
     print(p02)
-  }
+  } else {
 
+    out <- list(next_dose = next_dose, hpd_dose = hpd_dose,
+                prob_dlt = prob_dlt, hpd_pdlt = hpd_pdlt)
+    return(out)
+  }
 }
 
 #'@export
@@ -71,9 +72,6 @@ summary.ewoc_d1extended <- function(object, ..., pdlt = pdlt_d1extended,
   prob_dlt <- round(median(prob_dlt), 2)
   tab02 <- data.frame(prob_dlt, hpd_pdlt[1], hpd_pdlt[2])
 
-  out <- list(next_dose = next_dose, hpd_dose = hpd_dose,
-              prob_dlt = prob_dlt, hpd_pdlt = hpd_pdlt)
-
   if (print){
     cat("Conditions\n")
     print(p00)
@@ -91,6 +89,12 @@ summary.ewoc_d1extended <- function(object, ..., pdlt = pdlt_d1extended,
                         hpd = paste0("(", tab02[, 2], " ; ", tab02[, 3], ")"))
     colnames(p02) <- c("Estimate", "95% HPD")
     print(p02)
+  } else {
+
+    out <- list(next_dose = next_dose, hpd_dose = hpd_dose,
+                prob_dlt = prob_dlt, hpd_pdlt = hpd_pdlt)
+
+    return(out)
   }
 }
 
@@ -138,10 +142,13 @@ summary.ewoc_d1ph <- function(object, ..., pdlt = pdlt_d1ph, print = TRUE){
                         hpd = paste0("(", tab02[, 2], " ; ", tab02[, 3], ")"))
     colnames(p02) <- c("Estimate", "95% HPD")
     print(p02)
+  } else {
+
+    out <- list(next_dose = next_dose, hpd_dose = hpd_dose,
+                prob_dlt = prob_dlt, hpd_pdlt = hpd_pdlt)
+    return(out)
   }
 
-  out <- list(next_dose = next_dose, hpd_dose = hpd_dose,
-              prob_dlt = prob_dlt, hpd_pdlt = hpd_pdlt)
 }
 
 #'@export
@@ -201,10 +208,12 @@ summary.ewoc_d1multinomial <- function(object, ..., next_covariable = NULL,
     colnames(p02) <- c("Group", "Estimate", "95% HPD")
     rownames(p02) <- NULL
     print(p02)
-  }
+  } else {
 
-  out <- list(next_dose = tab01[, 1], hpd_dose = tab01[, 2:3],
-              prob_dlt = tab02[, 1], hpd_pdlt = tab02[, 2:3])
+    out <- list(next_dose = tab01[, 1], hpd_dose = tab01[, 2:3],
+                prob_dlt = tab02[, 1], hpd_pdlt = tab02[, 2:3])
+    return(out)
+  }
 }
 
 #'@export
@@ -265,10 +274,13 @@ summary.ewoc_d1ordinal <- function(object, ...,
     colnames(p02) <- c("Group", "Estimate", "95% HPD")
     rownames(p02) <- NULL
     print(p02)
-  }
+  } else {
 
-  out <- list(next_dose = tab01[, 1], hpd_dose = tab01[, 2:3],
-              prob_dlt = tab02[, 1], hpd_pdlt = tab02[, 2:3])
+    out <- list(next_dose = tab01[, 1], hpd_dose = tab01[, 2:3],
+                prob_dlt = tab02[, 1], hpd_pdlt = tab02[, 2:3])
+
+    return(out)
+  }
 }
 
 #'@export
@@ -324,10 +336,12 @@ summary.ewoc_d1continuous <- function(object, ...,
                       hpd = paste0("(", tab02[, 2], " ; ", tab02[, 3], ")"))
     colnames(p02) <- c("Covariable", "Estimate", "95% HPD")
     print(p02)
-  }
+  } else {
+    out <- list(next_dose = tab01[, 1], hpd_dose = tab01[, 2:3],
+                prob_dlt = tab02[, 1], hpd_pdlt = tab02[, 2:3])
 
-  out <- list(next_dose = tab01[, 1], hpd_dose = tab01[, 2:3],
-              prob_dlt = tab02[, 1], hpd_pdlt = tab02[, 2:3])
+    return(out)
+  }
 }
 
 
@@ -384,9 +398,11 @@ summary.ewoc_d1excontinuous <- function(object, ...,
                       hpd = paste0("(", tab02[, 2], " ; ", tab02[, 3], ")"))
     colnames(p02) <- c("Covariable", "Estimate", "95% HPD")
     print(p02)
-  }
+  } else {
+    out <- list(next_dose = tab01[, 1], hpd_dose = tab01[, 2:3],
+                prob_dlt = tab02[, 1], hpd_pdlt = tab02[, 2:3])
 
-  out <- list(next_dose = tab01[, 1], hpd_dose = tab01[, 2:3],
-              prob_dlt = tab02[, 1], hpd_pdlt = tab02[, 2:3])
+    return(out)
+  }
 }
 
