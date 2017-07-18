@@ -57,7 +57,7 @@ necessary if type = 'discrete'.}
 events.}
 
 \item{rounding}{a character indicating how to round a continuous dose to the
-one of elements of the dose set. It is only necessary if type = discrete'.}
+one of elements of the dose set. It is only necessary if type = 'discrete'.}
 
 \item{n_adapt}{the number of iterations for adaptation.
 See \code{\link[rjags]{adapt}} for details.}
@@ -85,6 +85,25 @@ See \code{\link[rjags]{adapt}} for details.}
 Finding the next dose for a phase I clinical trial based on Escalation Over
 Dose Control (EWOC) design considering parametrization for time
 to event response and single agent.
+}
+\examples{
+\dontrun{
+time <- 9
+status <- 0
+dose <- 30
+
+test <- ewoc_d1ph(cbind(time, status) ~ dose, type = 'discrete',
+                 theta = 0.33, alpha = 0.25, tau = 10,
+                 min_dose = 30, max_dose = 50,
+                 dose_set = seq(30, 50, 5),
+                 rho_prior = matrix(1, ncol = 2, nrow = 1),
+                 mtd_prior = matrix(1, ncol = 2, nrow = 1),
+                 distribution = 'exponential',
+                 rounding = 'nearest')
+summary(test)
+plot(test)
+}
+
 }
 \references{
 Tighiouart M, Liu Y, Rogatko A. Escalation with overdose control using time to toxicity for cancer phase I clinical trials. PloS one. 2014 Mar 24;9(3):e93070.
