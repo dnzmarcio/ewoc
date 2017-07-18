@@ -9,10 +9,10 @@ plot.ewoc_d1basic <- function(object, ...){
   dens <- density(mtd)
   shade <- with(dens, data.frame(x, y))
 
-  label <- paste("Next dose:", round(object$next_dose, 2))
+  label <- paste("Next dose:", round(sm$next_dose, 2))
 
   gp <- ggplot(data_plot, aes(x = mtd)) + geom_density() +
-    geom_vline(xintercept = as.numeric(object$next_dose),
+    geom_vline(xintercept = as.numeric(sm$next_dose),
                linetype = 2, size = 1.2) +
     geom_ribbon(data =
                 subset(shade,
@@ -21,7 +21,7 @@ plot.ewoc_d1basic <- function(object, ...){
                 aes(ymax = y, x = x), ymin = 0, fill="red", alpha=0.3) +
     labs(y = "Density", x = "MTD") +
     annotate("text",
-             x = object$next_dose,
+             x = sm$next_dose,
              y = max(shade$y)/2, hjust = -0.20,
              label = label) +
     theme_bw()
