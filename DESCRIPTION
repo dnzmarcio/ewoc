@@ -11,7 +11,7 @@ License: GPL(>= 2)
 LazyData: TRUE
 URL: https://github.com/dnzmarcio/ewoc/
 BugReports: https://github.com/dnzmarcio/ewoc/issues
-Imports:
+Depends:
     Formula(>= 1.2-1),
     ggplot2(>= 2.2.0),
     R2WinBUGS(>= 2.1-21),
