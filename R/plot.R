@@ -1,7 +1,6 @@
 #'@export
-plot.ewoc_d1basic <- function(x, ...){
+plot.ewoc_d1basic <- function(object, ...){
 
-  object <- x
   sm <- summary(object, print = FALSE)
 
   mtd <- as.numeric(object$mtd)
@@ -10,17 +9,20 @@ plot.ewoc_d1basic <- function(x, ...){
   dens <- density(mtd)
   shade <- with(dens, data.frame(x, y))
 
-  label <- paste("Next dose:", round(sm$next_dose, 2))
+  label <- paste("Next dose:", round(object$next_dose, 2))
 
   gp <- ggplot(data_plot, aes(x = mtd)) + geom_density() +
-    geom_vline(xintercept = as.numeric(sm$next_dose),
+    geom_vline(xintercept = as.numeric(object$next_dose),
                linetype = 2, size = 1.2) +
     geom_ribbon(data =
-                subset(shade, x > sm$hpd_dose[1] & x < sm$hpd_dose[2]),
+                subset(shade,
+                       x > sm$hpd_dose[1] &
+                         x < sm$hpd_dose[2]),
                 aes(ymax = y, x = x), ymin = 0, fill="red", alpha=0.3) +
     labs(y = "Density", x = "MTD") +
-    annotate("text", x = sm$next_dose + 0.10*sm$next_dose,
-             y = max(shade$y)/2,
+    annotate("text",
+             x = object$next_dose,
+             y = max(shade$y)/2, hjust = -0.20,
              label = label) +
     theme_bw()
 
@@ -29,9 +31,8 @@ plot.ewoc_d1basic <- function(x, ...){
 }
 
 #'@export
-plot.ewoc_d1extended <- function(x, ...){
+plot.ewoc_d1extended <- function(object, ...){
 
-  object <- x
   sm <- summary(object, print = FALSE)
 
   mtd <- as.numeric(object$mtd)
@@ -50,8 +51,8 @@ plot.ewoc_d1extended <- function(x, ...){
                          x < min(sm$hpd_dose[2], object$trial$max_dose())),
                 aes(ymax = y, x = x), ymin = 0, fill = "red", alpha = 0.3) +
     labs(y = "Density", x = "MTD") +
-    annotate("text", x = sm$next_dose + 0.30*sm$next_dose,
-             y = max(shade$y)/2,
+    annotate("text", x = sm$next_dose,
+             y = max(shade$y)/2, hjust = -0.20,
              label = label) +
     theme_bw()
 
@@ -60,9 +61,8 @@ plot.ewoc_d1extended <- function(x, ...){
 }
 
 #'@export
-plot.ewoc_d1ph <- function(x, ...){
+plot.ewoc_d1ph <- function(object, ...){
 
-  object <- x
   sm <- summary(object, print = FALSE)
 
   mtd <- as.numeric(object$mtd)
@@ -74,14 +74,14 @@ plot.ewoc_d1ph <- function(x, ...){
   label <- paste("Next dose:", round(sm$next_dose, 2))
 
   gp <- ggplot(data_plot, aes(x = mtd)) + geom_density() +
-    geom_vline(xintercept = as.numeric(next_dose),
+    geom_vline(xintercept = as.numeric(sm$next_dose),
                linetype = 2, size = 1.2) +
     geom_ribbon(data =
                   subset(shade, x > sm$hpd_dose[1] & x < sm$hpd_dose[2]),
                 aes(ymax = y, x = x), ymin = 0, fill="red", alpha=0.3) +
     labs(y = "Density", x = "MTD") +
-    annotate("text", x = sm$next_dose + 0.10*sm$next_dose,
-             y = max(shade$y)/2,
+    annotate("text", x = sm$next_dose,
+             y = max(shade$y)/2, hjust = -0.20,
              label = label) +
     theme_bw()
 
@@ -90,9 +90,9 @@ plot.ewoc_d1ph <- function(x, ...){
 }
 
 #'@export
-plot.ewoc_d1multinomial <- function(x, ..., next_covariable = NULL){
+plot.ewoc_d1multinomial <- function(object, ..., next_covariable = NULL){
 
-  object <- x
+  object <- object
 
   if (is.null(next_covariable))
     next_covariable <- object$trial$levels_cov
@@ -119,8 +119,8 @@ plot.ewoc_d1multinomial <- function(x, ..., next_covariable = NULL){
                   aes(ymax = y, x = x), ymin = 0, fill = "red", alpha = 0.3) +
       labs(y = "Density", x = "MTD",
            title = paste("Group:", next_covariable[i])) +
-      annotate("text", x = sm$next_dose[i] + 0.10*sm$next_dose[i],
-               y = max(shade$y)/2,
+      annotate("text", x = sm$next_dose[i],
+               y = max(shade$y)/2, hjust = -0.20,
                label = label) +
       theme_bw()
 
@@ -161,8 +161,8 @@ plot.ewoc_d1ordinal <- function(x, ..., next_covariable = NULL){
                   aes(ymax = y, x = x), ymin = 0, fill = "red", alpha = 0.3) +
       labs(y = "Density", x = "MTD",
            title = paste("Group:", next_covariable[i])) +
-      annotate("text", x = sm$next_dose[i] + 0.10*sm$next_dose[i],
-               y = max(shade$y)/2,
+      annotate("text", x = sm$next_dose[i],
+               y = max(shade$y)/2, hjust = -0.20,
                label = label) +
       theme_bw()
 
