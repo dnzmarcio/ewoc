@@ -39,7 +39,7 @@ next_dose.d1extended <- function(data){
 #'@export
 next_dose.d1ph <- function(data){
 
-  gamma <- data$mcmc$gamma
+  gamma <- data$mcmc$gamma - 10^(-2)
   shape <- data$mcmc$shape
   rho <- data$mcmc$rho
   mtd <-

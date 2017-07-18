@@ -36,7 +36,7 @@
 #'@param distribution a character establishing the distribution for the time of
 #'events.
 #'@param rounding a character indicating how to round a continuous dose to the
-#'one of elements of the dose set. It is only necessary if type = discrete'.
+#'one of elements of the dose set. It is only necessary if type = 'discrete'.
 #'@param n_adapt the number of iterations for adaptation.
 #'See \code{\link[rjags]{adapt}} for details.
 #'@param burn_in the number of iterations before to start monitoring.
@@ -49,6 +49,24 @@
 #'@return \code{rho} the posterior rho_0 distribution.
 #'@return \code{sample} a list of the MCMC chains distribution.
 #'@return \code{trial} a list of the trial conditions.
+#'
+#'@examples
+#'\dontrun{
+#'time <- 9
+#'status <- 0
+#'dose <- 30
+#'
+#'test <- ewoc_d1ph(cbind(time, status) ~ dose, type = 'discrete',
+#'                  theta = 0.33, alpha = 0.25, tau = 10,
+#'                  min_dose = 30, max_dose = 50,
+#'                  dose_set = seq(30, 50, 5),
+#'                  rho_prior = matrix(1, ncol = 2, nrow = 1),
+#'                  mtd_prior = matrix(1, ncol = 2, nrow = 1),
+#'                  distribution = 'exponential',
+#'                  rounding = 'nearest')
+#'summary(test)
+#'plot(test)
+#'}
 #'
 #'@references Tighiouart M, Liu Y, Rogatko A. Escalation with overdose control using time to toxicity for cancer phase I clinical trials. PloS one. 2014 Mar 24;9(3):e93070.
 #'
@@ -178,13 +196,17 @@ ewoc_jags.d1ph <- function(data, n_adapt, burn_in,
         rate[i] <- exp(inprod(design_matrix[i, ], beta))
       }
 
-      beta[1] <- log(-log(1 - rho[1])/(tau^shape))
-      beta[2] <- log(log(1 - theta)/log(1 - rho[1]))/gamma
+      beta[1] <- log(-log(1 - rho)) - shape*log(tau)
+      beta[2] <- (log(-log(1 - theta)) -
+        log(-log(1 - rho)))*
+        exp(-log(gamma))
 
-      rho[1] <- theta*r
+      rho <- theta*r
+      gamma <- g + 10^(-2)
+      shape <- s + 10^(-2)
       r ~ dbeta(rho_prior[1, 1], rho_prior[1, 2])
-      gamma ~ dbeta(mtd_prior[1, 1], mtd_prior[1, 2])
-      shape ~ dgamma(shape_prior[1, 1], shape_prior[1, 2])
+      g ~ dbeta(mtd_prior[1, 1], mtd_prior[1, 2])
+      s ~ dgamma(shape_prior[1, 1], shape_prior[1, 2])
     }
 
     inits <- function() {
@@ -193,9 +215,10 @@ ewoc_jags.d1ph <- function(data, n_adapt, burn_in,
 
       out <- list(r = rbeta(nrow(data$rho_prior),
                             data$rho_prior[, 1], data$rho_prior[, 2]),
-                  gamma = rbeta(nrow(data$mtd_prior),
-                                data$mtd_prior[, 1], data$mtd_prior[, 2]),
-                  shape = rgamma(1, data$shape_prior[1], data$shape_prior[2]),
+                  g = rbeta(nrow(data$mtd_prior),
+                            data$mtd_prior[, 1], data$mtd_prior[, 2]),
+                  s = rgamma(nrow(data$shape_prior),
+                                 data$shape_prior[, 1], data$shape_prior[, 2]),
                   time_mod = time_init)
       return(out)
     }
@@ -214,25 +237,27 @@ ewoc_jags.d1ph <- function(data, n_adapt, burn_in,
       for(i in 1:nobs) {
         censored[i] ~ dinterval(time_mod[i], time_cens[i])
         time_mod[i] ~ dexp(rate[i])
-        rate[i] <- exp(inprod(design_matrix[i, ], beta))
+        rate[i] <- exp(inprod(design_matrix[i, ], beta) + 10^(-3))
       }
 
-      beta[1] <- log(-log(1 - rho[1])/(tau^1))
-      beta[2] <- log(log(1 - theta)/log(1 - rho[1]))/gamma
+      beta[1] <- log(-log(1 - rho[1])) - log(tau)
+      beta[2] <- (log(-log(1 - theta)) -
+                    log(-log(1 - rho[1])))*
+        exp(-log(gamma + 10^(-2)))
 
       rho[1] <- theta*r
       r ~ dbeta(rho_prior[1, 1], rho_prior[1, 2])
       gamma ~ dbeta(mtd_prior[1, 1], mtd_prior[1, 2])
     }
 
-    inits <- function() {
+      inits <- function() {
       time_init <- rep(NA, length(time_mod))
       time_init[which(!status)] <- time_cens[which(!status)] + 1
 
       out <- list(r = rbeta(nrow(data$rho_prior),
                             data$rho_prior[, 1], data$rho_prior[, 2]),
-                  gamma = rbeta(nrow(data$rho_prior),
-                                data$mtd_prior[, 1], data$mtd_prior[, 2]),
+                  gamma = rbeta(nrow(data$mtd_prior),
+                            data$mtd_prior[, 1], data$mtd_prior[, 2]),
                   time_mod = time_init)
       return(out)
     }
@@ -244,18 +269,18 @@ ewoc_jags.d1ph <- function(data, n_adapt, burn_in,
                       'nobs' = length(time_cens[!is.na(time_cens)]),
                       'rho_prior' = data$rho_prior,
                       'mtd_prior' = data$mtd_prior)
-
   }
 
   tc1 <- textConnection("jmod", "w")
   R2WinBUGS::write.model(jfun, tc1)
   close(tc1)
 
+  initial <- inits()
   # Calling JAGS
   tc2 <- textConnection(jmod)
   j <- rjags::jags.model(tc2,
                          data = data_base,
-                         inits = inits(),
+                         inits = initial,
                          n.chains = n_chains,
                          n.adapt = n_adapt)
   close(tc2)
