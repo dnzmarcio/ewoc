@@ -85,7 +85,7 @@ summary.ewoc_d1extended <- function(object, ..., pdlt = pdlt_d1extended,
     cat("\n")
 
     cat("P(DLT| next dose)\n")
-    p02 <- data.frame(estimate = tab01[, 1],
+    p02 <- data.frame(estimate = tab02[, 1],
                         hpd = paste0("(", tab02[, 2], " ; ", tab02[, 3], ")"))
     colnames(p02) <- c("Estimate", "95% HPD")
     print(p02)
@@ -93,7 +93,6 @@ summary.ewoc_d1extended <- function(object, ..., pdlt = pdlt_d1extended,
 
     out <- list(next_dose = next_dose, hpd_dose = hpd_dose,
                 prob_dlt = prob_dlt, hpd_pdlt = hpd_pdlt)
-
     return(out)
   }
 }
