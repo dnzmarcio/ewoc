@@ -90,18 +90,15 @@ trial_simulation.d1basic <- function(step_zero, n_sim, sample_size,
   rho_sim <- matrix(NA, ncol = 1, nrow = n_sim)
   alpha_sim <- matrix(NA, ncol = sample_size, nrow = n_sim)
 
-  alpha_sim[, 1] <- step_zero$trial$alpha
-  npatients <- step_zero$trial$response[, 2]
 
   for (i in 1:n_sim){
 
-    dlt <- rep(NA, sample_size)
-    dlt[1] <- step_zero$trial$response[, 1]
-    dose <- rep(NA, sample_size)
-    dose[1] <- step_zero$trial$design_matrix[, 2]
-    previous_resolution <- 0
+    dlt <- as.numeric(step_zero$trial$response[, 1])
+    npatients <- as.numeric(step_zero$trial$response[, 2])
+    dose <- as.numeric(step_zero$trial$design_matrix[, 2])
+    alpha_sim[, 1:length(dose)] <- as.numeric(step_zero$trial$alpha)
 
-    for (j in 2:n_dose) {
+    for (j in (length(dose)+1):n_dose) {
 
       formula <- cbind(dlt[1:(j-1)], npatients) ~ dose[1:(j-1)]
       resolution <- ifelse(!is.na(dlt), 1, 0)
@@ -163,21 +160,21 @@ trial_simulation.d1ph <- function(step_zero, n_sim, sample_size,
   rho_sim <- matrix(NA, ncol = 1, nrow = n_sim)
   alpha_sim <- matrix(NA, ncol = sample_size, nrow = n_sim)
 
-  alpha_sim[, 1] <- step_zero$trial$alpha
+
 
   for (i in 1:n_sim){
 
-    dlt <- rep(NA, sample_size)
-    dlt[1] <- step_zero$trial$response[1, 2]
-    dose <- rep(NA, sample_size)
-    dose[1] <- step_zero$trial$first_dose
+    dlt <- as.numeric(step_zero$trial$response[, 2])
+    dose <- as.numeric(step_zero$trial$dose[, 2])
+    alpha_sim[, 1:length(dose)] <- as.numeric(step_zero$trial$alpha)
 
-    event_time <- rep(NA, sample_size)
-    event_time[1] <- response_sim(dose = dose[1]) + step_zero$trial$tau
+    event_time[1] <- ifelse(dlt == 1, as.numeric(step_zero$trial$response[, 1]),
+                            (response_sim(dose = dose) +
+                              max(as.numeric(step_zero$trial$response[, 1]))))
 
-    current_time <- 0
+    current_time <- max(step_zero$trial$response[, 1])
     initial_time <- rep(0, sample_size)
-    j <- 1
+    j <- length(dose)
 
     while ((current_time - initial_time[sample_size]) <=
            step_zero$trial$tau) {
