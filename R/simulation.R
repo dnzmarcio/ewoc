@@ -23,8 +23,7 @@
 #'
 #'@examples
 #'\dontrun{
-#'
-#'### Basic EWOC
+### Basic EWOC
 #'DLT <- 0
 #'npatients <- 1
 #'dose <- 30
@@ -165,10 +164,10 @@ trial_simulation.d1ph <- function(step_zero, n_sim, sample_size,
   for (i in 1:n_sim){
 
     dlt <- as.numeric(step_zero$trial$response[, 2])
-    dose <- as.numeric(step_zero$trial$dose[, 2])
+    dose <- as.numeric(step_zero$trial$design_matrix[, 2])
     alpha_sim[, 1:length(dose)] <- as.numeric(step_zero$trial$alpha)
 
-    event_time[1] <- ifelse(dlt == 1, as.numeric(step_zero$trial$response[, 1]),
+    event_time <- ifelse(dlt == 1, as.numeric(step_zero$trial$response[, 1]),
                             (response_sim(dose = dose) +
                               max(as.numeric(step_zero$trial$response[, 1]))))
 
