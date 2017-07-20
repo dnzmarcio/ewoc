@@ -26,10 +26,9 @@ feasibility value. Default is "constant". Options are "increasing" and
 feasibility strategy. Only necessary if alpha_strategy is either
 'increasing' or 'conditional'.}
 
-\item{response_sim}{a function which is self-contained and will beused
+\item{response_sim}{a function which is self-contained and will be used
 as a generator function of the response variables in the simulation.
-Its only imput is 'dose' and output is in the same format of the
-response variable used to create object 'step_zero'.}
+Its only imput is 'dose' and output is the DLT time.}
 }
 \description{
 Performing a simulation of several phase I clinical trial based on the
@@ -37,8 +36,6 @@ Escalation Over Dose Control (EWOC).
 }
 \examples{
 \dontrun{
-
-### Basic EWOC
 DLT <- 0
 npatients <- 1
 dose <- 30
@@ -57,7 +54,7 @@ sim <- trial_simulation(step_zero = step_zero,
                        response_sim = response_sim)
 
 ### PH EWOC
-time <- 9
+time <- 0
 status <- 0
 dose <- 30
 

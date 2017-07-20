@@ -16,10 +16,9 @@
 #'@param alpha_rate a numerical value indicating the rate of the
 #'feasibility strategy. Only necessary if alpha_strategy is either
 #''increasing' or 'conditional'.
-#'@param response_sim a function which is self-contained and will beused
+#'@param response_sim a function which is self-contained and will be used
 #'as a generator function of the response variables in the simulation.
-#'Its only imput is 'dose' and output is in the same format of the
-#'response variable used to create object 'step_zero'.
+#'Its only imput is 'dose' and output is the DLT time.
 #'
 #'@examples
 #'\dontrun{
@@ -42,7 +41,7 @@
 #'                        response_sim = response_sim)
 #'
 #'### PH EWOC
-#'time <- 9
+#'time <- 0
 #'status <- 0
 #'dose <- 30
 #'
@@ -170,13 +169,12 @@ trial_simulation.d1ph <- function(step_zero, n_sim, sample_size,
     event_time <- ifelse(dlt == 1, as.numeric(step_zero$trial$response[, 1]),
                             (response_sim(dose = dose) +
                               max(as.numeric(step_zero$trial$response[, 1]))))
-
+    event_time <- c(event_time, rep(NA, (sample_size - length(event_time))))
     current_time <- max(step_zero$trial$response[, 1])
     initial_time <- rep(0, sample_size)
     j <- length(dose)
 
-    while ((current_time - initial_time[sample_size]) <=
-           step_zero$trial$tau) {
+    while ((current_time - initial_time[sample_size]) <= step_zero$trial$tau) {
 
       current_time <- current_time + rexp(1, 1)
 
