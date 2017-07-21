@@ -67,7 +67,8 @@
 #'@export
 trial_simulation <- function(step_zero, n_sim, sample_size,
                              alpha_strategy = "fixed",
-                             alpha_rate = NULL, response_sim){
+                             alpha_rate = NULL, response_sim,
+                             stop_rule_sim = NULL){
   UseMethod("trial_simulation")
 }
 
@@ -76,7 +77,8 @@ trial_simulation.d1basic <- function(step_zero, n_sim, sample_size,
                                      alpha_strategy =
                                        c("fixed", "increasing", "conditional"),
                                      alpha_rate = 0.05,
-                                     response_sim = NULL){
+                                     response_sim = NULL,
+                                     stop_rule_sim = NULL){
 
   if (is.null(response_sim))
     stop("'response_sim' function should be defined.")
@@ -121,6 +123,10 @@ trial_simulation.d1basic <- function(step_zero, n_sim, sample_size,
                                mtd_prior = step_zero$trial$mtd_prior,
                                rounding = step_zero$trial$rounding)
 
+        if (!is.null(stop_rule_sim))
+          if (stop_rule_sim(update))
+            break
+
         dose[j] <- update$next_dose
         dlt[j] <- response_sim(dose = dose[j])
       }
@@ -143,7 +149,8 @@ trial_simulation.d1ph <- function(step_zero, n_sim, sample_size,
                                   alpha_strategy =
                                     c("fixed", "increasing", "conditional"),
                                   alpha_rate = 0.05,
-                                  response_sim = NULL){
+                                  response_sim = NULL,
+                                  stop_rule_sim = NULL){
 
   if (is.null(response_sim))
     stop("'response_sim' function should be defined.")
@@ -220,6 +227,10 @@ trial_simulation.d1ph <- function(step_zero, n_sim, sample_size,
                             shape_prior = step_zero$trial$shape_prior,
                             distribution = step_zero$trial$distribution,
                             rounding = step_zero$trial$rounding)
+
+        if (!is.null(stop_rule_sim))
+          if (stop_rule_sim(update))
+            break
 
         dose[j] <- update$next_dose
         event_time[j] <- response_sim(dose = dose[j])
