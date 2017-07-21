@@ -5,7 +5,7 @@
 \title{Simulation of a trial using Escalation Over with Dose Control}
 \usage{
 trial_simulation(step_zero, n_sim, sample_size, alpha_strategy = "fixed",
-  alpha_rate = NULL, response_sim)
+  alpha_rate = NULL, response_sim, stop_rule_sim = NULL)
 }
 \arguments{
 \item{step_zero}{an object from the classes 'ewoc_d1basic', 'ewoc_d1extended',

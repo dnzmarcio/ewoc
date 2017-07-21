@@ -1,4 +1,4 @@
 #'@export
-stop_rule <- function(trial){
+stop_rule_sim <- function(trial){
   out <- FALSE
 }
