@@ -124,18 +124,25 @@ trial_simulation.d1basic <- function(step_zero, n_sim, sample_size,
                                rounding = step_zero$trial$rounding)
 
         if (!is.null(stop_rule_sim))
-          if (stop_rule_sim(update))
+          if (stop_rule_sim(update)){
+            dose[j:sample_size] <- NA
+            dlt[j:sample_size] <- NA
+            mtd_estimate <- NA
+            rho_estimate <- NA
             break
+          }
 
         dose[j] <- update$next_dose
         dlt[j] <- response_sim(dose = dose[j])
+        mtd_estimate <- update$next_dose
+        rho_estimate <- median(update$rho)
       }
     }
 
     dose_sim[i, ] <- dose
     dlt_sim[i, ] <- dlt
-    mtd_sim[i] <- update$next_dose
-    rho_sim[i] <- median(update$rho)
+    mtd_sim[i] <- mtd_estimate
+    rho_sim[i] <- rho_estimate
   }
 
   out <- list(dose_sim = dose_sim, dlt_sim = dlt_sim,
@@ -229,19 +236,27 @@ trial_simulation.d1ph <- function(step_zero, n_sim, sample_size,
                             rounding = step_zero$trial$rounding)
 
         if (!is.null(stop_rule_sim))
-          if (stop_rule_sim(update))
+          if (stop_rule_sim(update)){
+            dose[j:sample_size] <- NA
+            dlt[j:sample_size] <- NA
+            event_time[j:sample_size] <- NA
+            mtd_estimate <- NA
+            rho_estimate <- NA
             break
+          }
 
         dose[j] <- update$next_dose
         event_time[j] <- response_sim(dose = dose[j])
+        mtd_estimate <- update$next_dose
+        rho_estimate <- median(update$rho)
       }
     }
 
     dose_sim[i, ] <- dose
     dlt_sim[i, ] <- dlt
     time_sim[i, ] <- event_time
-    mtd_sim[i] <- update$next_dose
-    rho_sim[i, ] <- median(update$rho)
+    mtd_sim[i] <- mtd_estimate
+    rho_sim[i, ] <- rho_estimate
   }
 
   out <- list(time_sim = time_sim, dose_sim = dose_sim, dlt_sim = dlt_sim,
