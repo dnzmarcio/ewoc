@@ -48,7 +48,8 @@ overdose_loss <- function (mtd_estimate, true_mtd, alpha) {
 dlt_rate <- function(dlt_matrix, trial = FALSE,
                      target_rate = NULL, margin = NULL, digits = 2) {
 
-  dlt_matrix <- as.matrix(dlt_matrix)
+  if (!is.matrix(dlt_matrix))
+    dlt_matrix <- matrix(dlt_matrix, nrow = 1)
 
   aux_upper <- function(dlt, target_rate, margin) {
     out <- ifelse(mean(dlt, na.rm = TRUE) > target_rate + margin, 1, 0)
@@ -108,12 +109,17 @@ dlt_rate <- function(dlt_matrix, trial = FALSE,
 #'@export
 stop_rule <- function(dlt_matrix, sample_size, digits = 2) {
 
-  dlt_matrix <- as.matrix(dlt_matrix)
+  if (!is.matrix(dlt_matrix))
+    dlt_matrix <- matrix(dlt_matrix, nrow = 1)
 
   index <- which(rowSums(!is.na(dlt_matrix)) < sample_size, arr.ind = TRUE)
+  temp <- dlt_matrix[index, ]
+  
+  if (!is.matrix(temp))
+    temp <- matrix(temp, nrow = 1)
 
   if(length(index) > 0) {
-    result <- apply(dlt_matrix[index, ], 1, function(x) sum(!is.na(x)))
+    result <- apply(temp, 1, function(x) sum(!is.na(x)))
   } else {
     result <- 0
   }
@@ -145,7 +151,8 @@ stop_rule <- function(dlt_matrix, sample_size, digits = 2) {
 #'@export
 overdose_percent <- function(dose_matrix, true_mtd,  margin = NULL, digits = 2) {
 
-  dose_matrix <- as.matrix(dose_matrix)
+  if (!is.matrix(dose_matrix))
+    dose_matrix <- matrix(dose_matrix, nrow = 1)
 
   aux <- function(dose, true_mtd,  margin) {
     observed_number <- sum(dose > true_mtd + margin)
@@ -179,7 +186,8 @@ overdose_percent <- function(dose_matrix, true_mtd,  margin = NULL, digits = 2) 
 #'@export
 underdose_percent <- function(dose_matrix, true_mtd,  margin, digits = 2) {
 
-  dose_matrix <- as.matrix(dose_matrix)
+  if (!is.matrix(dose_matrix))
+    dose_matrix <- matrix(dose_matrix, nrow = 1)
 
   aux <- function(dose, true_mtd,  margin) {
     observed_number <- sum(dose < true_mtd - margin)
@@ -212,7 +220,8 @@ underdose_percent <- function(dose_matrix, true_mtd,  margin, digits = 2) {
 #'@export
 optimal_mtd_interval <- function(dose_matrix, true_mtd, margin, digits = 2) {
 
-  dose_matrix <- as.matrix(dose_matrix)
+  if (!is.matrix(dose_matrix))
+    dose_matrix <- matrix(dose_matrix, nrow = 1)
 
   aux <- function(dose, true_mtd,  margin) {
     observed_number <- sum(dose > true_mtd - margin & dose < true_mtd + margin)
@@ -232,7 +241,8 @@ optimal_mtd_interval <- function(dose_matrix, true_mtd, margin, digits = 2) {
 #'@export
 optimal_toxicity_interval <- function(dose_matrix, theta, margin, pdlt, digits = 2) {
 
-  dose_matrix <- as.matrix(dose_matrix)
+  if (!is.matrix(dose_matrix))
+    dose_matrix <- matrix(dose_matrix, nrow = 1)
 
   aux <- function(dose, theta,  margin) {
     prob <- pdlt(dose)
