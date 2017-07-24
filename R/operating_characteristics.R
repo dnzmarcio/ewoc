@@ -28,6 +28,7 @@ overdose_loss <- function (mtd_estimate, true_mtd, alpha) {
 #'
 #'@param dlt_matrix a matrix of the number of DLT for each step of the trial (column)
 #'and for each trial (row).
+#'@param trial a logical value indicating if the DLT rate for each trial should be returned.
 #'@param target_rate a numerical value of the target rate of DLT.
 #'@param margin a numerical value of the acceptable distance from the \code{target_rate}.
 #'
@@ -44,7 +45,8 @@ overdose_loss <- function (mtd_estimate, true_mtd, alpha) {
 #'\code{target_rate != NULL}.
 #'
 #'@export
-dlt_rate <- function(dlt_matrix, target_rate = NULL, margin = NULL, digits = 2) {
+dlt_rate <- function(dlt_matrix, trial = FALSE,
+                     target_rate = NULL, margin = NULL, digits = 2) {
 
   dlt_matrix <- as.matrix(dlt_matrix)
 
@@ -74,8 +76,16 @@ dlt_rate <- function(dlt_matrix, target_rate = NULL, margin = NULL, digits = 2) 
 
     out <- list(trial = dlt_trial, average = dlt_average,
                 upper = dlt_upper, lower = dlt_lower, interval = dlt_interval)
+
+    if (trial)
+      out <- list(average = dlt_average,
+                  upper = dlt_upper, lower = dlt_lower, interval = dlt_interval)
+
   } else {
     out <- list(trial = dlt_trial, average = dlt_average)
+
+    if (trial)
+      out <- list(average = dlt_average)
   }
   return(out)
 }
@@ -98,6 +108,8 @@ dlt_rate <- function(dlt_matrix, target_rate = NULL, margin = NULL, digits = 2) 
 #'@export
 stop_rule <- function(dlt_matrix, sample_size, digits = 2) {
 
+  dlt_matrix <- as.matrix(dlt_matrix)
+
   index <- which(rowSums(!is.na(dlt_matrix)) < sample_size, arr.ind = TRUE)
 
   if(length(index) > 0) {
@@ -106,7 +118,8 @@ stop_rule <- function(dlt_matrix, sample_size, digits = 2) {
     result <- 0
   }
 
-  out <- list(average = mean(result), min = min(result),
+  out <- list(average = mean(result),
+              min = min(result),
               max = max(result),
               nstop = round(100*length(index)/
                               nrow(dlt_matrix), digits))
@@ -247,7 +260,7 @@ optimal_toxicity_interval <- function(dose_matrix, theta, margin, pdlt, digits =
 #'
 #'@export
 mtd_bias <- function(mtd_estimate, true_mtd) {
-  out <- mean(mtd_estimate - true_mtd)
+  out <- mean(mtd_estimate - true_mtd, na.rm = TRUE)
   return(out)
 }
 
@@ -262,7 +275,7 @@ mtd_bias <- function(mtd_estimate, true_mtd) {
 #'
 #'@export
 mtd_mse <- function(mtd_estimate, true_mtd) {
-  out <- mean((mtd_estimate - true_mtd)^2)
+  out <- mean((mtd_estimate - true_mtd)^2, na.rm = TRUE)
   return(out)
 }
 
