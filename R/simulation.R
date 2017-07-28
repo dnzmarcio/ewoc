@@ -134,6 +134,7 @@ trial_simulation.d1basic <- function(step_zero, n_sim, sample_size,
 
         dose[j] <- update$next_dose
         dlt[j] <- response_sim(dose = dose[j])
+        npatients[j] <- npatients[j-1]
         mtd_estimate <- update$next_dose
         rho_estimate <- median(update$rho)
       }
