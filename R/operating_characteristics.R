@@ -114,77 +114,9 @@ stop_rule <- function(dlt_matrix, sample_size, digits = 2) {
 }
 
 
-#'Percent of dose greater than an upper bound
+#'Percent of doses in relation the optimal MTD interval
 #'
-#'Calculate the percent of dose which are greater than \code{true_mtd + margin}.
-#'
-#'@param dose a numerical matrix of assigned doses for each step of the trial (column)
-#'and for each trial (row).
-#'@param true_MTD a numerical value of the true Maximum Tolerable Dose.
-#'@param margin a numerical value of the acceptable upper margin of distance from the
-#'\code{true_MTD}.
-#'
-#'@return \code{percent} the percent of the dose assigned which are greater than
-#' \code{true_MTD + margin} for each trial.
-#'@return \code{average} the average of the percent the dose assigned which are
-#' greater than \code{true_MTD + margin}.
-#'
-#'@export
-overdose_percent <- function(dose_matrix, true_mtd,  margin = NULL, digits = 2) {
-
-  dose_matrix <- as.matrix(dose_matrix)
-
-  aux <- function(dose, true_mtd,  margin) {
-    observed_number <- sum(dose > true_mtd + margin)
-    out <- round(100*observed_number/length(dose), digits)
-    return(out)
-  }
-
-  percent <- apply(dose_matrix, 1, aux,
-               true_mtd = true_mtd,  margin = margin)
-  average <- round(mean(percent, na.rm = TRUE), digits)
-  out <- list(trial = percent, average = average)
-
-  return(out)
-}
-
-#'Percent of dose smaller than a lower bound
-#'
-#'Calculate the percent of dose which are smaller than \code{true_MTD - margin}.
-#'
-#'@param dose a numerical matrix of assigned for each step of the trial (column)
-#'and for each trial (row).
-#'@param true_MTD a numerical value of the true Maximum Tolerable Dose.
-#'@param margin a numerical Value of the acceptable lower margin of distance from the
-#'\code{true_MTD}.
-#'
-#'@return \code{percent} the percent of the dose assigned which are smaller than
-#' \code{true_MTD - margin} for each trial.
-#'@return \code{average} the average of the percent the dose assigned which are
-#' greater than \code{true_MTD - margin}.
-#'
-#'@export
-underdose_percent <- function(dose_matrix, true_mtd,  margin, digits = 2) {
-
-  dose_matrix <- as.matrix(dose_matrix)
-
-  aux <- function(dose, true_mtd,  margin) {
-    observed_number <- sum(dose < true_mtd - margin)
-    out <- round(100*observed_number/length(dose), digits)
-    return(out)
-  }
-
-  percent <- apply(dose_matrix, 1, aux,
-                   true_mtd = true_mtd,  margin = margin)
-  average <- round(mean(percent, na.rm = TRUE), digits)
-  out <- list(trial = percent, average = average)
-
-  return(out)
-}
-
-#'Percent of optimal doses
-#'
-#'Calculate the percent of dose which are inside the interval \code{[true_MTD -
+#'Calculate the percent of dose which are inside the optimal MTD interval \code{[true_MTD -
 #'margin ; true_MTD + margin]}.
 #'
 #'@param dose_matrix a numerical matrix of assigned doses for each step of the trial (column)
@@ -193,44 +125,104 @@ underdose_percent <- function(dose_matrix, true_mtd,  margin, digits = 2) {
 #'@param margin a numerical value of the acceptable margin of distance from the
 #'\code{true_MTD}.
 #'
-#'@return \code{trial} the percent of optimal doses for each trial.
-#'@return \code{average} the average percent of optimal doses.
+#'@return \code{interval} the average percent of doses which are inside the optimal MTD interval.
+#'@return \code{underdose} the average percent of doses which are smaller than the lower limit of the optimal MTD interval.
+#'@return \code{overdose} the average percent of doses which are greater than the upper limit of the optimal MTD interval.
 #'
 #'@export
-optimal_mtd_interval <- function(dose_matrix, true_mtd, margin, digits = 2) {
+optimal_mtd <- function(dose_matrix, true_mtd, margin, digits = 2) {
 
   dose_matrix <- as.matrix(dose_matrix)
 
-  aux <- function(dose, true_mtd,  margin) {
+  aux_interval <- function(dose, true_mtd,  margin) {
     observed_number <- sum(dose > true_mtd - margin & dose < true_mtd + margin)
     out <- round(100*observed_number/length(dose), digits)
     return(out)
   }
-
+  
+  aux_underdose <- function(dose, true_mtd,  margin) {
+    observed_number <- sum(dose < true_mtd - margin)
+    out <- round(100*observed_number/length(dose), digits)
+    return(out)
+  }
+  
+  aux_overdose <- function(dose, true_mtd,  margin) {
+    observed_number <- sum(dose > true_mtd + margin)
+    out <- round(100*observed_number/length(dose), digits)
+    return(out)
+  }
+  
   percent <- apply(dose_matrix, 1, aux,
                    true_mtd = true_mtd,  margin = margin)
-  average <- round(mean(percent, na.rm = TRUE), digits)
-  out <- list(trial = percent, average = average)
+  overdose <- round(mean(percent, na.rm = TRUE), digits)
+  
+  percent <- apply(dose_matrix, 1, aux_underdose,
+                   true_mtd = true_mtd,  margin = margin)
+  underdose <- round(mean(percent, na.rm = TRUE), digits)
+
+  percent <- apply(dose_matrix, 1, aux_interval,
+                   true_mtd = true_mtd,  margin = margin)
+  interval <- round(mean(percent, na.rm = TRUE), digits)
+  
+  out <- list(interval = interval, underdose = underdose, overdose = overdose)
 
   return(out)
 }
 
-
+#'Percent of doses in relation the optimal toxicity interval
+#'
+#'Calculate the percent of dose which are inside the optimal toxicity interval \code{[target rate -
+#'margin ; target rate + margin]}.
+#'
+#'@param dose_matrix a numerical matrix of assigned doses for each step of the trial (column)
+#'and for each trial (row).
+#'@param target_rate a numerical value of the target DLT rate.
+#'@param margin a numerical value of the acceptable margin of distance from the
+#'\code{target_rate}.
+#'@param pdlt a function to calculate the probability of toxicity with a numeric vector of doses as input and a numeric vector of probabilities as output.
+#'
+#'@return \code{interval} the average percent of doses which are inside the optimal toxicity interval.
+#'@return \code{underdose} the average percent of doses which are smaller than the lower limit of the optimal toxicity interval.
+#'@return \code{overdose} the average percent of doses which are greater than the upper limit of the optimal toxicity interval.
+#'
 #'@export
-optimal_toxicity_interval <- function(dose_matrix, theta, margin, pdlt, digits = 2) {
+optimal_toxicity <- function(dose_matrix, theta, margin, pdlt, digits = 2) {
 
   dose_matrix <- as.matrix(dose_matrix)
 
-  aux <- function(dose, theta,  margin) {
+  aux_interval <- function(dose, theta,  margin) {
     prob <- pdlt(dose)
     observed_number <- sum(prob > theta - margin & prob < theta + margin)
     out <- round(100*observed_number/length(dose), digits)
     return(out)
   }
+  
+  aux_underdose <- function(dose, theta,  margin) {
+    prob <- pdlt(dose)
+    observed_number <- sum(prob < theta - margin)
+    out <- round(100*observed_number/length(dose), digits)
+    return(out)
+  }
+  
+  aux_overdose <- function(dose, theta,  margin) {
+    prob <- pdlt(dose)
+    observed_number <- sum(prob > theta + margin)
+    out <- round(100*observed_number/length(dose), digits)
+    return(out)
+  }
 
-  percent <- apply(dose_matrix, 1, aux,
+  percent <- apply(dose_matrix, 1, aux_interval,
                    theta = theta,  margin = margin)
-  average <- round(mean(percent, na.rm = TRUE), digits)
+  interval <- round(mean(percent, na.rm = TRUE), digits)
+  
+  percent <- apply(dose_matrix, 1, aux_underdose,
+                   theta = theta,  margin = margin)
+  underdose <- round(mean(percent, na.rm = TRUE), digits)
+  
+  percent <- apply(dose_matrix, 1, aux_overdose,
+                   theta = theta,  margin = margin)
+  overrdose <- round(mean(percent, na.rm = TRUE), digits)
+  
   out <- list(trial = percent, average = average)
 
   return(out)
