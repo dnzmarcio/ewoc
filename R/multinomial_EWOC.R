@@ -106,10 +106,6 @@ ewoc_d1multinomial <- function(formula, theta, alpha,
                                 ncol = (length(levels_cov) - 1)))
   response <- model.response(data_base)
 
-  if (!is.matrix(response))
-    stop("The left side of the formula should be a matrix:
-           number of DLT and number of patients for each dose!\n")
-
   if (length(type) > 1 | !(type == "continuous" | type == "discrete"))
     stop("'type' should be either 'continuous' or 'discrete'.")
 
@@ -209,10 +205,10 @@ ewoc_jags.d1multinomial <- function(data, n_adapt, burn_in,
   R2WinBUGS::write.model(jfun, tc1)
   close(tc1)
 
-  data_base <- list('dlt' = data$response[, 1],
+  data_base <- list('dlt' = data$response,
                     'design_matrix' = data$design_matrix,
                     'theta' = data$theta,
-                    'nobs' = length(data$response[, 1]),
+                    'nobs' = length(data$response),
                     'np' = ncol(data$design_matrix) - 1,
                     'rho_prior' = data$rho_prior, 'mtd_prior' = data$mtd_prior)
 
