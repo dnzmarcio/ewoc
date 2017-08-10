@@ -105,10 +105,11 @@ next_dose.d1continuous <- function(data){
   rho <- data$mcmc$rho
   gamma <- data$mcmc$gamma
 
-  mtd <-
-    inv_standard_dose(dose = gamma,
-                      min_dose = data$limits$min_dose(data$next_patient_cov),
-                      max_dose = data$limits$max_dose(data$next_patient_cov))
+  mtd <- inv_standard_dose(dose = gamma,
+                           min_dose =
+                             data$limits$min_dose(data$next_patient_cov),
+                           max_dose =
+                             data$limits$max_dose(data$next_patient_cov))
 
   next_dose <- quantile(mtd, probs = data$alpha)
 
@@ -128,10 +129,11 @@ next_dose.d1excontinuous <- function(data){
   scale_p2 <- logit(data$theta) - logit(rho[, 1])
   scale_p3 <- logit(rho[, 3]) - logit(rho[, 1])
   gamma <- (scale_p2 - scale_p0*scale_p1)/scale_p3
-  mtd <-
-    inv_standard_dose(dose = gamma,
-                      min_dose = data$limits$min_dose(data$next_patient_cov),
-                      max_dose = data$limits$max_dose(data$next_patient_cov))
+  mtd <- inv_standard_dose(dose = gamma,
+                           min_dose =
+                             data$limits$min_dose(data$next_patient_cov),
+                           max_dose =
+                             data$limits$max_dose(data$next_patient_cov))
 
   next_dose <- quantile(mtd, probs = data$alpha)
 
