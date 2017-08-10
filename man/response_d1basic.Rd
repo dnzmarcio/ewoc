@@ -24,4 +24,3 @@ the MTD.}
 \description{
 Generating a response function based on the EWOC basic model
 }
-

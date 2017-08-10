@@ -40,4 +40,3 @@ of trials which have \eqn{DLT rate > target_rate + margin}, the percent
 of trials which have \eqn{DLT rate < target_rate - margin} and the percent
 of trials which have \eqn{target_rate - margin < DLT rate < target_rate + margin}.
 }
-

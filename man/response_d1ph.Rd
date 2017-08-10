@@ -34,4 +34,3 @@ It is only necessary if 'distribution' = "weibull".}
 \description{
 Generating a response function based on the EWOC PH model
 }
-

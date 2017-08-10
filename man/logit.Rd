@@ -9,4 +9,3 @@ logit(p)
 \description{
 Transform a probability into logit scale
 }
-

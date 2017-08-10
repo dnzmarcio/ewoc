@@ -17,4 +17,3 @@ mtd_mse(mtd_estimate, true_mtd)
 \description{
 Calculate the Mean Square Error (MSE).
 }
-

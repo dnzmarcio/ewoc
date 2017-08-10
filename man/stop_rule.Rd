@@ -24,4 +24,3 @@ Calculate the average, minimum, maximum number of patients to stop a trial and
 the percent of stopped trials. Stopped trials contain NA after the last
 assigned dose.
 }
-

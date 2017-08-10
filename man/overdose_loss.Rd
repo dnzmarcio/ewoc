@@ -22,4 +22,3 @@ Calculate the overdose loss function given by \eqn{alpha(true_mtd -
 mtd_estimate)} if \eqn{true_mtd > mtd_estimate} and \eqn{(1 - alpha)
 (mtd_estimate - true_mtd)} if \eqn{true_mtd < mtd_estimate}.
 }
-

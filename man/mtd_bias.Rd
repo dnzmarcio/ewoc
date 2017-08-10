@@ -17,4 +17,3 @@ mtd_bias(mtd_estimate, true_mtd)
 \description{
 Calculate the bias.
 }
-
