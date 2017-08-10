@@ -14,8 +14,7 @@ ewoc_d1multinomial(formula, theta, alpha, mtd_prior, rho_prior, levels_cov,
 \item{formula}{an object of class \code{\link[Formula]{Formula}}: a symbolic
 description of the model to be fitted with two regressor parts separated by `|`
 corresponding to the dose and covariable, respectively, for the right side and
-a matrix as a response containing number of DLT and number of patients for
-the left side.}
+a vector as a response containing number of DLT for the left side.}
 
 \item{theta}{a numerical value defining the proportion of expected patients
 to experience a medically unacceptable, dose-limiting toxicity (DLT) if
@@ -90,11 +89,10 @@ response with multinomial covariable.
 library(ewoc)
 
 DLT <- rep(0, 2)
-npatients <- rep(1, 2)
 group <- c("B", "C")
 group <- factor(group, levels = c("A", "B", "C"))
 dose <- rep(30, 2)
-test <- ewoc_d1multinomial(cbind(DLT, npatients) ~ dose | group,
+test <- ewoc_d1multinomial(DLT ~ dose | group,
                           type = 'continuous',
                           theta = 0.33, alpha = 0.25,
                           min_dose = 30, max_dose = 50,

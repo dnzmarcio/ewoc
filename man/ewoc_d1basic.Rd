@@ -12,8 +12,8 @@ ewoc_d1basic(formula, theta, alpha, mtd_prior, rho_prior, min_dose, max_dose,
 \arguments{
 \item{formula}{an object of class \code{\link[Formula]{Formula}}: a symbolic
 description of the model to be fitted with only one regressor term
-corresponding to the dose for the right side and a matrix as a response
-containing number of DLT and number of patients for the left side.}
+corresponding to the dose for the right side and a numeric vector a response
+containing number of DLT for the left side.}
 
 \item{theta}{a numerical value defining the proportion of expected patients
 to experience a medically unacceptable, dose-limiting toxicity (DLT) if
@@ -79,9 +79,8 @@ basic parametrization for binary responses and single agent.
 \examples{
 \dontrun{
 DLT <- 0
-npatients <- 1
 dose <- 30
-test <- ewoc_d1basic(cbind(DLT, npatients) ~ dose, type = 'discrete',
+test <- ewoc_d1basic(DLT ~ dose, type = 'discrete',
                     theta = 0.33, alpha = 0.25,
                     min_dose = 0, max_dose = 100,
                     dose_set = seq(0, 100, 20),

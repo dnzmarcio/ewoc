@@ -90,4 +90,3 @@ for binary response with continuous covariable.
 \references{
 Babb JS, Rogatko A. Patient specific dosing in a cancer phase I clinical trial. Statistics in medicine. 2001 Jul 30;20(14):2079-90.
 }
-

@@ -108,4 +108,3 @@ plot(test)
 \references{
 Tighiouart M, Liu Y, Rogatko A. Escalation with overdose control using time to toxicity for cancer phase I clinical trials. PloS one. 2014 Mar 24;9(3):e93070.
 }
-
