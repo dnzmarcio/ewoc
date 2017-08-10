@@ -82,10 +82,33 @@ See \code{\link[rjags]{adapt}} for details.}
 }
 \description{
 Finding the next dose for a phase I clinical trial based on Escalation Over
-Dose Control (EWOC) design considering extended parametrization for binary
+Dose Control (EWOC) design considering classical parametrization for binary
 response with ordinal covariable.
+}
+\examples{
+\dontrun{
+library(ewoc)
+
+DLT <- rep(0, 2)
+npatients <- rep(1, 2)
+group <- c("B", "C")
+group <- factor(group, levels = c("A", "B", "C"))
+dose <- rep(30, 2)
+test <- ewoc_d1ordinal(cbind(DLT, npatients) ~ dose | group,
+                      type = 'continuous',
+                      theta = 0.33, alpha = 0.25,
+                      min_dose = 30, max_dose = 50,
+                      levels_cov = c("A", "B", "C"),
+                      next_patient_cov = "A",
+                      mtd_prior = matrix(1, nrow = 3, ncol = 2),
+                      rho_prior = matrix(1, nrow = 1, ncol = 2))
+summary(test)
+plot(test)
+}
+
+
+
 }
 \references{
 Tighiouart M, Cook-Wiens G, Rogatko A. Incorporating a patient dichotomous characteristic in cancer phase I clinical trials using escalation with overdose control. Journal of Probability and Statistics. 2012 Oct 2;2012.
 }
-
