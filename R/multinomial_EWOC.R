@@ -13,6 +13,7 @@
 #'administered the MTD.
 #'@param alpha a numerical value defining the probability that the dose selected
 #'by EWOC is higher than the MTD.
+#'@param order a logical value indicating if the MTD prior should be ordered.
 #'@param mtd_prior a matrix of hyperparameters for the Beta prior distribution
 #'associated with the MTD. Each row corresponds to a paramater.
 #'@param rho_prior a matrix of hyperparameters for the Beta prior distribution
@@ -77,6 +78,7 @@ ewoc_d1multinomial <- function(formula, theta, alpha,
                                levels_cov, next_patient_cov,
                                min_dose, max_dose,
                                type = c('continuous', 'discrete'),
+                               order = FALSE,
                                first_dose = NULL, last_dose = NULL,
                                dose_set = NULL,
                                rounding = c("down", "nearest"),
@@ -144,7 +146,7 @@ ewoc_d1multinomial <- function(formula, theta, alpha,
 
   my_data <- list(response = response, design_matrix = design_matrix,
                   theta = theta, alpha = alpha, limits = limits,
-                  dose_set = dose_set,
+                  dose_set = dose_set, order = order,
                   rho_prior = rho_prior, mtd_prior = mtd_prior,
                   levels_cov = levels_cov,
                   type = type, rounding = rounding)
@@ -156,7 +158,7 @@ ewoc_d1multinomial <- function(formula, theta, alpha,
                 theta = theta, alpha = alpha,
                 first_dose = limits$first_dose, last_dose = limits$last_dose,
                 min_dose = limits$min_dose, max_dose = limits$max_dose,
-                dose_set = dose_set,
+                dose_set = dose_set, order = order,
                 rho_prior = rho_prior, mtd_prior = mtd_prior,
                 levels_cov = levels_cov, covariable = covariable,
                 next_patient_cov = next_patient_cov,
@@ -176,28 +178,57 @@ ewoc_d1multinomial <- function(formula, theta, alpha,
 ewoc_jags.d1multinomial <- function(data, n_adapt, burn_in,
                                     n_mcmc, n_thin, n_chains) {
 
+  if (!data$order){
   # JAGS model function
-  jfun <- function() {
+    jfun <- function() {
 
-    for(i in 1:nobs) {
-      dlt[i] ~ dbin(p[i], 1)
-      p[i] <- ifelse(1/(1 + exp(-eta[i])) == 1, 0.99, 1/(1 + exp(-eta[i])))
-      eta[i] <- inprod(design_matrix[i, ], beta)
+      for(i in 1:nobs) {
+        dlt[i] ~ dbin(p[i], 1)
+        p[i] <- ifelse(1/(1 + exp(-eta[i])) == 1, 0.99, 1/(1 + exp(-eta[i])))
+        eta[i] <- inprod(design_matrix[i, ], beta)
+      }
+
+      for (i in 3:(np+1)) {
+        beta[i] <- logit(theta) - logit(rho[1]) -
+          gamma[i-1]*(logit(theta) - beta[1])/gamma[i-2]
+      }
+      beta[2] <- (logit(theta) - logit(rho[1]))/gamma[1]
+      beta[1] <- logit(rho[1])
+
+      rho[1] <- theta*r[1]
+      r[1] ~ dbeta(rho_prior[1, 1], rho_prior[1, 2])
+
+      for (i in 1:np) {
+        gamma[i] <- v[i]
+        v[i] ~ dbeta(mtd_prior[i, 1], mtd_prior[i, 2])
+      }
     }
+  } else {
+    jfun <- function() {
 
-    for (i in 3:(np+1)) {
-      beta[i] <- logit(theta) - logit(rho[1]) -
-        gamma[i-1]*(logit(theta) - beta[1])/gamma[i-2]
-    }
-    beta[2] <- (logit(theta) - logit(rho[1]))/gamma[1]
-    beta[1] <- logit(rho[1])
+      for(i in 1:nobs) {
+        dlt[i] ~ dbin(p[i], 1)
+        p[i] <- ifelse(1/(1 + exp(-eta[i])) == 1, 0.99, 1/(1 + exp(-eta[i])))
+        eta[i] <- inprod(design_matrix[i, ], beta)
+      }
 
-    rho[1] <- theta*r[1]
-    r[1] ~ dbeta(rho_prior[1, 1], rho_prior[1, 2])
+      for (i in 3:(np+1)) {
+        beta[i] <- logit(theta) - logit(rho[1]) -
+          gamma[i-1]*(logit(theta) - beta[1])/gamma[i-2]
+      }
+      beta[2] <- (logit(theta) - logit(rho[1]))/gamma[1]
+      beta[1] <- logit(rho[1])
 
-    for (i in 1:np) {
-      gamma[i] <- v[i]
-      v[i] ~ dbeta(mtd_prior[i, 1], mtd_prior[i, 2])
+      rho[1] <- theta*r[1]
+      r[1] ~ dbeta(rho_prior[1, 1], rho_prior[1, 2])
+
+      gamma[1] <- v[1]
+      v[1] ~ dbeta(mtd_prior[1, 1], mtd_prior[1, 2])
+
+      for (i in 2:np) {
+        gamma[i] <- gamma[i-1]*v[i]
+        v[i] ~ dbeta(mtd_prior[i, 1], mtd_prior[i, 2])
+      }
     }
   }
 

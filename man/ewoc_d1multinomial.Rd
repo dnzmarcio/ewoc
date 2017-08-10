@@ -6,7 +6,7 @@
 \usage{
 ewoc_d1multinomial(formula, theta, alpha, mtd_prior, rho_prior, levels_cov,
   next_patient_cov, min_dose, max_dose, type = c("continuous", "discrete"),
-  first_dose = NULL, last_dose = NULL, dose_set = NULL,
+  order = FALSE, first_dose = NULL, last_dose = NULL, dose_set = NULL,
   rounding = c("down", "nearest"), n_adapt = 5000, burn_in = 1000,
   n_mcmc = 1000, n_thin = 1, n_chains = 1)
 }
@@ -42,6 +42,8 @@ defining the upper bound of the support of the MTD used to standardize the doses
 
 \item{type}{a character describing the type of the Maximum Tolerable Dose
 (MTD) variable.}
+
+\item{order}{a logical value indicating if the MTD prior should be ordered.}
 
 \item{first_dose}{a numerical value for the first allowable dose in the trial.
 It is only necessary if type = 'continuous'.}

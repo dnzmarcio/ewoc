@@ -183,61 +183,6 @@ pdlt_d1multinomial <- function(rho, mtd, theta, min_dose, max_dose, levels_cov) 
 
 
 #'@export
-pdlt_d1ordinal <- function(rho, mtd, theta, min_dose, max_dose, levels_cov) {
-
-  if (!is.matrix(mtd))
-    mtd <- matrix(mtd, nrow = 1)
-
-  gamma <- matrix(NA, ncol = ncol(mtd), nrow = nrow(mtd))
-
-  for (i in 1:length(levels_cov)){
-    gamma[, i] <- standard_dose(dose = mtd[, i],
-                                min_dose = min_dose(levels_cov[i]),
-                                max_dose = max_dose(levels_cov[i]))
-  }
-
-  parm <- cbind(gamma, rho)
-  parm <- as.matrix(parm)
-  parm.names <- c(rep("mtd", ncol(gamma)), "rho")
-
-  pdlt <- function(dose, cov){
-
-    dose <- standard_dose(dose = dose,
-                          min_dose = min_dose(cov),
-                          max_dose = max_dose(cov))
-
-    aux_pdlt <- function(parm, dose, theta, cov, parm.names) {
-
-      rho <- parm[which(parm.names == "rho")]
-      mtd <- parm[which(parm.names == "mtd")]
-
-      beta <- rep(NA, (length(mtd) + 1))
-      beta[1] <- logit(rho[1])
-      beta[2] <- (logit(theta) - logit(rho[1]))/mtd[1]
-
-      for (i in 3:(length(mtd) + 1)) {
-        beta[i] <- logit(theta) - logit(rho[1]) -
-          mtd[i-1]*(logit(theta) - beta[1])/mtd[i-2]
-      }
-
-      cov <- factor(cov, levels = levels_cov)
-      cov <- matrix(model.matrix( ~ cov)[-1], nrow = 1)
-
-      design_matrix <- cbind(1, dose, cov)
-      lp <- design_matrix%*%beta
-      out <- as.numeric(plogis(lp))
-      return(out)
-    }
-
-    out <- apply(parm, 1, aux_pdlt, dose = dose, theta = theta,
-                 cov = cov, parm.names = parm.names)
-    return(out)
-  }
-
-  return(pdlt)
-}
-
-#'@export
 pdlt_d1continuous <- function(mtd, rho, theta, min_dose, max_dose,
                               min_cov, max_cov, cov) {
 

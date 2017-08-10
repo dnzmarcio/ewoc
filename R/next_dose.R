@@ -100,36 +100,6 @@ next_dose.d1multinomial <- function(data){
 }
 
 #'@export
-next_dose.d1ordinal <- function(data){
-
-  rho <- data$mcmc$rho
-  gamma <- data$mcmc$gamma
-
-  mtd <- matrix(NA, nrow = nrow(gamma), ncol = ncol(gamma))
-  next_dose <- rep(NA, ncol(gamma))
-
-  for (i in 1:length(data$levels_cov)){
-    mtd[, i] <-
-      inv_standard_dose(dose = gamma[, i],
-                        min_dose = data$limits$min_dose(data$levels_cov[i]),
-                        max_dose = data$limits$max_dose(data$levels_cov[i]))
-    next_dose[i] <- quantile(mtd[, i], probs = data$alpha)
-
-    next_dose[i] <- ifelse(next_dose[i] >
-                           data$limits$last_dose(data$levels_cov[i]),
-                           data$limits$last_dose(data$levels_cov[i]),
-                           ifelse(next_dose[i] <
-                                  data$limits$first_dose(data$levels_cov[i]),
-                                  data$limits$first_dose(data$levels_cov[i]),
-                                  next_dose[i]))
-  }
-
-  out <- list(mtd = mtd, next_dose = next_dose,
-              rho = rho, gamma = gamma, sample = data$mcmc$sample)
-  return(out)
-}
-
-#'@export
 next_dose.d1continuous <- function(data){
 
   rho <- data$mcmc$rho
