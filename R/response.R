@@ -73,7 +73,7 @@ response_d1extended <- function(rho, theta, min_dose, max_dose) {
   return(out)
 }
 
-#'Generating a binary response function based on the EWOC PH model
+#'Generating a response function based on the EWOC PH model
 #
 #'@param rho a numerical value indicating the true value of the parameter rho.
 #'@param mtd a numerical value indicating the true value of the parameter mtd.
