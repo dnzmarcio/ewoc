@@ -1,7 +1,7 @@
 #'Escalation Over with Dose Control
 #'
 #'Finding the next dose for a phase I clinical trial based on Escalation Over
-#'Dose Control (EWOC) design considering extended parametrization for binary
+#'Dose Control (EWOC) design considering classical parametrization for binary
 #'response with ordinal covariable.
 #'
 #'@param formula an object of class \code{\link[Formula]{Formula}}: a symbolic
@@ -51,6 +51,29 @@
 #'
 #'@references Tighiouart M, Cook-Wiens G, Rogatko A. Incorporating a patient dichotomous characteristic in cancer phase I clinical trials using escalation with overdose control. Journal of Probability and Statistics. 2012 Oct 2;2012.
 #'
+#'@examples
+#'\dontrun{
+#'library(ewoc)
+#'
+#'DLT <- rep(0, 2)
+#'npatients <- rep(1, 2)
+#'group <- c("B", "C")
+#'group <- factor(group, levels = c("A", "B", "C"))
+#'dose <- rep(30, 2)
+#'test <- ewoc_d1ordinal(cbind(DLT, npatients) ~ dose | group,
+#'                       type = 'continuous',
+#'                       theta = 0.33, alpha = 0.25,
+#'                       min_dose = 30, max_dose = 50,
+#'                       levels_cov = c("A", "B", "C"),
+#'                       next_patient_cov = "A",
+#'                       mtd_prior = matrix(1, nrow = 3, ncol = 2),
+#'                       rho_prior = matrix(1, nrow = 1, ncol = 2))
+#'summary(test)
+#'plot(test)
+#'}
+#'
+#'
+#'
 #'@export
 ewoc_d1ordinal <- function(formula, theta, alpha,
                            rho_prior, mtd_prior,
@@ -75,13 +98,14 @@ ewoc_d1ordinal <- function(formula, theta, alpha,
   if (length(formula)[2] == 1) {
     stop("This design requires a ordinal covariable.")
   } else {
-    nlc <- length(levels_cov)
     covariable_matrix <- model.matrix(formula, data_base, rhs = 2)
-    covariable <- levels_cov[rowSums(covariable_matrix)]
+    index <- apply(covariable_matrix, 1, function(x) max(which(x != 0)))
+    covariable <- levels_cov[index]
   }
 
   design_matrix <- cbind(dose_matrix,
-                         matrix(covariable_matrix[, -1], ncol = (nlc - 1)))
+                         matrix(covariable_matrix[, -1],
+                                ncol = (length(levels_cov) - 1)))
   response <- model.response(data_base)
 
   if (!is.matrix(response))
@@ -105,7 +129,7 @@ ewoc_d1ordinal <- function(formula, theta, alpha,
   if (!(theta > 0 & theta < 1))
     stop("'theta' should be in the interval (0, 1).")
 
-  if(nrow(mtd_prior) != nlg | ncol(mtd_prior) != 2)
+  if(nrow(mtd_prior) != length(levels_cov) | ncol(mtd_prior) != 2)
     stop(paste0("'mtd_prior' should be a matrix with 2 columns and ", nlg, " rows."))
 
   if(nrow(rho_prior) != 1 | ncol(mtd_prior) != 2)
@@ -126,7 +150,7 @@ ewoc_d1ordinal <- function(formula, theta, alpha,
                   theta = theta, alpha = alpha, limits = limits,
                   dose_set = dose_set,
                   rho_prior = rho_prior, mtd_prior = mtd_prior,
-                  levels_cov = levels_cov, covariable = covariable,
+                  levels_cov = levels_cov,
                   type = type, rounding = rounding)
   class(my_data) <- "d1ordinal"
 
@@ -149,8 +173,6 @@ ewoc_d1ordinal <- function(formula, theta, alpha,
   return(out)
 }
 
-
-
 #'@export
 ewoc_jags.d1ordinal <- function(data, n_adapt, burn_in,
                               n_mcmc, n_thin, n_chains) {
@@ -165,11 +187,11 @@ ewoc_jags.d1ordinal <- function(data, n_adapt, burn_in,
     }
 
     for (i in 3:(np+1)) {
-      beta[i] <- qlogis(theta) - qlogis(rho[1]) - gamma[i-1]*(qlogis(theta) -
-                                                              beta[1])/gamma[i-2]
+      beta[i] <- logit(theta) - logit(rho[1]) -
+        gamma[i-1]*(logit(theta) - beta[1])/gamma[i-2]
     }
-    beta[2] <- (qlogis(theta) - qlogis(rho[1]))/gamma[1]
-    beta[1] <- qlogis(rho[1])
+    beta[2] <- (logit(theta) - logit(rho[1]))/gamma[1]
+    beta[1] <- logit(rho[1])
 
     rho[1] <- theta*r[1]
     r[1] ~ dbeta(rho_prior[1, 1], rho_prior[1, 2])
@@ -220,49 +242,6 @@ ewoc_jags.d1ordinal <- function(data, n_adapt, burn_in,
   rho <- sample[, ncol(data$design_matrix)]
 
   out <- list(gamma = gamma, rho = rho)
-
-  return(out)
-}
-
-#'@export
-response_ordinal <- function(n, dose, rho, cov) {
-
-  cov <- matrix(cov, nrow = 1)
-  np <- 2 + ncol(cov)
-
-  beta <- rep(NA, np)
-  beta[1] <- qlogis(rho[1])
-  beta[np] <- qlogis(rho[np]) - qlogis(rho[1])
-  for (i in 2:(np-1))
-    beta[i] <- qlogis(rho[i]) - beta[1]
-
-  design_matrix <- cbind(1, cov, dose)
-  lp <- design_matrix%*%beta
-  p <- plogis(lp)
-
-  out <- rbinom(n, 1, p)
-
-  return(out)
-}
-
-#'@export
-rho_ordinal <- function(rho11, true_mtd, min_dose, max_dose, theta) {
-
-  aux <- function(rho11, true_mtd, theta) {
-    rho0 <- rep(NA, length(true_mtd))
-    rho0[1] <- plogis((qlogis(theta) - true_mtd[1]*
-                         qlogis(rho11))/(1 - true_mtd[1]))
-    for(i in 2:length(true_mtd)) {
-      rho0[i] <- plogis(qlogis(theta) - true_mtd[i]*
-                          (qlogis(rho11) - qlogis(rho0[1])))
-    }
-    return(rho0)
-  }
-
-  true_mtd <- (true_mtd - min_dose)/(max_dose - min_dose)
-
-  rho0_Vec <- Vectorize(aux, vectorize.args = "rho11")
-  out <-  rho0_Vec(rho11, true_mtd, theta)
 
   return(out)
 }

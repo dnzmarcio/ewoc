@@ -1,14 +1,13 @@
 #'Escalation Over with Dose Control
 #'
 #'Finding the next dose for a phase I clinical trial based on Escalation Over
-#'Dose Control (EWOC) design considering extended parametrization for binary
+#'Dose Control (EWOC) design considering classical parametrization for binary
 #'response with multinomial covariable.
 #'
 #'@param formula an object of class \code{\link[Formula]{Formula}}: a symbolic
 #'description of the model to be fitted with two regressor parts separated by `|`
 #'corresponding to the dose and covariable, respectively, for the right side and
-#'a matrix as a response containing number of DLT and number of patients for
-#'the left side.
+#'a vector as a response containing number of DLT for the left side.
 #'@param theta a numerical value defining the proportion of expected patients
 #'to experience a medically unacceptable, dose-limiting toxicity (DLT) if
 #'administered the MTD.
@@ -51,6 +50,27 @@
 #'
 #'@references Tighiouart M, Cook-Wiens G, Rogatko A. Incorporating a patient dichotomous characteristic in cancer phase I clinical trials using escalation with overdose control. Journal of Probability and Statistics. 2012 Oct 2;2012.
 #'
+#'@examples
+#'\dontrun{
+#'library(ewoc)
+#'
+#'DLT <- rep(0, 2)
+#'group <- c("B", "C")
+#'group <- factor(group, levels = c("A", "B", "C"))
+#'dose <- rep(30, 2)
+#'test <- ewoc_d1multinomial(DLT ~ dose | group,
+#'                           type = 'continuous',
+#'                           theta = 0.33, alpha = 0.25,
+#'                           min_dose = 30, max_dose = 50,
+#'                           levels_cov = c("A", "B", "C"),
+#'                           next_patient_cov = "A",
+#'                           mtd_prior = matrix(1, nrow = 3, ncol = 2),
+#'                           rho_prior = matrix(1, nrow = 1, ncol = 2))
+#'summary(test)
+#'plot(test)
+#'}
+#'
+#'
 #'@export
 ewoc_d1multinomial <- function(formula, theta, alpha,
                                mtd_prior, rho_prior,
@@ -82,7 +102,8 @@ ewoc_d1multinomial <- function(formula, theta, alpha,
   }
 
   design_matrix <- cbind(dose_matrix,
-                         matrix(covariable_matrix[, -1], ncol = (nlc - 1)))
+                         matrix(covariable_matrix[, -1],
+                                ncol = (length(levels_cov) - 1)))
   response <- model.response(data_base)
 
   if (!is.matrix(response))
@@ -106,31 +127,30 @@ ewoc_d1multinomial <- function(formula, theta, alpha,
   if (!(theta > 0 & theta < 1))
     stop("'theta' should be in the interval (0, 1).")
 
-  if(nrow(mtd_prior) != nlc | ncol(mtd_prior) != 2)
+  if(nrow(mtd_prior) != length(levels_cov) | ncol(mtd_prior) != 2)
     stop(paste0("'mtd_prior' should be a matrix with 2 columns and ", nlc, " rows."))
 
   if(nrow(rho_prior) != 1 | ncol(mtd_prior) != 2)
     stop(paste0("'rho_prior' should be a matrix with 2 columns and 1 row."))
 
-  if(!(next_patient_cov %in% levels_cov))
+  if(any(!(next_patient_cov %in% levels_cov)))
     stop(paste0("'next_patient_cov' should be choose from 'levels_cov'."))
 
   limits <- limits_d1cov(first_dose = first_dose, last_dose = last_dose,
                          min_dose = min_dose, max_dose = max_dose,
                          type = type, rounding = rounding,
                          dose_set = dose_set,
-                         covariable = covariable)
+                         covariable = next_patient_cov)
 
-  design_matrix[, 2] <-
-    standard_dose(dose = design_matrix[, 2],
-                  min_dose = limits$min_dose(covariable),
-                  max_dose = limits$max_dose(covariable))
+  design_matrix[, 2] <- standard_dose(dose = design_matrix[, 2],
+                                      min_dose = limits$min_dose(covariable),
+                                      max_dose = limits$max_dose(covariable))
 
   my_data <- list(response = response, design_matrix = design_matrix,
                   theta = theta, alpha = alpha, limits = limits,
                   dose_set = dose_set,
                   rho_prior = rho_prior, mtd_prior = mtd_prior,
-                  levels_cov = levels_cov, covariable = covariable,
+                  levels_cov = levels_cov,
                   type = type, rounding = rounding)
   class(my_data) <- "d1multinomial"
 
@@ -164,7 +184,7 @@ ewoc_jags.d1multinomial <- function(data, n_adapt, burn_in,
   jfun <- function() {
 
     for(i in 1:nobs) {
-      dlt[i] ~ dbin(p[i], npatients[i])
+      dlt[i] ~ dbin(p[i], 1)
       p[i] <- ifelse(1/(1 + exp(-eta[i])) == 1, 0.99, 1/(1 + exp(-eta[i])))
       eta[i] <- inprod(design_matrix[i, ], beta)
     }
@@ -190,7 +210,6 @@ ewoc_jags.d1multinomial <- function(data, n_adapt, burn_in,
   close(tc1)
 
   data_base <- list('dlt' = data$response[, 1],
-                    'npatients' = data$response[, 1],
                     'design_matrix' = data$design_matrix,
                     'theta' = data$theta,
                     'nobs' = length(data$response[, 1]),

@@ -90,15 +90,11 @@ plot.ewoc_d1ph <- function(object, ...){
 }
 
 #'@export
-plot.ewoc_d1multinomial <- function(object, ..., next_covariable = NULL){
+plot.ewoc_d1multinomial <- function(object, ...){
 
-  object <- object
+  index <- which(object$trial$next_patient_cov == object$trial$levels_cov)
 
-  if (is.null(next_covariable))
-    next_covariable <- object$trial$levels_cov
-  index <- which(next_covariable == object$trial$levels_cov)
-
-  sm <- summary(object, print = FALSE, next_covariable = next_covariable)
+  sm <- summary(object, print = FALSE)
 
   gp <- list()
 
@@ -118,7 +114,7 @@ plot.ewoc_d1multinomial <- function(object, ..., next_covariable = NULL){
                                   x < sm$hpd_dose[i, 2]),
                   aes(ymax = y, x = x), ymin = 0, fill = "red", alpha = 0.3) +
       labs(y = "Density", x = "MTD",
-           title = paste("Group:", next_covariable[i])) +
+           title = paste("Group:", object$trial$next_patient_cov[i])) +
       annotate("text", x = sm$next_dose[i],
                y = max(shade$y)/2, hjust = -0.20,
                label = label) +
@@ -132,15 +128,11 @@ plot.ewoc_d1multinomial <- function(object, ..., next_covariable = NULL){
 }
 
 #'@export
-plot.ewoc_d1ordinal <- function(x, ..., next_covariable = NULL){
+plot.ewoc_d1ordinal <- function(object, ..., next_covariable = NULL){
 
-  object <- x
+  index <- which(object$trial$next_patient_cov == object$trial$levels_cov)
 
-  if (is.null(next_covariable))
-    next_covariable <- object$trial$levels_cov
-  index <- which(next_covariable == object$trial$levels_cov)
-
-  sm <- summary(object, print = FALSE, next_covariable = next_covariable)
+  sm <- summary(object, print = FALSE)
 
   gp <- list()
 
@@ -160,7 +152,7 @@ plot.ewoc_d1ordinal <- function(x, ..., next_covariable = NULL){
                                   x < sm$hpd_dose[i, 2]),
                   aes(ymax = y, x = x), ymin = 0, fill = "red", alpha = 0.3) +
       labs(y = "Density", x = "MTD",
-           title = paste("Group:", next_covariable[i])) +
+           title = paste("Group:", object$trial$next_patient_cov[i])) +
       annotate("text", x = sm$next_dose[i],
                y = max(shade$y)/2, hjust = -0.20,
                label = label) +
