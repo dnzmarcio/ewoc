@@ -88,10 +88,9 @@ See \code{\link[rjags]{adapt}} for details.}
 }
 \description{
 Finding the next dose for a phase I clinical trial based on Escalation Over
-Dose Control (EWOC) design considering extended parametrization
+Dose Control (EWOC) design considering classical parametrization
 for binary response with continuous covariable.
 }
 \references{
 Babb JS, Rogatko A. Patient specific dosing in a cancer phase I clinical trial. Statistics in medicine. 2001 Jul 30;20(14):2079-90.
 }
-
