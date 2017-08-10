@@ -53,6 +53,23 @@ sim <- trial_simulation(step_zero = step_zero,
                        alpha_strategy = "constant",
                        response_sim = response_sim)
 
+DLT <- 0
+npatients <- 1
+dose <- 30
+step_zero <- ewoc_d1extended(cbind(DLT, npatients) ~ dose, type = 'discrete',
+                           theta = 0.33, alpha = 0.25,
+                           min_dose = 0, max_dose = 100,
+                           dose_set = seq(0, 100, 20),
+                           rho_prior = matrix(1, ncol = 2, nrow = 1),
+                           mtd_prior = matrix(1, ncol = 2, nrow = 1),
+                           rounding = "nearest")
+response_sim <- response_d1extended(rho = c(0.05, 0.5), theta = 0.33,
+                                   min_dose = 10, max_dose = 50)
+sim <- trial_simulation(step_zero = step_zero,
+                       n_sim = 1, sample_size = 30,
+                       alpha_strategy = "constant",
+                       response_sim = response_sim)
+
 ### PH EWOC
 time <- 0
 status <- 0
@@ -78,4 +95,3 @@ sim <- trial_simulation(step_zero = step_zero,
 
 
 }
-
