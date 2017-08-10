@@ -3,12 +3,16 @@ next_dose.d1basic <- function(data){
 
   rho <- data$mcmc$rho
   gamma <- data$mcmc$gamma
-  mtd <-
-    inv_standard_dose(dose = gamma,
-                      min_dose = data$limits$min_dose,
-                      max_dose = data$limits$max_dose)
+  mtd <- inv_standard_dose(dose = gamma,
+                           min_dose = data$limits$min_dose,
+                           max_dose = data$limits$max_dose)
 
   next_dose <- quantile(mtd, probs = data$alpha)
+
+  next_dose <- ifelse(next_dose > data$limits$last_dose,
+                      data$limits$last_dose,
+                      ifelse(next_dose < data$limits$first_dose,
+                             data$limits$first_dose, next_dose))
 
     out <- list(mtd = mtd, next_dose = next_dose,
                 rho = rho, gamma = gamma,
@@ -24,12 +28,16 @@ next_dose.d1extended <- function(data){
 
   scale <- logit(rho[, 2]) - logit(rho[, 1])
   gamma <- (logit(data$theta) - logit(rho[, 1]))/scale
-  mtd <-
-    inv_standard_dose(dose = gamma,
-                      min_dose = data$limits$min_dose,
-                      max_dose = data$limits$max_dose)
+  mtd <- inv_standard_dose(dose = gamma,
+                           min_dose = data$limits$min_dose,
+                           max_dose = data$limits$max_dose)
 
   next_dose <- quantile(mtd, probs = data$alpha)
+
+  next_dose <- ifelse(next_dose > data$limits$last_dose,
+                      data$limits$last_dose,
+                      ifelse(next_dose < data$limits$first_dose,
+                             data$limits$first_dose, next_dose))
 
   out <- list(mtd = mtd, next_dose = next_dose,
               rho = rho, gamma = gamma, sample = data$mcmc$sample)
@@ -42,12 +50,16 @@ next_dose.d1ph <- function(data){
   gamma <- data$mcmc$gamma - 10^(-2)
   shape <- data$mcmc$shape
   rho <- data$mcmc$rho
-  mtd <-
-    inv_standard_dose(dose = gamma,
-                      min_dose = data$limits$min_dose,
-                      max_dose = data$limits$max_dose)
+  mtd <- inv_standard_dose(dose = gamma,
+                           min_dose = data$limits$min_dose,
+                           max_dose = data$limits$max_dose)
 
   next_dose <- quantile(mtd, probs = data$alpha)
+
+  next_dose <- ifelse(next_dose > data$limits$last_dose,
+                      data$limits$last_dose,
+                      ifelse(next_dose < data$limits$first_dose,
+                             data$limits$first_dose, next_dose))
 
   out <- list(mtd = mtd, next_dose = next_dose,
               rho = rho, shape = shape, gamma = gamma,
@@ -64,12 +76,22 @@ next_dose.d1multinomial <- function(data){
   mtd <- matrix(NA, nrow = nrow(gamma), ncol = ncol(gamma))
   next_dose <- rep(NA, ncol(gamma))
 
-  for (i in 1:length(data$levels_cov)){
-    mtd[, i] <-
-      inv_standard_dose(dose = gamma[, i],
-                        min_dose = data$limits$min_dose(data$levels_cov[i]),
-                        max_dose = data$limits$max_dose(data$levels_cov[i]))
+  for (i in 1:ncol(gamma)){
+
+    mtd[, i] <- inv_standard_dose(dose = gamma[, i],
+                                  min_dose =
+                                    data$limits$min_dose(data$levels_cov[i]),
+                                  max_dose =
+                                    data$limits$max_dose(data$levels_cov[i]))
     next_dose[i] <- quantile(mtd[, i], probs = data$alpha)
+
+    next_dose[i] <- ifelse(next_dose[i] >
+                           data$limits$last_dose(data$levels_cov[i]),
+                           data$limits$last_dose(data$levels_cov[i]),
+                           ifelse(next_dose[i] <
+                                  data$limits$first_dose(data$levels_cov[i]),
+                                  data$limits$first_dose(data$levels_cov[i]),
+                                  next_dose[i]))
   }
 
   out <- list(mtd = mtd, next_dose = next_dose,
@@ -92,6 +114,14 @@ next_dose.d1ordinal <- function(data){
                         min_dose = data$limits$min_dose(data$levels_cov[i]),
                         max_dose = data$limits$max_dose(data$levels_cov[i]))
     next_dose[i] <- quantile(mtd[, i], probs = data$alpha)
+
+    next_dose[i] <- ifelse(next_dose[i] >
+                           data$limits$last_dose(data$levels_cov[i]),
+                           data$limits$last_dose(data$levels_cov[i]),
+                           ifelse(next_dose[i] <
+                                  data$limits$first_dose(data$levels_cov[i]),
+                                  data$limits$first_dose(data$levels_cov[i]),
+                                  next_dose[i]))
   }
 
   out <- list(mtd = mtd, next_dose = next_dose,
