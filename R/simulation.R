@@ -122,14 +122,13 @@ trial_simulation.d1basic <- function(step_zero, n_sim, sample_size,
 
   for (i in 1:n_sim){
 
-    dlt <- as.numeric(step_zero$trial$response[, 1])
-    npatients <- as.numeric(step_zero$trial$response[, 2])
+    dlt <- as.numeric(step_zero$trial$response)
     dose <- as.numeric(step_zero$trial$design_matrix[, 2])
     alpha_sim[, 1:length(dose)] <- as.numeric(step_zero$trial$alpha)
 
     for (j in (length(dose)+1):n_dose) {
 
-      formula <- cbind(dlt[1:(j-1)], npatients) ~ dose[1:(j-1)]
+      formula <- dlt[1:(j-1)] ~ dose[1:(j-1)]
       resolution <- ifelse(!is.na(dlt), 1, 0)
 
       if (j <= sample_size){
@@ -163,7 +162,6 @@ trial_simulation.d1basic <- function(step_zero, n_sim, sample_size,
 
         dose[j] <- update$next_dose
         dlt[j] <- response_sim(dose = dose[j])
-        npatients[j] <- npatients[j-1]
         mtd_estimate <- update$next_dose
         rho_estimate <- median(update$rho)
       }
@@ -201,14 +199,13 @@ trial_simulation.d1extended <- function(step_zero, n_sim, sample_size,
 
   for (i in 1:n_sim){
 
-    dlt <- as.numeric(step_zero$trial$response[, 1])
-    npatients <- as.numeric(step_zero$trial$response[, 2])
+    dlt <- as.numeric(step_zero$trial$response)
     dose <- as.numeric(step_zero$trial$design_matrix[, 2])
     alpha_sim[, 1:length(dose)] <- as.numeric(step_zero$trial$alpha)
 
     for (j in (length(dose)+1):n_dose) {
 
-      formula <- cbind(dlt[1:(j-1)], npatients) ~ dose[1:(j-1)]
+      formula <- dlt[1:(j-1)] ~ dose[1:(j-1)]
       resolution <- ifelse(!is.na(dlt), 1, 0)
 
       if (j <= sample_size){
@@ -242,7 +239,6 @@ trial_simulation.d1extended <- function(step_zero, n_sim, sample_size,
 
         dose[j] <- update$next_dose
         dlt[j] <- response_sim(dose = dose[j])
-        npatients[j] <- npatients[j-1]
         mtd_estimate <- update$next_dose
         rho_estimate <- median(update$rho)
       }
@@ -280,8 +276,6 @@ trial_simulation.d1ph <- function(step_zero, n_sim, sample_size,
   mtd_sim <- matrix(NA, ncol = 1, nrow = n_sim)
   rho_sim <- matrix(NA, ncol = 1, nrow = n_sim)
   alpha_sim <- matrix(NA, ncol = sample_size, nrow = n_sim)
-
-
 
   for (i in 1:n_sim){
 

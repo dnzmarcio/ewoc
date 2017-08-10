@@ -5,7 +5,8 @@
 \title{Simulation of a trial using Escalation Over with Dose Control}
 \usage{
 trial_simulation(step_zero, n_sim, sample_size, alpha_strategy = "fixed",
-  alpha_rate = NULL, response_sim, stop_rule_sim = NULL)
+  alpha_rate = NULL, response_sim, covariable_sim = NULL,
+  stop_rule_sim = NULL)
 }
 \arguments{
 \item{step_zero}{an object from the classes 'ewoc_d1basic', 'ewoc_d1extended',
@@ -37,9 +38,8 @@ Escalation Over Dose Control (EWOC).
 \examples{
 \dontrun{
 DLT <- 0
-npatients <- 1
 dose <- 30
-step_zero <- ewoc_d1basic(cbind(DLT, npatients) ~ dose, type = 'discrete',
+step_zero <- ewoc_d1basic(DLT ~ dose, type = 'discrete',
                          theta = 0.33, alpha = 0.25,
                          min_dose = 0, max_dose = 100,
                          dose_set = seq(0, 100, 20),
@@ -54,9 +54,8 @@ sim <- trial_simulation(step_zero = step_zero,
                        response_sim = response_sim)
 
 DLT <- 0
-npatients <- 1
 dose <- 30
-step_zero <- ewoc_d1extended(cbind(DLT, npatients) ~ dose, type = 'discrete',
+step_zero <- ewoc_d1extended(DLT ~ dose, type = 'discrete',
                            theta = 0.33, alpha = 0.25,
                            min_dose = 0, max_dose = 100,
                            dose_set = seq(0, 100, 20),
@@ -90,6 +89,18 @@ sim <- trial_simulation(step_zero = step_zero,
                        n_sim = 1, sample_size = 30,
                        alpha_strategy = "increasing",
                        response_sim = response_sim)
+
+DLT <- rep(0, 1)
+group <- "B"
+dose <- rep(30, 1)
+step_zero <- ewoc_d1multinomial(DLT ~ dose | group,
+                               type = 'continuous',
+                               theta = 0.33, alpha = 0.25,
+                               min_dose = 30, max_dose = 50,
+                               levels_cov = c("A", "B", "C"),
+                               next_patient_cov = "A",
+                               mtd_prior = matrix(1, nrow = 3, ncol = 2),
+                               rho_prior = matrix(1, nrow = 1, ncol = 2))
 
 }
 
