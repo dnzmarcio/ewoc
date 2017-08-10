@@ -2,7 +2,7 @@
 % Please edit documentation in R/response.R
 \name{response_d1basic}
 \alias{response_d1basic}
-\title{Generating a response function based on the EWOC basic model}
+\title{Generating a binary response function based on the EWOC basic model}
 \usage{
 response_d1basic(rho, mtd, theta, min_dose, max_dose)
 }
@@ -22,5 +22,5 @@ the MTD.}
 the MTD.}
 }
 \description{
-Generating a response function based on the EWOC basic model
+Generating a binary response function based on the EWOC basic model
 }
