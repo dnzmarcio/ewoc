@@ -24,9 +24,8 @@
 #'\dontrun{
 ### Basic EWOC
 #'DLT <- 0
-#'npatients <- 1
 #'dose <- 30
-#'step_zero <- ewoc_d1basic(cbind(DLT, npatients) ~ dose, type = 'discrete',
+#'step_zero <- ewoc_d1basic(DLT ~ dose, type = 'discrete',
 #'                          theta = 0.33, alpha = 0.25,
 #'                          min_dose = 0, max_dose = 100,
 #'                          dose_set = seq(0, 100, 20),
@@ -35,6 +34,23 @@
 #'                          rounding = "nearest")
 #'response_sim <- response_d1basic(rho = 0.05, mtd = 20, theta = 0.33,
 #'                                 min_dose = 10, max_dose = 50)
+#'sim <- trial_simulation(step_zero = step_zero,
+#'                        n_sim = 1, sample_size = 30,
+#'                        alpha_strategy = "constant",
+#'                        response_sim = response_sim)
+#'
+### Extended EWOC
+#'DLT <- 0
+#'dose <- 30
+#'step_zero <- ewoc_d1extended(DLT ~ dose, type = 'discrete',
+#'                            theta = 0.33, alpha = 0.25,
+#'                            min_dose = 0, max_dose = 100,
+#'                            dose_set = seq(0, 100, 20),
+#'                            rho_prior = matrix(1, ncol = 2, nrow = 1),
+#'                            mtd_prior = matrix(1, ncol = 2, nrow = 1),
+#'                            rounding = "nearest")
+#'response_sim <- response_d1extended(rho = c(0.05, 0.5), theta = 0.33,
+#'                                    min_dose = 10, max_dose = 50)
 #'sim <- trial_simulation(step_zero = step_zero,
 #'                        n_sim = 1, sample_size = 30,
 #'                        alpha_strategy = "constant",
@@ -61,6 +77,18 @@
 #'                        alpha_strategy = "increasing",
 #'                        response_sim = response_sim)
 #'
+#'DLT <- rep(0, 1)
+#'group <- "B"
+#'dose <- rep(30, 1)
+#'step_zero <- ewoc_d1multinomial(DLT ~ dose | group,
+#'                                type = 'continuous',
+#'                                theta = 0.33, alpha = 0.25,
+#'                                min_dose = 30, max_dose = 50,
+#'                                levels_cov = c("A", "B", "C"),
+#'                                next_patient_cov = "A",
+#'                                mtd_prior = matrix(1, nrow = 3, ncol = 2),
+#'                                rho_prior = matrix(1, nrow = 1, ncol = 2))
+#'
 #'}
 #'
 #'
@@ -68,6 +96,7 @@
 trial_simulation <- function(step_zero, n_sim, sample_size,
                              alpha_strategy = "fixed",
                              alpha_rate = NULL, response_sim,
+                             covariable_sim = NULL,
                              stop_rule_sim = NULL){
   UseMethod("trial_simulation")
 }
@@ -122,6 +151,85 @@ trial_simulation.d1basic <- function(step_zero, n_sim, sample_size,
                                rho_prior = step_zero$trial$rho_prior,
                                mtd_prior = step_zero$trial$mtd_prior,
                                rounding = step_zero$trial$rounding)
+
+        if (!is.null(stop_rule_sim))
+          if (stop_rule_sim(update)){
+            dose[j:sample_size] <- NA
+            dlt[j:sample_size] <- NA
+            mtd_estimate <- NA
+            rho_estimate <- NA
+            break
+          }
+
+        dose[j] <- update$next_dose
+        dlt[j] <- response_sim(dose = dose[j])
+        npatients[j] <- npatients[j-1]
+        mtd_estimate <- update$next_dose
+        rho_estimate <- median(update$rho)
+      }
+    }
+
+    dose_sim[i, ] <- dose
+    dlt_sim[i, ] <- dlt
+    mtd_sim[i] <- mtd_estimate
+    rho_sim[i] <- rho_estimate
+  }
+
+  out <- list(dose_sim = dose_sim, dlt_sim = dlt_sim,
+              mtd_sim = mtd_sim, rho_sim = rho_sim, alpha_sim = alpha_sim)
+  return(out)
+}
+
+#'@export
+trial_simulation.d1extended <- function(step_zero, n_sim, sample_size,
+                                        alpha_strategy =
+                                          c("fixed", "increasing", "conditional"),
+                                        alpha_rate = 0.05,
+                                        response_sim = NULL,
+                                        stop_rule_sim = NULL){
+
+  if (is.null(response_sim))
+    stop("'response_sim' function should be defined.")
+
+  n_dose <- sample_size + 1
+  dose_sim <- matrix(NA, ncol = sample_size, nrow = n_sim)
+  dlt_sim <- matrix(NA, ncol = sample_size, nrow = n_sim)
+  mtd_sim <- matrix(NA, ncol = 1, nrow = n_sim)
+  rho_sim <- matrix(NA, ncol = 1, nrow = n_sim)
+  alpha_sim <- matrix(NA, ncol = sample_size, nrow = n_sim)
+
+
+  for (i in 1:n_sim){
+
+    dlt <- as.numeric(step_zero$trial$response[, 1])
+    npatients <- as.numeric(step_zero$trial$response[, 2])
+    dose <- as.numeric(step_zero$trial$design_matrix[, 2])
+    alpha_sim[, 1:length(dose)] <- as.numeric(step_zero$trial$alpha)
+
+    for (j in (length(dose)+1):n_dose) {
+
+      formula <- cbind(dlt[1:(j-1)], npatients) ~ dose[1:(j-1)]
+      resolution <- ifelse(!is.na(dlt), 1, 0)
+
+      if (j <= sample_size){
+        alpha_sim[i, j] <- feasibility(alpha = alpha_sim[i, 1:(j-1)],
+                                       strategy = alpha_strategy,
+                                       dlt = dlt[1:(j-1)],
+                                       resolution = resolution[1:(j-1)],
+                                       rate = alpha_rate)
+
+        update <- ewoc_d1extended(formula,
+                                  type = step_zero$trial$type,
+                                  theta = step_zero$trial$theta,
+                                  alpha = alpha_sim[i, j],
+                                  min_dose = step_zero$trial$min_dose,
+                                  max_dose = step_zero$trial$max_dose,
+                                  first_dose = step_zero$trial$first_dose,
+                                  last_dose = step_zero$trial$last_dose,
+                                  dose_set = step_zero$trial$dose_set,
+                                  rho_prior = step_zero$trial$rho_prior,
+                                  mtd_prior = step_zero$trial$mtd_prior,
+                                  rounding = step_zero$trial$rounding)
 
         if (!is.null(stop_rule_sim))
           if (stop_rule_sim(update)){
@@ -262,4 +370,97 @@ trial_simulation.d1ph <- function(step_zero, n_sim, sample_size,
 
   out <- list(time_sim = time_sim, dose_sim = dose_sim, dlt_sim = dlt_sim,
               mtd_sim = mtd_sim, rho_sim = rho_sim, alpha_sim = alpha_sim)
+}
+
+
+#'@export
+trial_simulation.d1multinomial <-
+  function(step_zero, n_sim, sample_size,
+           alpha_strategy = c("fixed", "increasing", "conditional"),
+           alpha_rate = 0.05,
+           response_sim = NULL,
+           covariable_sim = NULL,
+           stop_rule_sim = NULL){
+
+  if (is.null(response_sim))
+    stop("'response_sim' function should be defined.")
+
+  if (is.null(covariable_sim))
+    stop("'covariable_sim' function should be defined.")
+
+  n_dose <- sample_size + 1
+  dose_sim <- matrix(NA, ncol = sample_size, nrow = n_sim)
+  covariable_sim <- matrix(NA, ncol = sample_size, nrow = n_sim)
+  dlt_sim <- matrix(NA, ncol = sample_size, nrow = n_sim)
+  mtd_sim <- matrix(NA, ncol = 1, nrow = n_sim)
+  rho_sim <- matrix(NA, ncol = 1, nrow = n_sim)
+  alpha_sim <- matrix(NA, ncol = sample_size, nrow = n_sim)
+
+
+  for (i in 1:n_sim){
+
+    dlt <- as.numeric(step_zero$trial$response[, 1])
+    npatients <- as.numeric(step_zero$trial$response[, 2])
+    dose <- as.numeric(step_zero$trial$design_matrix[, 2])
+    covariable <- as.numeric(step_zero$trial$covariable)
+    alpha_sim[, 1:length(dose)] <- as.numeric(step_zero$trial$alpha)
+
+    for (j in (length(dose)+1):n_dose) {
+
+      formula <-
+        cbind(dlt[1:(j-1)], npatients) ~ dose[1:(j-1)] | covariable[1:(j-1)]
+      resolution <- ifelse(!is.na(dlt), 1, 0)
+
+      if (j <= sample_size){
+        alpha_sim[i, j] <- feasibility(alpha = alpha_sim[i, 1:(j-1)],
+                                       strategy = alpha_strategy,
+                                       dlt = dlt[1:(j-1)],
+                                       resolution = resolution[1:(j-1)],
+                                       rate = alpha_rate)
+        covariable[j:(j + npatients)] <- covariable_sim(n = npatients)
+
+        update <- ewoc_d1multinomial(formula,
+                                     type = step_zero$trial$type,
+                                     theta = step_zero$trial$theta,
+                                     alpha = alpha_sim[i, j],
+                                     min_dose = step_zero$trial$min_dose,
+                                     max_dose = step_zero$trial$max_dose,
+                                     first_dose = step_zero$trial$first_dose,
+                                     last_dose = step_zero$trial$last_dose,
+                                     dose_set = step_zero$trial$dose_set,
+                                     levels_cov = step_zero$trial$levels_cov,
+                                     next_patient_cov = covariable[j],
+                                     rho_prior = step_zero$trial$rho_prior,
+                                     mtd_prior = step_zero$trial$mtd_prior,
+                                     rounding = step_zero$trial$rounding)
+
+        if (!is.null(stop_rule_sim))
+          if (stop_rule_sim(update)){
+            dose[j:sample_size] <- NA
+            dlt[j:sample_size] <- NA
+            covariable[j:sample_size] <- NA
+            mtd_estimate <- NA
+            rho_estimate <- NA
+            break
+          }
+
+        dose[j] <- update$next_dose
+        dlt[j] <- response_sim(dose = dose[j], cov = covariable[j])
+        npatients[j] <- npatients[j-1]
+        mtd_estimate <- update$next_dose
+        rho_estimate <- median(update$rho)
+      }
+    }
+
+    dose_sim[i, ] <- dose
+    dlt_sim[i, ] <- dlt
+    covariable_sim[i, ] <- covariable
+    mtd_sim[i] <- mtd_estimate
+    rho_sim[i] <- rho_estimate
+  }
+
+  out <- list(dose_sim = dose_sim, covariable_sim = covariable_sim,
+              dlt_sim = dlt_sim, mtd_sim = mtd_sim, rho_sim = rho_sim,
+              alpha_sim = alpha_sim)
+  return(out)
 }
