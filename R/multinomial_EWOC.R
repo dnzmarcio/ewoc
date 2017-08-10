@@ -57,7 +57,6 @@
 #'
 #'DLT <- rep(0, 2)
 #'group <- c("B", "C")
-#'group <- factor(group, levels = c("A", "B", "C"))
 #'dose <- rep(30, 2)
 #'test <- ewoc_d1multinomial(DLT ~ dose | group,
 #'                           type = 'continuous',
@@ -91,13 +90,13 @@ ewoc_d1multinomial <- function(formula, theta, alpha,
 
   data_base <- model.frame(formula, na.action = na.exclude,
                            drop.unused.levels = FALSE)
+  data_base[, 3] <- factor(data_base[, 3], levels = levels_cov)
 
   dose_matrix <- model.matrix(formula, data_base, rhs = 1)
 
   if (length(formula)[2] == 1) {
     stop("This design requires a multinomial covariable.")
   } else {
-    nlc <- length(levels_cov)
     covariable_matrix <- model.matrix(formula, data_base, rhs = 2)
     index <- apply(covariable_matrix, 1, function(x) max(which(x != 0)))
     covariable <- levels_cov[index]

@@ -92,7 +92,6 @@ library(ewoc)
 
 DLT <- rep(0, 2)
 group <- c("B", "C")
-group <- factor(group, levels = c("A", "B", "C"))
 dose <- rep(30, 2)
 test <- ewoc_d1multinomial(DLT ~ dose | group,
                           type = 'continuous',
