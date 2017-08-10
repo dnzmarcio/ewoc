@@ -5,7 +5,7 @@ summary.ewoc_d1basic <- function(object, ..., pdlt = NULL, print = TRUE){
                     max_dose = object$trial$max_dose,
                     theta = object$trial$theta,
                     alpha = object$trial$alpha,
-                    n = nrow(object$trial$response))
+                    n = length(object$trial$response))
   colnames(p00) <- c("Minimum Dose", "Maximum Dose", "Theta",
                        "Alpha", "Number of patients")
 
@@ -59,7 +59,7 @@ summary.ewoc_d1extended <- function(object, ..., pdlt = NULL, print = TRUE){
                     max_dose = object$trial$max_dose,
                     theta = object$trial$theta,
                     alpha = object$trial$alpha,
-                    n = nrow(object$trial$response))
+                    n = length(object$trial$response))
   colnames(p00) <- c("Minimum Dose", "Maximum Dose", "Theta",
                        "Alpha", "Number of patients")
 
@@ -112,7 +112,7 @@ summary.ewoc_d1ph <- function(object, ..., pdlt = NULL, print = TRUE){
                     max_dose = object$trial$max_dose,
                     theta = object$trial$theta,
                     alpha = object$trial$alpha,
-                    n = nrow(object$trial$response))
+                    n = length(object$trial$response))
   colnames(p00) <- c("Minimum Dose", "Maximum Dose", "Theta",
                        "Alpha", "Number of patients")
 

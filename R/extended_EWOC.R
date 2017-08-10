@@ -6,8 +6,8 @@
 #'
 #'@param formula an object of class \code{\link[Formula]{Formula}}: a symbolic
 #'description of the model to be fitted with only one regressor term
-#'corresponding to the dose for the right side and a matrix as a response
-#'containing number of DLT and number of patients for the left side.
+#'corresponding to the dose for the right side and a numeric vector as a response
+#'containing number of DLT for the left side.
 #'@param theta a numerical value defining the proportion of expected patients
 #'to experience a medically unacceptable, dose-limiting toxicity (DLT) if
 #'administered the MTD.
@@ -45,10 +45,9 @@
 #'
 #'\dontrun{
 #'DLT <- 0
-#'npatients <- 1
 #'dose <- 30
 #'
-#'test <- ewoc_d1extended(cbind(DLT, npatients) ~ dose, type = 'discrete',
+#'test <- ewoc_d1extended(DLT ~ dose, type = 'discrete',
 #'                        theta = 0.33, alpha = 0.25,
 #'                        dose_set = c(30, 40, 50),
 #'                        min_dose = 20, max_dose = 100,
@@ -86,11 +85,6 @@ ewoc_d1extended <- function(formula, theta, alpha,
   colnames(design_matrix) <- c("intercept", "dose")
 
   response <- model.response(data_base)
-
-  if (!is.matrix(response)) {
-    stop("The left side of the formula should be a matrix:
-           number of DLT and number of patients for each dose!\n")
-  }
 
   if (length(type) > 1 | !(type == "continuous" | type == "discrete"))
     stop("'type' should be either 'continuous' or 'discrete'.")
@@ -165,7 +159,7 @@ ewoc_jags.d1extended <- function(data, n_adapt, burn_in,
   jfun <- function() {
 
     for(i in 1:nobs) {
-      dlt[i] ~ dbin(p[i], npatients[i])
+      dlt[i] ~ dbin(p[i], 1)
       p[i] <- ifelse(1/(1 + exp(-lp[i])) == 1, 0.99, 1/(1 + exp(-lp[i])))
       lp[i] <- inprod(design_matrix[i, ], beta)
     }
@@ -189,10 +183,9 @@ ewoc_jags.d1extended <- function(data, n_adapt, burn_in,
   R2WinBUGS::write.model(jfun, tc1)
   close(tc1)
 
-  data_base <- list('dlt' = data$response[, 1],
-                    'npatients' = data$response[, 2],
+  data_base <- list('dlt' = data$response,
                     'design_matrix' = data$design_matrix,
-                    'nobs' = length(data$response[, 1]),
+                    'nobs' = length(data$response),
                     'rho_prior' = data$rho_prior,
                     'theta' = data$theta,
                     'lb' = lb)
