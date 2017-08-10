@@ -142,11 +142,29 @@ response_d1ph <- function(rho, mtd, theta, min_dose, max_dose,
 response_d1multinomial <- function(rho, mtd, theta, min_dose, max_dose,
                                    levels_cov) {
 
+  if (!is.function(min_dose)){
+    min_dose_value <- min_dose
+    min_dose <- function(cov){
+      out <- min_dose_value
+      return(out)
+    }
+  }
+
+  if (!is.function(max_dose)){
+    max_dose_value <- max_dose
+    max_dose <- function(cov){
+      out <- max_dose_value
+      return(out)
+    }
+  }
+
   response_sim <- function(dose, cov){
 
-    gamma <- standard_dose(dose = mtd,
-                           min_dose = min_dose(cov),
-                           max_dose = max_dose(cov))
+    for (i in 1:length(levels_cov)){
+      gamma <- standard_dose(dose = mtd,
+                             min_dose = min_dose(levels_cov[i]),
+                             max_dose = max_dose(levels_cov[i]))
+    }
 
     dose <- standard_dose(dose = dose,
                           min_dose = min_dose(cov),
@@ -155,14 +173,15 @@ response_d1multinomial <- function(rho, mtd, theta, min_dose, max_dose,
     beta <- rep(NA, length(mtd))
     beta[1] <- logit(rho[1])
     beta[2] <- (logit(theta) - logit(rho[1]))/gamma[1]
-    for (i in 3:(np+1)) {
+    for (i in 3:(length(mtd)+1)) {
       beta[i] <- logit(theta) - logit(rho[1]) -
         gamma[i-1]*(logit(theta) - beta[1])/gamma[i-2]
     }
 
     cov <- factor(cov, levels = levels_cov)
+    cov <- matrix(model.matrix(~ cov)[-1], nrow = 1)
 
-    design_matrix <- cbind(1, dose, model.matrix(~ cov))
+    design_matrix <- cbind(1, dose, cov)
     lp <- design_matrix %*% beta
     p <- as.numeric(plogis(lp))
     out <- rbinom(n = length(dose), size = 1, prob = p)

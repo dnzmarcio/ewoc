@@ -77,6 +77,9 @@
 #'                        alpha_strategy = "increasing",
 #'                        response_sim = response_sim)
 #'
+#'### Multinomial EWOC
+#'
+#'
 #'DLT <- rep(0, 1)
 #'group <- "B"
 #'dose <- rep(30, 1)
@@ -88,6 +91,24 @@
 #'                                next_patient_cov = "A",
 #'                                mtd_prior = matrix(1, nrow = 3, ncol = 2),
 #'                                rho_prior = matrix(1, nrow = 1, ncol = 2))
+#'
+#'response_sim <- response_d1multinomial(rho = 0.05, mtd = c(20, 30, 50),
+#'                                       theta = 0.33,
+#'                                       min_dose = 10, max_dose = 100,
+#'                                       levels_cov = c("A", "B", "C"))
+#'
+#'covariable_sim <- function(n){
+#'  p <- c(0.5, 0.3, 0.2)
+#'  u <- runif(n, 0, 1)
+#'  out <- ifelse(u < p[1], "A", ifelse(u < p[2], "B", "C"))
+#'  return(out)
+#'}
+#'
+#'sim <- trial_simulation(step_zero = step_zero,
+#'                        n_sim = 1, sample_size = 30,
+#'                        alpha_strategy = "increasing",
+#'                        response_sim = response_sim,
+#'                        covariable_sim = covariable_sim)
 #'
 #'}
 #'
@@ -393,16 +414,14 @@ trial_simulation.d1multinomial <-
 
   for (i in 1:n_sim){
 
-    dlt <- as.numeric(step_zero$trial$response[, 1])
-    npatients <- as.numeric(step_zero$trial$response[, 2])
+    dlt <- as.numeric(step_zero$trial$response)
     dose <- as.numeric(step_zero$trial$design_matrix[, 2])
-    covariable <- as.numeric(step_zero$trial$covariable)
+    covariable <- step_zero$trial$covariable
     alpha_sim[, 1:length(dose)] <- as.numeric(step_zero$trial$alpha)
 
     for (j in (length(dose)+1):n_dose) {
 
-      formula <-
-        cbind(dlt[1:(j-1)], npatients) ~ dose[1:(j-1)] | covariable[1:(j-1)]
+      formula <- dlt[1:(j-1)] ~ dose[1:(j-1)] | covariable[1:(j-1)]
       resolution <- ifelse(!is.na(dlt), 1, 0)
 
       if (j <= sample_size){
@@ -411,7 +430,7 @@ trial_simulation.d1multinomial <-
                                        dlt = dlt[1:(j-1)],
                                        resolution = resolution[1:(j-1)],
                                        rate = alpha_rate)
-        covariable[j:(j + npatients)] <- covariable_sim(n = npatients)
+        covariable[j] <- covariable_sim(n = 1)
 
         update <- ewoc_d1multinomial(formula,
                                      type = step_zero$trial$type,
