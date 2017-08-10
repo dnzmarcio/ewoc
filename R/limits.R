@@ -76,27 +76,15 @@ limits_d1cov <- function(first_dose, last_dose, min_dose, max_dose, type,
       }
     }
     max_dose <- Vectorize(max_dose)
-  } else {
-
-    if (type == "discrete"){
-      if (rounding == "down"){
-        aux_max_dose <- max_dose
-        max_dose <- function(covariable){
-          out <- aux_max_dose(covariable) + 1
-          return(out)
-        }
-      }
-    }
   }
-
 
   if (any(min_dose(covariable) > max_dose(covariable)))
     stop("'min_dose' should be smaller than the 'max_dose'.")
 
   if (is.null(first_dose) | is.null(last_dose)) {
     if (type == "continuous"){
-      first_dose <- min_dose(covariable)
-      last_dose <- max_dose(covariable)
+      first_dose <- min_dose
+      last_dose <- max_dose
       warning("'first_dose' and 'last_dose' were defined as the minimum and maximum doses, respectively.")
     }
     if (type == "discrete") {
