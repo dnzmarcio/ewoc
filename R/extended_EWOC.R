@@ -206,12 +206,14 @@ ewoc_jags.d1extended <- function(data, n_adapt, burn_in,
                   n.adapt = n_adapt)
   close(tc2)
   update(j, burn_in)
-  sample <- rjags::coda.samples(j, variable.names = c("rho"),
+  sample <- rjags::coda.samples(j, variable.names = c("beta", "rho"),
                                 n.iter = n_mcmc, thin = n_thin,
                                 n.chains = n_chains)
-  rho <- sample[[1]]
 
-  out <- list(rho = rho, sample = sample)
+  beta <- sample[[1]][, 1:2]
+  rho <- sample[[1]][, 3:4]
+
+  out <- list(beta = beta, rho = rho, sample = sample)
 
   return(out)
 }

@@ -288,38 +288,30 @@ ewoc_jags.d1ph <- function(data, n_adapt, burn_in,
 
   if (data$distribution == "weibull"){
     sample <- rjags::coda.samples(j,
-                                  variable.names =  c("gamma", "rho", "shape"),
+                                  variable.names =
+                                    c("beta", "gamma", "rho", "shape"),
                                   n.iter = n_mcmc, thin = n_thin,
                                   n.chains = n_chains)
 
-    gamma <- sample[[1]][, 1]
-    rho <- sample[[1]][, 2]
-    shape <- sample[[1]][, 3]
+    beta <- sample[[1]][, 1:2]
+    gamma <- sample[[1]][, 3]
+    rho <- sample[[1]][, 4]
+    shape <- sample[[1]][, 5]
 
-    out <- list(gamma = gamma, rho = rho, shape = shape, sample = sample)
+    out <- list(beta = beta, gamma = gamma, rho = rho, shape = shape,
+                sample = sample)
   } else {
-    sample <- rjags::coda.samples(j, variable.names =  c("gamma", "rho"),
+    sample <- rjags::coda.samples(j, variable.names =  c("beta", "gamma", "rho"),
                                   n.iter = n_mcmc, thin = n_thin,
                                   n.chains = n_chains)
 
-    gamma <- sample[[1]][, 1]
-    rho <- sample[[1]][, 2]
+    beta <- sample[[1]][, 1:2]
+    gamma <- sample[[1]][, 3]
+    rho <- sample[[1]][, 4]
 
-    out <- list(gamma = gamma, rho = rho, sample = sample)
+    out <- list(beta = beta, gamma = gamma, rho = rho, sample = sample)
   }
   return(out)
 }
 
-
-
-#'@export
-rho_ph <- function(rho0, true_mtd, min_dose, max_dose, theta) {
-
-  p0 <- (max_dose - min_dose)/(true_mtd - min_dose)
-  p1 <- (log(1 - theta)/log(1 - rho0))^p0
-  p2 <- log(1 - rho0)*p1
-  out <- 1 - exp(p2)
-
-  return(out)
-}
 

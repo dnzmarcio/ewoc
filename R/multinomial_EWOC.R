@@ -147,6 +147,7 @@ ewoc_d1multinomial <- function(formula, theta, alpha,
                   theta = theta, alpha = alpha, limits = limits,
                   dose_set = dose_set, order = order,
                   rho_prior = rho_prior, mtd_prior = mtd_prior,
+                  next_patient_cov = next_patient_cov,
                   levels_cov = levels_cov,
                   type = type, rounding = rounding)
   class(my_data) <- "d1multinomial"
@@ -259,13 +260,15 @@ ewoc_jags.d1multinomial <- function(data, n_adapt, burn_in,
                          n.adapt = n_adapt)
   close(tc2)
   update(j, burn_in)
-  sample <- rjags::coda.samples(j, variable.names =  c("gamma", "rho"),
+  sample <- rjags::coda.samples(j, variable.names =  c("beta", "gamma", "rho"),
                                 n.iter = n_mcmc, thin = n_thin,
                                 n.chains = n_chains)
-  gamma <- sample[[1]][, 1:(ncol(data$design_matrix) - 1)]
-  rho <- sample[[1]][, ncol(data$design_matrix)]
+  beta <- sample[[1]][, 1:ncol(data$design_matrix)]
+  gamma <- sample[[1]][, (ncol(data$design_matrix) + 1):
+                         (2*ncol(data$design_matrix) - 1)]
+  rho <- sample[[1]][, 2*ncol(data$design_matrix)]
 
-  out <- list(gamma = gamma, rho = rho, sample = sample)
+  out <- list(beta = beta, gamma = gamma, rho = rho, sample = sample)
 
   return(out)
 }

@@ -205,13 +205,14 @@ ewoc_jags.d1basic <- function(data, n_adapt, burn_in,
                          n.adapt = n_adapt)
   close(tc2)
   update(j, burn_in)
-  sample <- rjags::coda.samples(j, variable.names = c("gamma", "rho"),
+  sample <- rjags::coda.samples(j, variable.names = c("beta", "gamma", "rho"),
                                 n.iter = n_mcmc, thin = n_thin,
                                 n.chains = n_chains)
 
-  gamma <- sample[[1]][, 1]
-  rho <- sample[[1]][, 2]
-  out <- list(gamma = gamma, rho = rho, sample = sample)
+  beta <- sample[[1]][, 1:2]
+  gamma <- sample[[1]][, 3]
+  rho <- sample[[1]][, 4]
+  out <- list(beta = beta, gamma = gamma, rho = rho, sample = sample)
 
   return(out)
 }
