@@ -70,8 +70,8 @@
 #'                       distribution = 'exponential',
 #'                       rounding = 'nearest')
 #'response_sim <- response_d1ph(rho = 0.05, mtd = 40, theta = 0.33,
-#'                                 min_dose = 30, max_dose = 50,
-#'                                 tau = 10, distribution = "exponential")
+#'                              min_dose = 30, max_dose = 50,
+#'                              tau = 10, distribution = "exponential")
 #'sim <- trial_simulation(step_zero = step_zero,
 #'                        n_sim = 1, sample_size = 30,
 #'                        alpha_strategy = "increasing",
@@ -459,7 +459,6 @@ trial_simulation.d1multinomial <-
 
         dose[j] <- update$next_dose
         dlt[j] <- response_sim(dose = dose[j], cov = covariable[j])
-        npatients[j] <- npatients[j-1]
         mtd_estimate <- update$next_dose
         rho_estimate <- median(update$rho)
       }
