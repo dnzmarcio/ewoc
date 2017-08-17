@@ -134,7 +134,7 @@ next_dose.d1multinomial <- function(data){
   cov <- matrix(model.matrix(~ cov)[-1], nrow = 1)
 
   temp <- cbind(1, next_gamma, cov)
-  pdlt <- as.numeric(plogis(temp%*%t(beta)))
+  pdlt <- as.matrix(plogis(temp%*%t(beta)))
 
 
   out <- list(mtd = mtd, pdlt = pdlt, next_dose = next_dose,
@@ -146,15 +146,38 @@ next_dose.d1multinomial <- function(data){
 next_dose.d1continuous <- function(data){
 
   rho <- data$mcmc$rho
-  gamma <- data$mcmc$gamma
+  gamma_max <- data$mcmc$gamma_max
+  beta <- data$mcmc$beta
 
-  mtd <- inv_standard_dose(dose = gamma,
-                           min_dose =
-                             data$limits$min_dose(data$next_patient_cov),
-                           max_dose =
-                             data$limits$max_dose(data$next_patient_cov))
+  mtd <- matrix(NA, ncol = length(data$next_patient_cov),
+                nrow = length(gamma_max))
+  gamma <- matrix(NA, ncol = length(data$next_patient_cov),
+                  nrow = length(gamma_max))
+  next_dose <- rep(NA, length(data$next_patient_cov))
+  next_gamma <- rep(NA, length(data$next_patient_cov))
 
-  next_dose <- quantile(mtd, probs = data$alpha)
+
+  for (i in 1:length(data$next_patient_cov)){
+    index <- which(data$next_patient_cov[i] == data$levels_cov)
+
+    cov <- (data$next_patient_cov[i] - data$min_cov)/(data$max_cov - data$min_cov)
+
+    gamma[, i] <- (gamma_max/(logit(data$theta) - logit(rho[, 2])))*
+      (logit(data$theta) - logit(rho[, 1]) -
+         cov*(logit(rho[, 2]) - logit(rho[, 1])))
+
+    mtd[, i] <- inv_standard_dose(dose = gamma[, i],
+                                  min_dose =
+                                    data$limits$min_dose(data$next_patient_cov[i]),
+                                  max_dose =
+                                    data$limits$max_dose(data$next_patient_cov[i]))
+
+    next_dose[i] <- quantile(mtd[, i], probs = data$alpha)
+    next_gamma[i] <- quantile(gamma[, i], probs = data$alpha)
+  }
+
+  temp <- cbind(1, next_gamma, cov)
+  pdlt <- as.matrix(plogis(temp%*%t(beta)))
 
   out <- list(mtd = mtd, next_dose = next_dose,
               rho = rho, gamma = gamma, sample = data$mcmc$sample)

@@ -138,9 +138,10 @@ response_d1ph <- function(rho, mtd, theta, min_dose, max_dose,
 #'the MTD.
 #'@param max_dose a numerical value defining the upper bound of the support of
 #'the MTD.
+#'@param levels_cov a character vector of the possible values for the ordinal covariable.
 #'@export
-response_d1multinomial <- function(rho, mtd, theta, min_dose, max_dose,
-                                   levels_cov) {
+response_d1multinomial <- function(rho, mtd, theta,
+                                   min_dose, max_dose, levels_cov) {
 
   if (!is.function(min_dose)){
     min_dose_value <- min_dose
@@ -180,6 +181,76 @@ response_d1multinomial <- function(rho, mtd, theta, min_dose, max_dose,
 
     cov <- factor(cov, levels = levels_cov)
     cov <- matrix(model.matrix(~ cov)[-1], nrow = 1)
+
+    design_matrix <- cbind(1, dose, cov)
+    lp <- design_matrix %*% beta
+    p <- as.numeric(plogis(lp))
+    out <- rbinom(n = length(dose), size = 1, prob = p)
+    return(out)
+  }
+
+  out <- response_sim
+  return(out)
+}
+
+#'Generating a binary response function based on the EWOC model with a
+#'continuous covariable
+#
+#'@param rho a numerical value indicating the true value of the parameter rho.
+#'@param mtd a numerical value indicating the true value of the parameter mtd
+#'when the covariable is equal to \code{max_cov}.
+#'@param theta a numerical value defining the proportion of expected patients
+#'to experience a medically unacceptable, dose-limiting toxicity (DLT) if
+#'administered the MTD.
+#'@param min_dose a numerical value defining the lower bound of the support of
+#'the MTD.
+#'@param max_dose a numerical value defining the upper bound of the support of
+#'the MTD.
+#'@param min_cov a numerical value defining the lower bound of the support of
+#'the MTD.
+#'@param max_cov a numerical value defining the upper bound of the support of
+#'the MTD.
+#'@export
+response_d1continuous <- function(rho, mtd, theta, direction,
+                                  min_dose, max_dose, min_cov, max_cov) {
+
+  if (!is.function(min_dose)){
+    min_dose_value <- min_dose
+    min_dose <- function(cov){
+      out <- min_dose_value
+      return(out)
+    }
+  }
+
+  if (!is.function(max_dose)){
+    max_dose_value <- max_dose
+    max_dose <- function(cov){
+      out <- max_dose_value
+      return(out)
+    }
+  }
+
+  gamma <- standard_dose(dose = mtd,
+                         min_dose = min_dose(max_cov),
+                         max_dose = max_dose(max_cov))
+
+  response_sim <- function(dose, cov){
+
+    dose <- standard_dose(dose = dose,
+                          min_dose = min_dose(cov),
+                          max_dose = max_dose(cov))
+
+    if (direction == "positive"){
+      beta[1] <- logit(rho[1])
+      beta[2] <- (logit(theta) - logit(rho[2]))/gamma
+      beta[3] <- logit(rho[2]) - logit(rho[1])
+    } else {
+      beta[1] <- logit(rho[1])
+      beta[2] <- -(logit(theta) - logit(rho[2]))/gamma
+      beta[3] <- logit(rho[2]) - logit(rho[1])
+    }
+
+    cov <- (cov - min_cov)/(max_cov - min_cov)
 
     design_matrix <- cbind(1, dose, cov)
     lp <- design_matrix %*% beta

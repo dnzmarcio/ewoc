@@ -7,8 +7,7 @@
 #'@param formula an object of class \code{\link[Formula]{Formula}}: a symbolic
 #'description of the model to be fitted with two regressor parts separated by `|`
 #'corresponding to the dose and covariable, respectively, for the right side and
-#'a matrix as a response containing number of DLT and number of patients for
-#'the left side.
+#'a numeric vector as a response containing number of DLT for the left side.
 #'@param theta a numerical value defining the proportion of expected patients
 #'to experience a medically unacceptable, dose-limiting toxicity (DLT) if
 #'administered the MTD.
@@ -53,6 +52,24 @@
 #'@return \code{trial} a list of the trial conditions.
 #'
 #'@references Babb JS, Rogatko A. Patient specific dosing in a cancer phase I clinical trial. Statistics in medicine. 2001 Jul 30;20(14):2079-90.
+#'
+#'@examples
+#'DLT <- 0
+#'npatients <- 1
+#'covariable <- 20
+#'dose <- 30
+#'next_patient_cov <- 99
+#'test <- ewoc_d1continuous(DLT ~ dose | covariable,
+#'                          type = 'continuous',
+#'                          next_patient_cov = next_patient_cov,
+#'                          theta = 0.33, alpha = 0.25,
+#'                          min_dose = 30, max_dose = 50,
+#'                          min_cov = 0, max_cov = 100,
+#'                          direction = "positive",
+#'                          mtd_prior = matrix(1, nrow = 1, ncol = 2),
+#'                          rho_prior = matrix(1, nrow = 2, ncol = 2))
+#'summary(test)
+#'
 #'
 #'@export
 ewoc_d1continuous <- function(formula, theta, alpha,
@@ -165,17 +182,14 @@ ewoc_jags.d1continuous <- function(data, n_adapt, burn_in,
     jfun <- function() {
 
       for(i in 1:nobs) {
-        dlt[i] ~ dbin(p[i], npatients[i])
+        dlt[i] ~ dbin(p[i], 1)
         p[i] <- 1/(1 + exp(-lp[i]))
         lp[i] <- inprod(design_matrix[i, ], beta)
       }
 
-      beta[1] <- logit(rho[1]) - (min_cov/(max_cov - min_cov))*(logit(rho[2]) -
-                                                                  logit(rho[1]))
-      beta[2] <- logit(theta) - logit(rho[1]) -
-        ((next_patient_cov - max_cov)/(max_cov - min_cov))*(logit(rho[2]) -
-                                                              logit(rho[1]))
-      beta[3] <- (logit(rho[2]) - logit(rho[1]))/(max_cov - min_cov)
+      beta[1] <- logit(rho[1])
+      beta[2] <- (logit(theta) - logit(rho[2]))/gamma
+      beta[3] <- logit(rho[2]) - logit(rho[1])
 
       rho[1] <- rho[2]*r[1]
       r[1] ~ dbeta(rho_prior[1, 1], rho_prior[1, 2])
@@ -189,22 +203,19 @@ ewoc_jags.d1continuous <- function(data, n_adapt, burn_in,
     jfun <- function() {
 
       for(i in 1:nobs) {
-        dlt[i] ~ dbin(p[i], npatients[i])
+        dlt[i] ~ dbin(p[i], 1)
         p[i] <- 1/(1 + exp(-lp[i]))
         lp[i] <- inprod(design_matrix[i, ], beta)
       }
 
-      beta[1] <- logit(rho[1]) - (min_cov/(max_cov - min_cov))*(logit(rho[2]) -
-                                                                  logit(rho[1]))
-      beta[2] <- logit(theta) - logit(rho[1]) +
-        ((next_patient_cov - max_cov)/(max_cov - min_cov))*(logit(rho[2]) -
-                                                              logit(rho[1]))
-      beta[3] <- -(logit(rho[2]) - logit(rho[1]))/(max_cov - min_cov)
+      beta[1] <- logit(rho[1])
+      beta[2] <- (logit(theta) - logit(rho[2]))/gamma
+      beta[3] <- logit(rho[1]) - logit(rho[2])
 
-      rho[1] <- rho[2]*r[1]
-      r[1] ~ dbeta(rho_prior[1, 1], rho_prior[1, 2])
-      rho[2] <- theta*r[2]
+      rho[2] <- rho[1]*r[2]
       r[2] ~ dbeta(rho_prior[2, 1], rho_prior[2, 2])
+      rho[1] <- theta*r[1]
+      r[1] ~ dbeta(rho_prior[1, 1], rho_prior[1, 2])
       gamma <- g[1]
       g[1] ~ dbeta(mtd_prior[1, 1], mtd_prior[1, 2])
     }
@@ -214,13 +225,10 @@ ewoc_jags.d1continuous <- function(data, n_adapt, burn_in,
   R2WinBUGS::write.model(jfun, tc1)
   close(tc1)
 
-  data_base <- list('dlt' = data$response[, 1],
-                    'npatients' = data$response[, 2],
+  data_base <- list('dlt' = data$response,
                     'design_matrix' = data$design_matrix,
-                    'theta' = data$theta, 'nobs' = length(data$response[, 1]),
-                    'mtd_prior' = data$mtd_prior, 'rho_prior' = data$rho_prior,
-                    'min_cov' = data$min_cov, 'max_cov' = data$max_cov,
-                    'next_patient_cov' = data$next_patient_cov)
+                    'theta' = data$theta, 'nobs' = length(data$response),
+                    'mtd_prior' = data$mtd_prior, 'rho_prior' = data$rho_prior)
 
   inits <- function() {
     out <- list(r = rbeta(nrow(data$rho_prior),
@@ -239,14 +247,15 @@ ewoc_jags.d1continuous <- function(data, n_adapt, burn_in,
                          n.adapt = n_adapt)
   close(tc2)
   update(j, burn_in)
-  sample <- rjags::coda.samples(j, variable.names = c("gamma", "rho"),
+  sample <- rjags::coda.samples(j, variable.names = c("beta", "gamma", "rho"),
                                 n.iter = n_mcmc, thin = n_thin,
                                 n.chains = n_chains)
-  gamma <- sample[[1]][, 1]
-  rho <- sample[[1]][, 2:3]
 
+  beta <- sample[[1]][, 1:3]
+  gamma_max <- sample[[1]][, 4]
+  rho <- sample[[1]][, 5:6]
 
-  out <- list(gamma = gamma, rho = rho, sample = sample)
+  out <- list(beta = beta, gamma_max = gamma_max, rho = rho, sample = sample)
 
   return(out)
 }

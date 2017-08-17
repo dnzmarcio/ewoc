@@ -15,8 +15,7 @@ ewoc_d1continuous(formula, theta, alpha, mtd_prior, rho_prior, min_dose,
 \item{formula}{an object of class \code{\link[Formula]{Formula}}: a symbolic
 description of the model to be fitted with two regressor parts separated by `|`
 corresponding to the dose and covariable, respectively, for the right side and
-a matrix as a response containing number of DLT and number of patients for
-the left side.}
+a numeric vector as a response containing number of DLT for the left side.}
 
 \item{theta}{a numerical value defining the proportion of expected patients
 to experience a medically unacceptable, dose-limiting toxicity (DLT) if
@@ -90,6 +89,25 @@ See \code{\link[rjags]{adapt}} for details.}
 Finding the next dose for a phase I clinical trial based on Escalation Over
 Dose Control (EWOC) design considering classical parametrization
 for binary response with continuous covariable.
+}
+\examples{
+DLT <- 0
+npatients <- 1
+covariable <- 20
+dose <- 30
+next_patient_cov <- 99
+test <- ewoc_d1continuous(DLT ~ dose | covariable,
+                         type = 'continuous',
+                         next_patient_cov = next_patient_cov,
+                         theta = 0.33, alpha = 0.25,
+                         min_dose = 30, max_dose = 50,
+                         min_cov = 0, max_cov = 100,
+                         direction = "positive",
+                         mtd_prior = matrix(1, nrow = 1, ncol = 2),
+                         rho_prior = matrix(1, nrow = 2, ncol = 2))
+summary(test)
+
+
 }
 \references{
 Babb JS, Rogatko A. Patient specific dosing in a cancer phase I clinical trial. Statistics in medicine. 2001 Jul 30;20(14):2079-90.
