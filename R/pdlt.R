@@ -90,9 +90,6 @@ pdlt_d1multinomial <- function(rho, mtd, theta, min_dose, max_dose, levels_cov) 
                           min_dose = min_dose(cov),
                           max_dose = max_dose(cov))
 
-    rho <- parm[which(parm.names == "rho")]
-    mtd <- parm[which(parm.names == "mtd")]
-
     beta <- rep(NA, (length(mtd) + 1))
     beta[1] <- logit(rho[1])
     beta[2] <- (logit(theta) - logit(rho[1]))/mtd[1]
@@ -124,77 +121,59 @@ pdlt_d1continuous <- function(mtd, rho, theta, min_dose, max_dose,
                          min_dose = min_dose(cov),
                          max_dose = max_dose(cov))
 
-  parm <- cbind(gamma, rho)
-  parm <- as.matrix(parm)
-  parm.names <- c("mtd", "rho", "rho")
-
-  dose <- standard_dose(dose = dose,
-                        min_dose = min_dose(cov),
-                        max_dose = max_dose(cov))
-
-  pdlt <- function(dose){
-
-    aux_pdlt <- function(parm, dose, mtd, theta, cov, min_cov, max_cov,
-                         parm.names) {
-
-      rho <- parm[which(parm.names == "rho")]
-      mtd <- parm[which(parm.names == "mtd")]
-
-      beta <- rep(NA, 3)
-      beta[1] <- logit(rho[1]) - min_cov*(logit(rho[2]) - logit(rho[1]))/
-        (max_cov - min_cov)
-      beta[2] <- (logit(theta) - logit(rho[1]))/mtd
-      beta[3] <- (logit(rho[2]) - logit(rho[1]))/(max_cov - min_cov)
-
-      design_matrix <- cbind(1, dose, cov)
-      lp <- design_matrix%*%beta
-      out <- as.numeric(plogis(lp))
-      return(out)
-    }
-
-    out <- apply(parm, 1, aux_pdlt, mtd = mtd, dose = dose, theta = theta,
-                 cov = cov, min_cov = min_cov, max_cov = max_cov,
-                 parm.names = parm.names)
-    return(out)
-  }
-  return(pdlt)
-}
-
-#'@export
-pdlt_d1excontinuous <- function(rho, theta, min_dose, max_dose,
-                                min_cov, max_cov, cov) {
-
-  parm <- cbind(rho)
-  parm <- matrix(rho, ncol = 3)
-  parm.names <- c("rho", "rho", "rho")
-
   pdlt <- function(dose){
 
     dose <- standard_dose(dose = dose,
                           min_dose = min_dose(cov),
                           max_dose = max_dose(cov))
 
-    aux_pdlt <- function(parm, dose, mtd, theta, cov, min_cov, max_cov,
-                         parm.names) {
+    beta <- rep(NA, 3)
+    beta[1] <- logit(rho[1]) - min_cov*(logit(rho[2]) - logit(rho[1]))/
+      (max_cov - min_cov)
+    beta[2] <- (logit(theta) - logit(rho[1]))/mtd
+    beta[3] <- (logit(rho[2]) - logit(rho[1]))/(max_cov - min_cov)
 
-      rho <- parm[which(parm.names == "rho")]
+    design_matrix <- cbind(1, dose, cov)
+    lp <- design_matrix%*%beta
+    out <- as.numeric(plogis(lp))
+    return(out)
 
-      beta <- rep(NA, 3)
-      beta[1] <- logit(rho[1]) - min_cov*(logit(rho[2]) - logit(rho[1]))/(max_cov - min_cov)
-      beta[2] <- logit(rho[3]) - logit(rho[1])
-      beta[3] <- (logit(rho[2]) - logit(rho[1]))/(max_cov - min_cov)
+  }
+  return(pdlt)
+}
 
-      design_matrix <- cbind(1, dose, cov)
-      lp <- design_matrix%*%beta
-      out <- as.numeric(plogis(lp))
-      return(out)
+#'@export
+pdlt_d1excontinuous <- function(rho, theta, direction,
+                                min_dose, max_dose, min_cov, max_cov) {
+
+  gamma <- standard_dose(dose = mtd,
+                         min_dose = min_dose(max_cov),
+                         max_dose = max_dose(max_cov))
+
+  pdlt <- function(dose, cov){
+
+    dose <- standard_dose(dose = dose,
+                          min_dose = min_dose(cov),
+                          max_dose = max_dose(cov))
+
+    if (direction == "positive"){
+      beta[1] <- logit(rho[1])
+      beta[2] <- logit(rho[2]) - logit(rho[1])
+      beta[3] <- (logit(theta) - logit(rho[1]))/gamma
+    } else {
+      beta[1] <- logit(rho[1])
+      beta[2] <- logit(rho[2]) - logit(rho[1])
+      beta[3] <- -(logit(theta) - logit(rho[1]))/gamma
     }
 
-    out <- apply(parm, 1, aux_pdlt, mtd = mtd, dose = dose, theta = theta,
-                 cov = cov, min_cov = min_cov, max_cov = max_cov,
-                 parm.names = parm.names)
+    cov <- (cov - min_cov)/(max_cov - min_cov)
+
+    design_matrix <- cbind(1, dose, cov)
+    lp <- design_matrix%*%beta
+    out <- as.numeric(plogis(lp))
     return(out)
   }
+
   return(pdlt)
 }
 
