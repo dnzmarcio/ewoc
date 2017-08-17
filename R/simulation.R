@@ -76,40 +76,6 @@
 #'                        n_sim = 1, sample_size = 30,
 #'                        alpha_strategy = "increasing",
 #'                        response_sim = response_sim)
-#'
-#'### Multinomial EWOC
-#'
-#'
-#'DLT <- rep(0, 1)
-#'group <- "B"
-#'dose <- rep(30, 1)
-#'step_zero <- ewoc_d1multinomial(DLT ~ dose | group,
-#'                                type = 'continuous',
-#'                                theta = 0.33, alpha = 0.25,
-#'                                min_dose = 30, max_dose = 50,
-#'                                levels_cov = c("A", "B", "C"),
-#'                                next_patient_cov = "A",
-#'                                mtd_prior = matrix(1, nrow = 3, ncol = 2),
-#'                                rho_prior = matrix(1, nrow = 1, ncol = 2))
-#'
-#'response_sim <- response_d1multinomial(rho = 0.05, mtd = c(20, 30, 50),
-#'                                       theta = 0.33,
-#'                                       min_dose = 10, max_dose = 100,
-#'                                       levels_cov = c("A", "B", "C"))
-#'
-#'covariable_sim <- function(n){
-#'  p <- c(0.5, 0.3, 0.2)
-#'  u <- runif(n, 0, 1)
-#'  out <- ifelse(u < p[1], "A", ifelse(u < p[2], "B", "C"))
-#'  return(out)
-#'}
-#'
-#'sim <- trial_simulation(step_zero = step_zero,
-#'                        n_sim = 1, sample_size = 30,
-#'                        alpha_strategy = "increasing",
-#'                        response_sim = response_sim,
-#'                        covariable_sim = covariable_sim)
-#'
 #'}
 #'
 #'
@@ -117,7 +83,6 @@
 trial_simulation <- function(step_zero, n_sim, sample_size,
                              alpha_strategy = "fixed",
                              alpha_rate = NULL, response_sim,
-                             covariable_sim = NULL,
                              stop_rule_sim = NULL){
   UseMethod("trial_simulation")
 }
