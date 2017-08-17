@@ -87,10 +87,6 @@ ewoc_d1continuous <- function(formula, theta, alpha,
   colnames(design_matrix) <- c("intercept", "dose", "covariable")
   response <- model.response(data_base)
 
-  if (!is.matrix(response))
-    stop("The left side of the formula should be a matrix:
-         number of DLT and number of patients for each dose!\n")
-
   if (length(type) > 1 | !(type == "continuous" | type == "discrete"))
     stop("'type' should be either 'continuous' or 'discrete'.")
 
@@ -124,6 +120,11 @@ ewoc_d1continuous <- function(formula, theta, alpha,
     standard_dose(dose = design_matrix[, 2],
                   min_dose = limits$min_dose(covariable),
                   max_dose = limits$max_dose(covariable))
+
+  design_matrix[, 3] <-
+    standard_dose(dose = design_matrix[, 3],
+                  min_dose = min_cov,
+                  max_dose = max_cov)
 
   my_data <- list(response = response, design_matrix = design_matrix,
                   next_patient_cov = next_patient_cov,
