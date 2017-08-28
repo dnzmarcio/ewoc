@@ -74,7 +74,7 @@ dlt_rate <- function(dlt_matrix, trial = FALSE,
                          target_rate = target_rate, margin = margin)
     dlt_lower <- round(mean(dlt_lower, na.rm = TRUE)*100, digits)
 
-    dlt_interval <- dlt_upper + dlt_lower
+    dlt_interval <- 100 - dlt_upper - dlt_lower
 
     out <- list(average = dlt_average,
                 upper = dlt_upper, lower = dlt_lower, interval = dlt_interval)
