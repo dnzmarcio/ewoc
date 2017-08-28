@@ -180,13 +180,11 @@ ewoc_jags.d1basic <- function(data, n_adapt, burn_in,
   }
 
   # Calling JAGS
-  tc2 <- textConnection(jmod)
-  j <- rjags::jags.model(tc2,
+  j <- rjags::jags.model(textConnection(jfun),
                          data = data_base,
                          inits = list(v = inits()),
                          n.chains = n_chains,
                          n.adapt = n_adapt)
-  close(tc2)
   update(j, burn_in)
   sample <- rjags::coda.samples(j, variable.names = c("beta", "gamma", "rho"),
                                 n.iter = n_mcmc, thin = n_thin,

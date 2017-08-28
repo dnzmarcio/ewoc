@@ -9,12 +9,12 @@ summary.ewoc_d1basic <- function(object, ..., print = TRUE){
   colnames(p00) <- c("Minimum Dose", "Maximum Dose", "Theta",
                        "Alpha", "Number of patients")
 
-  hpd_dose <- coda::HPDinterval(as.mcmc(object$mtd))
+  hpd_dose <- coda::HPDinterval(coda::as.mcmc(object$mtd))
   hpd_dose <- round(as.numeric(hpd_dose), 2)
   next_dose <- round(as.numeric(object$next_dose), 2)
   tab01 <- data.frame(next_dose, hpd_dose[1], hpd_dose[2])
 
-  hpd_pdlt <- coda::HPDinterval(as.mcmc(object$pdlt))
+  hpd_pdlt <- coda::HPDinterval(coda::as.mcmc(object$pdlt))
   hpd_pdlt <- round(as.numeric(hpd_pdlt), 2)
   prob_dlt <- round(median(object$pdlt), 2)
   tab02 <- data.frame(prob_dlt, hpd_pdlt[1], hpd_pdlt[2])
@@ -36,6 +36,7 @@ summary.ewoc_d1basic <- function(object, ..., print = TRUE){
                         hpd = paste0("(", tab02[, 2], " ; ", tab02[, 3], ")"))
     colnames(p02) <- c("Estimate", "95% HPD")
     print(p02)
+
   } else {
 
     out <- list(next_dose = next_dose, hpd_dose = hpd_dose,
@@ -55,12 +56,12 @@ summary.ewoc_d1extended <- function(object, ..., print = TRUE){
   colnames(p00) <- c("Minimum Dose", "Maximum Dose", "Theta",
                        "Alpha", "Number of patients")
 
-  hpd_dose <- coda::HPDinterval(as.mcmc(object$mtd))
+  hpd_dose <- coda::HPDinterval(coda::as.mcmc(object$mtd))
   hpd_dose <- round(as.numeric(hpd_dose), 2)
   next_dose <- round(as.numeric(object$next_dose), 2)
   tab01 <- data.frame(next_dose, hpd_dose[1], hpd_dose[2])
 
-  hpd_pdlt <- coda::HPDinterval(as.mcmc(object$pdlt))
+  hpd_pdlt <- coda::HPDinterval(coda::as.mcmc(object$pdlt))
   hpd_pdlt <- round(as.numeric(hpd_pdlt), 2)
   prob_dlt <- round(median(object$pdlt), 2)
   tab02 <- data.frame(prob_dlt, hpd_pdlt[1], hpd_pdlt[2])
@@ -82,6 +83,7 @@ summary.ewoc_d1extended <- function(object, ..., print = TRUE){
                         hpd = paste0("(", tab02[, 2], " ; ", tab02[, 3], ")"))
     colnames(p02) <- c("Estimate", "95% HPD")
     print(p02)
+
   } else {
 
     out <- list(next_dose = next_dose, hpd_dose = hpd_dose,
@@ -106,7 +108,7 @@ summary.ewoc_d1ph <- function(object, ..., print = TRUE){
   next_dose <- round(as.numeric(object$next_dose), 2)
   tab01 <- data.frame(next_dose, hpd_dose[1], hpd_dose[2])
 
-  hpd_pdlt <- coda::HPDinterval(as.mcmc(object$pdlt))
+  hpd_pdlt <- coda::HPDinterval(coda::as.mcmc(object$pdlt))
   hpd_pdlt <- round(as.numeric(hpd_pdlt), 2)
   prob_dlt <- round(median(object$pdlt), 2)
   tab02 <- data.frame(prob_dlt, hpd_pdlt[1], hpd_pdlt[2])
@@ -128,6 +130,7 @@ summary.ewoc_d1ph <- function(object, ..., print = TRUE){
                         hpd = paste0("(", tab02[, 2], " ; ", tab02[, 3], ")"))
     colnames(p02) <- c("Estimate", "95% HPD")
     print(p02)
+
   } else {
 
     out <- list(next_dose = next_dose, hpd_dose = hpd_dose,

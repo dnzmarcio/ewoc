@@ -72,10 +72,10 @@ ewoc_d1ph <- function(formula, theta, alpha, tau,
   if (class(formula)[2] != "formula")
     stop("Invalid formula! \n")
 
-  data_base <- model.frame(formula, na.action = na.exclude,
-                           drop.unused.levels = FALSE)
+  data_base <- stats::model.frame(formula, na.action = na.exclude,
+                                  drop.unused.levels = FALSE)
 
-  dose_matrix <- model.matrix(formula, data_base, rhs = 1)
+  dose_matrix <- stats::model.matrix(formula, data_base, rhs = 1)
 
   if (length(formula)[2] == 1){
     covariable_matrix <- NULL
@@ -85,7 +85,7 @@ ewoc_d1ph <- function(formula, theta, alpha, tau,
     stop("This design cannot accommodate a covariable.")
   }
 
-  response <- model.response(data_base)
+  response <- stats::model.response(data_base)
 
   if (!is.matrix(response))
     stop("The left side of the formula should be a matrix: time and status!\n")
@@ -161,7 +161,6 @@ ewoc_d1ph <- function(formula, theta, alpha, tau,
   return(out)
 }
 
-#'@export
 ewoc_jags.d1ph <- function(data, n_adapt, burn_in,
                          n_mcmc, n_thin, n_chains) {
 
@@ -174,7 +173,7 @@ ewoc_jags.d1ph <- function(data, n_adapt, burn_in,
   # JAGS model function
 
   if (data$distribution == "weibull") {
-    jfun <- function() {
+    jfun <- "model {
 
       for(i in 1:nobs) {
         censored[i] ~ dinterval(time_mod[i], time_cens[i])
@@ -193,7 +192,7 @@ ewoc_jags.d1ph <- function(data, n_adapt, burn_in,
       r ~ dbeta(rho_prior[1, 1], rho_prior[1, 2])
       g ~ dbeta(mtd_prior[1, 1], mtd_prior[1, 2])
       s ~ dgamma(shape_prior[1, 1], shape_prior[1, 2])
-    }
+    }"
 
     inits <- function() {
       time_init <- rep(NA, length(time_mod))
@@ -218,7 +217,7 @@ ewoc_jags.d1ph <- function(data, n_adapt, burn_in,
                       'mtd_prior' = data$mtd_prior,
                       'shape_prior' = data$shape_prior)
   } else {
-    jfun <- function() {
+    jfun <- "model {
 
       for(i in 1:nobs) {
         censored[i] ~ dinterval(time_mod[i], time_cens[i])
@@ -234,7 +233,7 @@ ewoc_jags.d1ph <- function(data, n_adapt, burn_in,
       rho[1] <- theta*r
       r ~ dbeta(rho_prior[1, 1], rho_prior[1, 2])
       gamma ~ dbeta(mtd_prior[1, 1], mtd_prior[1, 2])
-    }
+    }"
 
       inits <- function() {
       time_init <- rep(NA, length(time_mod))
@@ -257,19 +256,13 @@ ewoc_jags.d1ph <- function(data, n_adapt, burn_in,
                       'mtd_prior' = data$mtd_prior)
   }
 
-  tc1 <- textConnection("jmod", "w")
-  R2WinBUGS::write.model(jfun, tc1)
-  close(tc1)
-
   initial <- inits()
   # Calling JAGS
-  tc2 <- textConnection(jmod)
-  j <- rjags::jags.model(tc2,
+  j <- rjags::jags.model(textConnection(jfun),
                          data = data_base,
                          inits = initial,
                          n.chains = n_chains,
                          n.adapt = n_adapt)
-  close(tc2)
   update(j, burn_in)
 
   if (data$distribution == "weibull"){

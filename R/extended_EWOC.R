@@ -58,10 +58,10 @@ ewoc_d1extended <- function(formula, theta, alpha,
   if (class(formula)[2] != "formula")
     stop("Invalid formula! \n")
 
-  data_base <- model.frame(formula, na.action = na.exclude,
-                           drop.unused.levels = FALSE)
+  data_base <- stats::model.frame(formula, na.action = na.exclude,
+                                  drop.unused.levels = FALSE)
 
-  dose_matrix <- model.matrix(formula, data_base, rhs = 1)
+  dose_matrix <- stats::model.matrix(formula, data_base, rhs = 1)
 
   if (length(formula)[2] == 1){
     design_matrix <- dose_matrix
@@ -71,7 +71,7 @@ ewoc_d1extended <- function(formula, theta, alpha,
   }
   colnames(design_matrix) <- c("intercept", "dose")
 
-  response <- model.response(data_base)
+  response <- stats::model.response(data_base)
 
   if (length(type) > 1 | !(type == "continuous" | type == "discrete"))
     stop("'type' should be either 'continuous' or 'discrete'.")
@@ -134,7 +134,6 @@ ewoc_d1extended <- function(formula, theta, alpha,
   return(out)
 }
 
-#'@export
 ewoc_jags.d1extended <- function(data, n_adapt, burn_in,
                                  n_mcmc, n_thin, n_chains) {
 
@@ -143,7 +142,7 @@ ewoc_jags.d1extended <- function(data, n_adapt, burn_in,
   lb <- - min_dose/(max_dose - min_dose)
 
   # JAGS model function
-  jfun <- function() {
+  jfun <- "model {
 
     for(i in 1:nobs) {
       dlt[i] ~ dbin(p[i], 1)
@@ -164,11 +163,7 @@ ewoc_jags.d1extended <- function(data, n_adapt, burn_in,
 
     rho[2] <- v[2]
     v[2] ~ dbeta(rho_prior[2, 1], rho_prior[2, 2])
-  }
-
-  tc1 <- textConnection("jmod", "w")
-  R2WinBUGS::write.model(jfun, tc1)
-  close(tc1)
+  }"
 
   data_base <- list('dlt' = data$response,
                     'design_matrix' = data$design_matrix,
@@ -185,13 +180,11 @@ ewoc_jags.d1extended <- function(data, n_adapt, burn_in,
   }
 
   # Calling JAGS
-  tc2 <- textConnection(jmod)
-  j <- rjags::jags.model(tc2,
+  j <- rjags::jags.model(textConnection(jfun),
                   data = data_base,
                   inits = list(v = inits()),
                   n.chains = n_chains,
                   n.adapt = n_adapt)
-  close(tc2)
   update(j, burn_in)
   sample <- rjags::coda.samples(j, variable.names = c("beta", "rho"),
                                 n.iter = n_mcmc, thin = n_thin,
