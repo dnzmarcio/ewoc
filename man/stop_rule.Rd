@@ -7,8 +7,12 @@
 stop_rule(dlt_matrix, sample_size, digits = 2)
 }
 \arguments{
-\item{dose}{Matrix of the number of DLT for each step of the trial (column)
+\item{dlt_matrix}{Matrix of the number of DLT for each step of the trial (column)
 and for each trial (row).}
+
+\item{sample_size}{a numerical value indicating the expected sample size.}
+
+\item{digits}{a numerical value indicating the number of digits.}
 }
 \value{
 A list consisting of

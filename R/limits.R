@@ -1,4 +1,3 @@
-#'@export
 limits_d1nocov <- function(first_dose, last_dose, min_dose, max_dose, type,
                            rounding, dose_set){
 

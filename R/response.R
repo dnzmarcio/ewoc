@@ -1,4 +1,4 @@
-#'Generating a binary response function based on the EWOC basic model
+#'Generating a binary response function based on the EWOC classical model
 #
 #'@param rho a numerical value indicating the true value of the parameter rho.
 #'@param mtd a numerical value indicating the true value of the parameter mtd.
@@ -9,6 +9,12 @@
 #'the MTD.
 #'@param max_dose a numerical value defining the upper bound of the support of
 #'the MTD.
+#'
+#'@return A function with dose as an imput and a Binomial variable based on the
+#'parameters as an output.
+#'
+#'@importFrom stats plogis rbinom
+#'
 #'@export
 response_d1basic <- function(rho, mtd, theta, min_dose, max_dose) {
 
@@ -49,6 +55,12 @@ response_d1basic <- function(rho, mtd, theta, min_dose, max_dose) {
 #'the MTD.
 #'@param max_dose a numerical value defining the upper bound of the support of
 #'the MTD.
+#'
+#'@return A function with dose as an imput and a Binomial variable based on the
+#'parameters as an output.
+#'
+#'@importFrom stats plogis rbinom
+#'
 #'@export
 response_d1extended <- function(rho, theta, min_dose, max_dose) {
 
@@ -73,7 +85,7 @@ response_d1extended <- function(rho, theta, min_dose, max_dose) {
   return(out)
 }
 
-#'Generating a response function based on the EWOC PH model
+#'Generating a response function based on the EWOC Proportional Hazards model
 #
 #'@param rho a numerical value indicating the true value of the parameter rho.
 #'@param mtd a numerical value indicating the true value of the parameter mtd.
@@ -90,6 +102,12 @@ response_d1extended <- function(rho, theta, min_dose, max_dose) {
 #'events.
 #'@param shape a numerical value indicating the true value of the parameter shape.
 #'It is only necessary if 'distribution' = "weibull".
+#'
+#'@return A function with dose as an imput and a Binomial variable based on the
+#'parameters as an output.
+#'
+#'@importFrom stats runif
+#'
 #'@export
 response_d1ph <- function(rho, mtd, theta, min_dose, max_dose,
                           tau, distribution, shape = NULL) {

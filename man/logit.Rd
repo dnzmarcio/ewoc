@@ -6,6 +6,13 @@
 \usage{
 logit(p)
 }
+\arguments{
+\item{p}{A numerical value indicating the probability.}
+}
+\value{
+A numerical value of the logit transformation calculated based on
+\code{p}.
+}
 \description{
 Transform a probability into logit scale
 }

@@ -1,4 +1,3 @@
-#'@export
 next_dose.d1basic <- function(data){
 
   rho <- data$mcmc$rho
@@ -28,7 +27,6 @@ next_dose.d1basic <- function(data){
 }
 
 
-#'@export
 next_dose.d1extended <- function(data){
 
   rho <- data$mcmc$rho
@@ -58,7 +56,6 @@ next_dose.d1extended <- function(data){
   return(out)
 }
 
-#'@export
 next_dose.d1ph <- function(data){
 
   gamma <- data$mcmc$gamma - 10^(-2)

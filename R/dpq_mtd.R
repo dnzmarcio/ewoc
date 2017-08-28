@@ -1,4 +1,3 @@
-#'@export
 qmtd_jags <- function(data, n_adapt, burn_in, n_mcmc, n_thin, n_chains) {
 
   data$mcmc <- ewoc_jags(data, n_adapt, burn_in, n_mcmc, n_thin, n_chains)

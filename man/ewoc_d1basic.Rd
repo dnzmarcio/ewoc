@@ -23,10 +23,10 @@ administered the MTD.}
 by EWOC is higher than the MTD.}
 
 \item{mtd_prior}{a matrix 1 x 2 of hyperparameters for the Beta prior
-distribution associated with the MTD.}
+distribution associated with the parameter MTD.}
 
 \item{rho_prior}{a matrix 1 x 2 of hyperparameters for the Beta prior distribution
-associated with each rho. Each row corresponds to a paramater.}
+associated with the parameter rho.}
 
 \item{min_dose}{a numerical value defining the lower bound of the support of
 the MTD.}
@@ -75,21 +75,6 @@ See \code{\link[rjags]{adapt}} for details.}
 Finding the next dose for a phase I clinical trial based on the
 Escalation Over Dose Control (EWOC) design considering the
 basic parametrization for binary responses and single agent.
-}
-\examples{
-\dontrun{
-DLT <- 0
-dose <- 30
-test <- ewoc_d1basic(DLT ~ dose, type = 'discrete',
-                    theta = 0.33, alpha = 0.25,
-                    min_dose = 0, max_dose = 100,
-                    dose_set = seq(0, 100, 20),
-                    rho_prior = matrix(1, ncol = 2, nrow = 1),
-                    mtd_prior = matrix(1, ncol = 2, nrow = 1),
-                    rounding = "nearest")
-summary(test)
-plot(test)}
-
 }
 \references{
 Babb, J., Rogatko, A. and Zacks, S., 1998.

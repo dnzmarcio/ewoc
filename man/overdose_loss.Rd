@@ -9,10 +9,10 @@ overdose_loss(mtd_estimate, true_mtd, alpha)
 \arguments{
 \item{mtd_estimate}{a numerical value of the MTD estimate.}
 
+\item{true_mtd}{a numerical value of the true MTD.}
+
 \item{alpha}{Value of the loss for an underdose while the loss for
 an overdose is (1 - \code{alpha}).}
-
-\item{true_MTD}{a numerical value of the true MTD.}
 }
 \value{
 value of the evaluated loss function.

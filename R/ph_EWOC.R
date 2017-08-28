@@ -15,8 +15,10 @@
 #'by EWOC is higher than the MTD.
 #'@param tau a numerical value defining the period of time for a possible
 #'toxicity be observed.
-#'@param rho_prior a matrix 2x2 of hyperparameters for the Beta prior
-#'distribution associated with each rho. Each row corresponds to a paramater.
+#'@param mtd_prior a matrix 1x2 of hyperparameters for the Beta prior
+#'distribution associated with the parameter MTD.
+#'@param rho_prior a matrix 1x2 of hyperparameters for the Beta prior
+#'distribution associated with the parameter rho.
 #'@param shape_prior a matrix 1x2 of hyperparameters for the Gamma prior
 #'distribution associated with the shape parameter r for the Weibull
 #'distribution.
@@ -50,25 +52,9 @@
 #'@return \code{sample} a list of the MCMC chains distribution.
 #'@return \code{trial} a list of the trial conditions.
 #'
-#'@examples
-#'\dontrun{
-#'time <- 9
-#'status <- 0
-#'dose <- 30
-#'
-#'test <- ewoc_d1ph(cbind(time, status) ~ dose, type = 'discrete',
-#'                  theta = 0.33, alpha = 0.25, tau = 10,
-#'                  min_dose = 30, max_dose = 50,
-#'                  dose_set = seq(30, 50, 5),
-#'                  rho_prior = matrix(1, ncol = 2, nrow = 1),
-#'                  mtd_prior = matrix(1, ncol = 2, nrow = 1),
-#'                  distribution = 'exponential',
-#'                  rounding = 'nearest')
-#'summary(test)
-#'plot(test)
-#'}
-#'
 #'@references Tighiouart M, Liu Y, Rogatko A. Escalation with overdose control using time to toxicity for cancer phase I clinical trials. PloS one. 2014 Mar 24;9(3):e93070.
+#'
+#'@import stats
 #'
 #'@export
 ewoc_d1ph <- function(formula, theta, alpha, tau,

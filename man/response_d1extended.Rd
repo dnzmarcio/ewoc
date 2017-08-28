@@ -20,6 +20,10 @@ the MTD.}
 \item{max_dose}{a numerical value defining the upper bound of the support of
 the MTD.}
 }
+\value{
+A function with dose as an imput and a Binomial variable based on the
+parameters as an output.
+}
 \description{
 Generating a binary response function based on the EWOC extended model
 }

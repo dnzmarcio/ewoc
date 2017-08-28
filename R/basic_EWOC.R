@@ -16,9 +16,9 @@
 #'@param alpha a numerical value defining the probability that the dose selected
 #'by EWOC is higher than the MTD.
 #'@param mtd_prior a matrix 1 x 2 of hyperparameters for the Beta prior
-#'distribution associated with the MTD.
+#'distribution associated with the parameter MTD.
 #'@param rho_prior a matrix 1 x 2 of hyperparameters for the Beta prior distribution
-#'associated with each rho. Each row corresponds to a paramater.
+#'associated with the parameter rho.
 #'@param min_dose a numerical value defining the lower bound of the support of
 #'the MTD.
 #'@param max_dose a numerical value defining the upper bound of the support of
@@ -48,19 +48,7 @@
 #'Cancer phase I clinical trials: efficient dose escalation with overdose
 #'control. Statistics in medicine, 17(10), pp.1103-1120.
 #'
-#'@examples
-#'\dontrun{
-#'DLT <- 0
-#'dose <- 30
-#'test <- ewoc_d1basic(DLT ~ dose, type = 'discrete',
-#'                     theta = 0.33, alpha = 0.25,
-#'                     min_dose = 0, max_dose = 100,
-#'                     dose_set = seq(0, 100, 20),
-#'                     rho_prior = matrix(1, ncol = 2, nrow = 1),
-#'                     mtd_prior = matrix(1, ncol = 2, nrow = 1),
-#'                     rounding = "nearest")
-#'summary(test)
-#'plot(test)}
+#'@import stats
 #'
 #'@export
 ewoc_d1basic <- function(formula, theta, alpha,
@@ -78,10 +66,10 @@ ewoc_d1basic <- function(formula, theta, alpha,
   if (class(formula)[2] != "formula")
     stop("Invalid formula! \n")
 
-  data_base <- model.frame(formula, na.action = na.exclude,
-                           drop.unused.levels = FALSE)
+  data_base <- stats::model.frame(formula, na.action = na.exclude,
+                                  drop.unused.levels = FALSE)
 
-  dose_matrix <- model.matrix(formula, data_base, rhs = 1)
+  dose_matrix <- stats::model.matrix(formula, data_base, rhs = 1)
 
   if (length(formula)[2] == 1){
     design_matrix <- dose_matrix
@@ -90,7 +78,7 @@ ewoc_d1basic <- function(formula, theta, alpha,
     stop("This design cannot accommodate a covariable.")
   }
 
-  response <- model.response(data_base)
+  response <- stats::model.response(data_base)
 
   if (length(type) > 1 | !(type == "continuous" | type == "discrete"))
     stop("'type' should be either 'continuous' or 'discrete'.")
@@ -154,12 +142,11 @@ ewoc_d1basic <- function(formula, theta, alpha,
   return(out)
 }
 
-#'@export
 ewoc_jags.d1basic <- function(data, n_adapt, burn_in,
                               n_mcmc, n_thin, n_chains) {
 
   # JAGS model function
-  jfun <- function() {
+  jfun <- "model {
 
     for(i in 1:nobs) {
       dlt[i] ~ dbin(p[i], 1)
@@ -175,11 +162,7 @@ ewoc_jags.d1basic <- function(data, n_adapt, burn_in,
 
     gamma <- v[2]
     v[2] ~ dbeta(mtd_prior[1, 1], mtd_prior[1, 2])
-  }
-
-  tc1 <- textConnection("jmod", "w")
-  R2WinBUGS::write.model(jfun, tc1)
-  close(tc1)
+  }"
 
   data_base <- list('dlt' = data$response,
                     'design_matrix' = data$design_matrix,

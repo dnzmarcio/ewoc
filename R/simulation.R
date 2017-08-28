@@ -1,10 +1,43 @@
-#'Simulation of a trial using Escalation Over with Dose Control
+#'Generic EWOC simulation
 #'
-#'Performing a simulation of several phase I clinical trial based on the
-#'Escalation Over Dose Control (EWOC).
+#'Generic function for simulating EWOC trials.
 #'
 #'@param step_zero an object from the classes 'ewoc_d1basic', 'ewoc_d1extended',
-#''ewoc_d1ph', 'ewoc_d1multinomial', 'ewoc_d1ordinal', and 'ewoc_d1continuous'
+#''ewoc_d1ph' created using dummy data.
+#'@param n_sim a number indicating the number of phase I clinical trials
+#'to be simulated.
+#'@param sample_size a number indicating the number of patients enrolled for
+#'each clinical trial.
+#'@param alpha_strategy a character indicating the strategy to apply for the
+#'feasibility value. Default is "constant". Options are "increasing" and
+#'"conditional".
+#'@param alpha_rate a numerical value indicating the rate of the
+#'feasibility strategy. Only necessary if alpha_strategy is either
+#''increasing' or 'conditional'.
+#'@param response_sim a function which is self-contained and will be used
+#'as a generator function of the response variables in the simulation.
+#'Its only imput is 'dose' and output is the indicator of DLT for classical and
+#'extended EWOC and the time until DLT for PH EWOC.
+#'@param stop_rule_sim a function having as an imput an object containing all
+#'the information related to the trial as the returned object trial from either
+#'\code{ewoc_d1basic}, \code{ewoc_d1extended}, \code{ewoc_d1ph} and as
+#'output a logical valuel indicating the trial should be stopped.
+#'
+#'
+#'@export
+trial_simulation <- function(step_zero, n_sim, sample_size,
+                             alpha_strategy = "fixed",
+                             alpha_rate = NULL, response_sim,
+                             stop_rule_sim = NULL){
+  UseMethod("trial_simulation")
+}
+
+
+#'Simulation of trials using classical EWOC
+#'
+#'Performing a simulation of several phase I clinical trials based on classical EWOC.
+#'
+#'@param step_zero an object from the classes 'ewoc_d1basic'
 #'created using dummy data.
 #'@param n_sim a number indicating the number of phase I clinical trials
 #'to be simulated.
@@ -18,75 +51,12 @@
 #''increasing' or 'conditional'.
 #'@param response_sim a function which is self-contained and will be used
 #'as a generator function of the response variables in the simulation.
-#'Its only imput is 'dose' and output is the DLT time.
+#'Its only imput is 'dose' and output is the ndicator of DLT.
+#'@param stop_rule_sim a function having as an imput an object containing all
+#'the information related to the trial as the returned object trial from
+#'\code{ewoc_d1basic} and as output a logical valuel indicating the trial
+#'should be stopped.
 #'
-#'@examples
-#'\dontrun{
-### Basic EWOC
-#'DLT <- 0
-#'dose <- 30
-#'step_zero <- ewoc_d1basic(DLT ~ dose, type = 'discrete',
-#'                          theta = 0.33, alpha = 0.25,
-#'                          min_dose = 0, max_dose = 100,
-#'                          dose_set = seq(0, 100, 20),
-#'                          rho_prior = matrix(1, ncol = 2, nrow = 1),
-#'                          mtd_prior = matrix(1, ncol = 2, nrow = 1),
-#'                          rounding = "nearest")
-#'response_sim <- response_d1basic(rho = 0.05, mtd = 20, theta = 0.33,
-#'                                 min_dose = 10, max_dose = 50)
-#'sim <- trial_simulation(step_zero = step_zero,
-#'                        n_sim = 1, sample_size = 30,
-#'                        alpha_strategy = "constant",
-#'                        response_sim = response_sim)
-#'
-### Extended EWOC
-#'DLT <- 0
-#'dose <- 30
-#'step_zero <- ewoc_d1extended(DLT ~ dose, type = 'discrete',
-#'                            theta = 0.33, alpha = 0.25,
-#'                            min_dose = 0, max_dose = 100,
-#'                            dose_set = seq(0, 100, 20),
-#'                            rho_prior = matrix(1, ncol = 2, nrow = 1),
-#'                            mtd_prior = matrix(1, ncol = 2, nrow = 1),
-#'                            rounding = "nearest")
-#'response_sim <- response_d1extended(rho = c(0.05, 0.5), theta = 0.33,
-#'                                    min_dose = 10, max_dose = 50)
-#'sim <- trial_simulation(step_zero = step_zero,
-#'                        n_sim = 1, sample_size = 30,
-#'                        alpha_strategy = "constant",
-#'                        response_sim = response_sim)
-#'
-#'### PH EWOC
-#'time <- 0
-#'status <- 0
-#'dose <- 30
-#'
-#'step_zero <- ewoc_d1ph(cbind(time, status) ~ dose, type = 'discrete',
-#'                       theta = 0.33, alpha = 0.25, tau = 10,
-#'                       min_dose = 30, max_dose = 50,
-#'                       dose_set = seq(30, 50, 5),
-#'                       rho_prior = matrix(1, ncol = 2, nrow = 1),
-#'                       mtd_prior = matrix(1, ncol = 2, nrow = 1),
-#'                       distribution = 'exponential',
-#'                       rounding = 'nearest')
-#'response_sim <- response_d1ph(rho = 0.05, mtd = 40, theta = 0.33,
-#'                              min_dose = 30, max_dose = 50,
-#'                              tau = 10, distribution = "exponential")
-#'sim <- trial_simulation(step_zero = step_zero,
-#'                        n_sim = 1, sample_size = 30,
-#'                        alpha_strategy = "increasing",
-#'                        response_sim = response_sim)
-#'}
-#'
-#'
-#'@export
-trial_simulation <- function(step_zero, n_sim, sample_size,
-                             alpha_strategy = "fixed",
-                             alpha_rate = NULL, response_sim,
-                             stop_rule_sim = NULL){
-  UseMethod("trial_simulation")
-}
-
 #'@export
 trial_simulation.d1basic <- function(step_zero, n_sim, sample_size,
                                      alpha_strategy =
@@ -164,6 +134,30 @@ trial_simulation.d1basic <- function(step_zero, n_sim, sample_size,
   return(out)
 }
 
+#'Simulation of trials using extended EWOC
+#'
+#'Performing a simulation of several phase I clinical trials based on the extended EWOC.
+#'
+#'@param step_zero an object from the classes 'ewoc_d1basic'
+#'created using dummy data.
+#'@param n_sim a number indicating the number of phase I clinical trials
+#'to be simulated.
+#'@param sample_size a number indicating the number of patients enrolled for
+#'each clinical trial.
+#'@param alpha_strategy a character indicating the strategy to apply for the
+#'feasibility value. Default is "constant". Options are "increasing" and
+#'"conditional".
+#'@param alpha_rate a numerical value indicating the rate of the
+#'feasibility strategy. Only necessary if alpha_strategy is either
+#''increasing' or 'conditional'.
+#'@param response_sim a function which is self-contained and will be used
+#'as a generator function of the response variables in the simulation.
+#'Its only imput is 'dose' and output is the indicator of DLT.
+#'@param stop_rule_sim a function having as an imput an object containing all
+#'the information related to the trial as the returned object trial from
+#'\code{ewoc_d1extended} and as output a logical valuel indicating the trial
+#'should be stopped.
+#'
 #'@export
 trial_simulation.d1extended <- function(step_zero, n_sim, sample_size,
                                         alpha_strategy =
@@ -241,7 +235,30 @@ trial_simulation.d1extended <- function(step_zero, n_sim, sample_size,
   return(out)
 }
 
-
+#'Simulation of trials using proportional hazards EWOC
+#'
+#'Performing a simulation of several phase I clinical trials based on the proportional hazards EWOC.
+#'
+#'@param step_zero an object from the classes 'ewoc_d1basic'
+#'created using dummy data.
+#'@param n_sim a number indicating the number of phase I clinical trials
+#'to be simulated.
+#'@param sample_size a number indicating the number of patients enrolled for
+#'each clinical trial.
+#'@param alpha_strategy a character indicating the strategy to apply for the
+#'feasibility value. Default is "constant". Options are "increasing" and
+#'"conditional".
+#'@param alpha_rate a numerical value indicating the rate of the
+#'feasibility strategy. Only necessary if alpha_strategy is either
+#''increasing' or 'conditional'.
+#'@param response_sim a function which is self-contained and will be used
+#'as a generator function of the response variables in the simulation.
+#'Its only imput is 'dose' and output is the time of DLT.
+#'@param stop_rule_sim a function having as an imput an object containing all
+#'the information related to the trial as the returned object trial from
+#'\code{ewoc_d1ph} and as output a logical valuel indicating the trial
+#'should be stopped.
+#'
 #'@export
 trial_simulation.d1ph <- function(step_zero, n_sim, sample_size,
                                   alpha_strategy =

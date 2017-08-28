@@ -1,11 +1,25 @@
 #'Transform a probability into logit scale
 #'
+#'@param p A numerical value indicating the probability.
+#'
+#'@return A numerical value of the logit transformation calculated based on
+#'\code{p}.
+#'
 #'@export
 logit <- function(p) {
   out <- log(p/(1 - p))
   return(out)
 }
 
+#'Standardizing dose
+#'
+#'@param dose A numerical value indicating the dose to be standardized between
+#'\code{min_dose} and \code{max_dose}.
+#'@param min_dose A numerical value indicating the minimum dose.
+#'@param max_dose A numerical value indicating the maximum dose.
+#'
+#'@return A standardized dose between 0 and 1.
+#'
 #'@export
 standard_dose <- function(dose, min_dose, max_dose) {
 
@@ -13,6 +27,15 @@ standard_dose <- function(dose, min_dose, max_dose) {
   return(out)
 }
 
+#'Rescaling standardized dose
+#'
+#'@param dose A numerical value indicating the standardized dose to be
+#'reescaled between \code{min_dose} and \code{max_dose}.
+#'@param min_dose A numerical value indicating the minimum dose.
+#'@param max_dose A numerical value indicating the maximum dose.
+#'
+#'@return A reescaled dose between \code{min_dose} and \code{max_dose}.
+#'
 #'@export
 inv_standard_dose <- function(dose, min_dose, max_dose) {
 
@@ -20,7 +43,6 @@ inv_standard_dose <- function(dose, min_dose, max_dose) {
   return(out)
 }
 
-#'@export
 round_down <- function(dose, grid){
 
   dif <- dose - grid
@@ -29,7 +51,6 @@ round_down <- function(dose, grid){
   return(out)
 }
 
-#'@export
 round_nearest <- function(dose, grid){
 
   dif <- abs(dose - grid)
@@ -38,7 +59,6 @@ round_nearest <- function(dose, grid){
   return(out)
 }
 
-#'@export
 rounding_system <- function(dose, grid, rounding) {
 
   dose <- matrix(dose, ncol = 1)
@@ -52,17 +72,14 @@ rounding_system <- function(dose, grid, rounding) {
 
 }
 
-#'@export
 next_dose <- function(data) {
   UseMethod("next_dose")
 }
 
-#'@export
 ewoc_jags <- function(data, n_adapt, burn_in, n_mcmc, n_thin, n_chains) {
   UseMethod("ewoc_jags")
 }
 
-#'@export
 feasibility <- function(alpha, strategy, rate, dlt, resolution){
   if (strategy == "constant")
     next_alpha <- alpha[1]

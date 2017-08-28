@@ -16,6 +16,8 @@ and for each trial (row).}
 \item{target_rate}{a numerical value of the target rate of DLT.}
 
 \item{margin}{a numerical value of the acceptable distance from the \code{target_rate}.}
+
+\item{digits}{a numerical value indicating the number of digits.}
 }
 \value{
 \code{trial} a numerical vector of the DLT rate for each trial.

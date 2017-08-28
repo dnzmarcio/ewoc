@@ -10,12 +10,14 @@ optimal_toxicity(dose_matrix, theta, margin, pdlt, digits = 2)
 \item{dose_matrix}{a numerical matrix of assigned doses for each step of the trial (column)
 and for each trial (row).}
 
+\item{theta}{a numerical value of the target DLT rate.}
+
 \item{margin}{a numerical value of the acceptable margin of distance from the
 \code{target_rate}.}
 
 \item{pdlt}{a function to calculate the probability of toxicity with a numeric vector of doses as input and a numeric vector of probabilities as output.}
 
-\item{target_rate}{a numerical value of the target DLT rate.}
+\item{digits}{a numerical value indicating the number of digits.}
 }
 \value{
 \code{interval} the average percent of doses which are inside the optimal toxicity interval.

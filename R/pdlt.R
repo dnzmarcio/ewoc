@@ -1,3 +1,18 @@
+#'Generating a probability of DLT function based on the EWOC classical model
+#
+#'@param rho a numerical value indicating the true value of the parameter rho.
+#'@param mtd a numerical value indicating the true value of the parameter mtd.
+#'@param theta a numerical value defining the proportion of expected patients
+#'to experience a medically unacceptable, dose-limiting toxicity (DLT) if
+#'administered the MTD.
+#'@param min_dose a numerical value defining the lower bound of the support of
+#'the MTD.
+#'@param max_dose a numerical value defining the upper bound of the support of
+#'the MTD.
+#'
+#'@return A function with dose as an imput and a probability based on the
+#'logistic regression and parameters as an output.
+#'
 #'@export
 pdlt_d1basic <- function(rho, mtd, theta, min_dose, max_dose){
 
@@ -24,6 +39,18 @@ pdlt_d1basic <- function(rho, mtd, theta, min_dose, max_dose){
   return(pdlt)
 }
 
+#'Generating a probability of DLT function based on the EWOC extended model
+#
+#'@param rho a numerical vector indicating the true value of the parameters
+#'rho_0 and rho_1.
+#'@param min_dose a numerical value defining the lower bound of the support of
+#'the MTD.
+#'@param max_dose a numerical value defining the upper bound of the support of
+#'the MTD.
+#'
+#'@return A function with dose as an imput and a probability based on the
+#'logistic regression and parameters as an output.
+#'
 #'@export
 pdlt_d1extended <- function(rho, min_dose, max_dose){
 
@@ -46,6 +73,27 @@ pdlt_d1extended <- function(rho, min_dose, max_dose){
   return(pdlt)
 }
 
+#'Generating a probability of DLT function based on the EWOC Proportional Hazards model
+#
+#'@param rho a numerical value indicating the true value of the parameter rho.
+#'@param mtd a numerical value indicating the true value of the parameter mtd.
+#'@param theta a numerical value defining the proportion of expected patients
+#'to experience a medically unacceptable, dose-limiting toxicity (DLT) if
+#'administered the MTD.
+#'@param min_dose a numerical value defining the lower bound of the support of
+#'the MTD.
+#'@param max_dose a numerical value defining the upper bound of the support of
+#'the MTD.
+#'@param tau a numerical value defining the period of time for a possible
+#'toxicity be observed.
+#'@param distribution a character establishing the distribution for the time of
+#'events.
+#'@param shape a numerical value indicating the true value of the parameter shape.
+#'It is only necessary if 'distribution' = "weibull".
+#'
+#'@return A function with dose as an imput and a probability based on the
+#'logistic regression and parameters as an output.
+#'
 #'@export
 pdlt_d1ph <- function(rho, mtd, shape = NULL, theta, min_dose, max_dose,
                       tau, distribution) {

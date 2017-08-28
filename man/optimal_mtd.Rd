@@ -10,10 +10,12 @@ optimal_mtd(dose_matrix, true_mtd, margin, digits = 2)
 \item{dose_matrix}{a numerical matrix of assigned doses for each step of the trial (column)
 and for each trial (row).}
 
+\item{true_mtd}{a numerical value of the true Maximum Tolerable Dose.}
+
 \item{margin}{a numerical value of the acceptable margin of distance from the
 \code{true_MTD}.}
 
-\item{true_MTD}{a numerical value of the true Maximum Tolerable Dose.}
+\item{digits}{a numerical value indicating the number of digits.}
 }
 \value{
 \code{interval} the average percent of doses which are inside the optimal MTD interval.

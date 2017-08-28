@@ -5,7 +5,7 @@
 #'(mtd_estimate - true_mtd)} if \eqn{true_mtd < mtd_estimate}.
 #'
 #'@param mtd_estimate a numerical value of the MTD estimate.
-#'@param true_MTD a numerical value of the true MTD.
+#'@param true_mtd a numerical value of the true MTD.
 #'@param alpha Value of the loss for an underdose while the loss for
 #'an overdose is (1 - \code{alpha}).
 #'
@@ -31,6 +31,7 @@ overdose_loss <- function (mtd_estimate, true_mtd, alpha) {
 #'@param trial a logical value indicating if the DLT rate for each trial should be returned.
 #'@param target_rate a numerical value of the target rate of DLT.
 #'@param margin a numerical value of the acceptable distance from the \code{target_rate}.
+#'@param digits a numerical value indicating the number of digits.
 #'
 #'@return \code{trial} a numerical vector of the DLT rate for each trial.
 #'@return \code{average} a numerical value of the average of DLT rate considering a batch of trials.
@@ -97,8 +98,11 @@ dlt_rate <- function(dlt_matrix, trial = FALSE,
 #'the percent of stopped trials. Stopped trials contain NA after the last
 #'assigned dose.
 #'
-#'@param dose Matrix of the number of DLT for each step of the trial (column)
+#'@param dlt_matrix Matrix of the number of DLT for each step of the trial (column)
 #'and for each trial (row).
+#'@param sample_size a numerical value indicating the expected sample size.
+#'@param digits a numerical value indicating the number of digits.
+#'
 #'@return A list consisting of
 #'\itemize{
 #' \item{\code{average}: }{Average number of patients to stop a trial.}
@@ -140,9 +144,10 @@ stop_rule <- function(dlt_matrix, sample_size, digits = 2) {
 #'
 #'@param dose_matrix a numerical matrix of assigned doses for each step of the trial (column)
 #'and for each trial (row).
-#'@param true_MTD a numerical value of the true Maximum Tolerable Dose.
+#'@param true_mtd a numerical value of the true Maximum Tolerable Dose.
 #'@param margin a numerical value of the acceptable margin of distance from the
 #'\code{true_MTD}.
+#'@param digits a numerical value indicating the number of digits.
 #'
 #'@return \code{interval} the average percent of doses which are inside the optimal MTD interval.
 #'@return \code{underdose} the average percent of doses which are smaller than the lower limit of the optimal MTD interval.
@@ -172,7 +177,7 @@ optimal_mtd <- function(dose_matrix, true_mtd, margin, digits = 2) {
     return(out)
   }
 
-  percent <- apply(dose_matrix, 1, aux,
+  percent <- apply(dose_matrix, 1, aux_overdose,
                    true_mtd = true_mtd,  margin = margin)
   overdose <- round(mean(percent, na.rm = TRUE), digits)
 
@@ -196,10 +201,11 @@ optimal_mtd <- function(dose_matrix, true_mtd, margin, digits = 2) {
 #'
 #'@param dose_matrix a numerical matrix of assigned doses for each step of the trial (column)
 #'and for each trial (row).
-#'@param target_rate a numerical value of the target DLT rate.
+#'@param theta a numerical value of the target DLT rate.
 #'@param margin a numerical value of the acceptable margin of distance from the
 #'\code{target_rate}.
 #'@param pdlt a function to calculate the probability of toxicity with a numeric vector of doses as input and a numeric vector of probabilities as output.
+#'@param digits a numerical value indicating the number of digits.
 #'
 #'@return \code{interval} the average percent of doses which are inside the optimal toxicity interval.
 #'@return \code{underdose} the average percent of doses which are smaller than the lower limit of the optimal toxicity interval.
@@ -232,7 +238,7 @@ optimal_toxicity <- function(dose_matrix, theta, margin, pdlt, digits = 2) {
     return(out)
   }
 
-  percent <- apply(dose_matrix, 1, aux_interval,
+  percent <- apply(dose_matrix, 1, aux_overdose,
                    theta = theta,  margin = margin)
   interval <- round(mean(percent, na.rm = TRUE), digits)
 
@@ -242,9 +248,9 @@ optimal_toxicity <- function(dose_matrix, theta, margin, pdlt, digits = 2) {
 
   percent <- apply(dose_matrix, 1, aux_overdose,
                    theta = theta,  margin = margin)
-  overrdose <- round(mean(percent, na.rm = TRUE), digits)
+  overdose <- round(mean(percent, na.rm = TRUE), digits)
 
-  out <- list(trial = percent, average = average)
+  out <- list(interval = interval, underdose = underdose, overdose = overdose)
 
   return(out)
 }
