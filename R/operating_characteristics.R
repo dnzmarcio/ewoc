@@ -76,12 +76,13 @@ dlt_rate <- function(dlt_matrix, trial = FALSE,
 
     dlt_interval <- dlt_upper + dlt_lower
 
-    out <- list(trial = dlt_trial, average = dlt_average,
+    out <- list(average = dlt_average,
                 upper = dlt_upper, lower = dlt_lower, interval = dlt_interval)
 
     if (trial)
-      out <- list(average = dlt_average,
+      out <- list(trial = dlt_trial, average = dlt_average,
                   upper = dlt_upper, lower = dlt_lower, interval = dlt_interval)
+
 
   } else {
     out <- list(trial = dlt_trial, average = dlt_average)
