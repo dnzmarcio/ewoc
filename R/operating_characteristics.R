@@ -238,7 +238,7 @@ optimal_toxicity <- function(dose_matrix, theta, margin, pdlt, digits = 2) {
     return(out)
   }
 
-  percent <- apply(dose_matrix, 1, aux_overdose,
+  percent <- apply(dose_matrix, 1, aux_interval,
                    theta = theta,  margin = margin)
   interval <- round(mean(percent, na.rm = TRUE), digits)
 
