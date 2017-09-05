@@ -1,5 +1,6 @@
-#'@export
-plot.ewoc_d1basic <- function(object, ...){
+#'@import ggplot2 graphics
+NULL
+gg_ewoc_d1basic <- function(object){
 
   sm <- summary(object, print = FALSE)
 
@@ -7,18 +8,16 @@ plot.ewoc_d1basic <- function(object, ...){
   data_plot <- data.frame(mtd)
 
   dens <- density(mtd)
-  shade <- with(dens, data.frame(x, y))
+  shade <- data.frame(x = dens$x, y = dens$y)
 
   label <- paste("Next dose:", round(sm$next_dose, 2))
 
-  gp <- ggplot(data_plot, aes(x = mtd)) + geom_density() +
+  gp <- ggplot(data_plot, aes_string(x = 'mtd')) + geom_density() +
     geom_vline(xintercept = as.numeric(sm$next_dose),
                linetype = 2, size = 1.2) +
-    geom_ribbon(data =
-                subset(shade,
-                       x > sm$hpd_dose[1] &
-                         x < sm$hpd_dose[2]),
-                aes(ymax = y, x = x), ymin = 0, fill="red", alpha=0.3) +
+    geom_ribbon(data = shade[shade$x > sm$hpd_dose[1] &
+                               shade$x < sm$hpd_dose[2], ],
+                aes_string(ymax = 'y', x = 'x'), ymin = 0, fill="red", alpha=0.3) +
     labs(y = "Density", x = "MTD") +
     annotate("text",
              x = sm$next_dose,
@@ -30,8 +29,9 @@ plot.ewoc_d1basic <- function(object, ...){
   return(gp)
 }
 
-#'@export
-plot.ewoc_d1extended <- function(object, ...){
+#'@import ggplot2 graphics
+NULL
+gg_ewoc_d1extended <- function(object){
 
   sm <- summary(object, print = FALSE)
 
@@ -39,17 +39,17 @@ plot.ewoc_d1extended <- function(object, ...){
   data_plot <- data.frame(x = mtd)
 
   dens <- density(mtd, n = 2^15)
-  shade <- with(dens, data.frame(x, y))
+  shade <- data.frame(x = dens$x, y = dens$y)
 
   label <- paste("Next dose:", round(sm$next_dose, 2))
 
-  gp <- ggplot(data_plot, aes(x = mtd)) + geom_density() +
+  gp <- ggplot(data_plot, aes_string(x = 'mtd')) + geom_density() +
     geom_vline(xintercept = as.numeric(sm$next_dose),
                linetype = 2, size = 1.2) +
-    geom_ribbon(data =
-                subset(shade, x > max(sm$hpd_dose[1], object$trial$min_dose) &
-                         x < min(sm$hpd_dose[2], object$trial$max_dose)),
-                aes(ymax = y, x = x), ymin = 0, fill = "red", alpha = 0.3) +
+    geom_ribbon(data = shade[
+      shade$x > max(sm$hpd_dose[1], object$trial$min_dose) &
+        shade$x < min(sm$hpd_dose[2], object$trial$max_dose), ],
+      aes_string(ymax = 'y', x = 'x'), ymin = 0, fill = "red", alpha = 0.3) +
     labs(y = "Density", x = "MTD") +
     annotate("text", x = sm$next_dose,
              y = max(shade$y)/2, hjust = -0.20,
@@ -60,8 +60,9 @@ plot.ewoc_d1extended <- function(object, ...){
   return(gp)
 }
 
-#'@export
-plot.ewoc_d1ph <- function(object, ...){
+#'@import ggplot2 graphics
+NULL
+gg_ewoc_d1ph <- function(object){
 
   sm <- summary(object, print = FALSE)
 
@@ -69,16 +70,16 @@ plot.ewoc_d1ph <- function(object, ...){
   data_plot <- data.frame(mtd)
 
   dens <- density(mtd)
-  shade <- with(dens, data.frame(x, y))
+  shade <- data.frame(x = dens$x, y = dens$y)
 
   label <- paste("Next dose:", round(sm$next_dose, 2))
 
-  gp <- ggplot(data_plot, aes(x = mtd)) + geom_density() +
+  gp <- ggplot(data_plot, aes_string(x = 'mtd')) + geom_density() +
     geom_vline(xintercept = as.numeric(sm$next_dose),
                linetype = 2, size = 1.2) +
-    geom_ribbon(data =
-                  subset(shade, x > sm$hpd_dose[1] & x < sm$hpd_dose[2]),
-                aes(ymax = y, x = x), ymin = 0, fill="red", alpha=0.3) +
+    geom_ribbon(data = shade[shade$x > sm$hpd_dose[1] &
+                               shade$x < sm$hpd_dose[2], ],
+                aes_string(ymax = 'y', x = 'x'), ymin = 0, fill="red", alpha=0.3) +
     labs(y = "Density", x = "MTD") +
     annotate("text", x = sm$next_dose,
              y = max(shade$y)/2, hjust = -0.20,
