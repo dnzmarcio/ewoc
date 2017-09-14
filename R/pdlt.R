@@ -1,4 +1,4 @@
-#'Generating a probability of DLT function based on the EWOC classical model
+#'Generating a probability of DLT function based on the EWOC classic model
 #
 #'@param rho a numerical value indicating the true value of the parameter rho.
 #'@param mtd a numerical value indicating the true value of the parameter mtd.
@@ -14,7 +14,7 @@
 #'logistic regression and parameters as an output.
 #'
 #'@export
-pdlt_d1basic <- function(rho, mtd, theta, min_dose, max_dose){
+pdlt_d1classic <- function(rho, mtd, theta, min_dose, max_dose){
 
   gamma <- standard_dose(dose = mtd,
                          min_dose = min_dose,

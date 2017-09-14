@@ -1,4 +1,4 @@
-next_dose.d1basic <- function(data){
+next_dose.d1classic <- function(data){
 
   rho <- data$mcmc$rho
   gamma <- data$mcmc$gamma

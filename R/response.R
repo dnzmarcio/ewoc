@@ -1,4 +1,4 @@
-#'Generating a binary response function based on the EWOC classical model
+#'Generating a binary response function based on the EWOC classic model
 #
 #'@param rho a numerical value indicating the true value of the parameter rho.
 #'@param mtd a numerical value indicating the true value of the parameter mtd.
@@ -16,7 +16,7 @@
 #'@importFrom stats plogis rbinom
 #'
 #'@export
-response_d1basic <- function(rho, mtd, theta, min_dose, max_dose) {
+response_d1classic <- function(rho, mtd, theta, min_dose, max_dose) {
 
   gamma <- standard_dose(dose = mtd,
                          min_dose = min_dose,

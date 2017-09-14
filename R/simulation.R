@@ -2,7 +2,7 @@
 #'
 #'Generic function for simulating EWOC trials.
 #'
-#'@param step_zero an object from the classes 'ewoc_d1basic', 'ewoc_d1extended',
+#'@param step_zero an object from the classes 'ewoc_d1classic', 'ewoc_d1extended',
 #''ewoc_d1ph' created using dummy data.
 #'@param n_sim a number indicating the number of phase I clinical trials
 #'to be simulated.
@@ -20,7 +20,7 @@
 #'extended EWOC and the time until DLT for PH EWOC.
 #'@param stop_rule_sim a function having as an imput an object containing all
 #'the information related to the trial as the returned object trial from either
-#'\code{ewoc_d1basic}, \code{ewoc_d1extended}, \code{ewoc_d1ph} and as
+#'\code{ewoc_d1classic}, \code{ewoc_d1extended}, \code{ewoc_d1ph} and as
 #'output a logical valuel indicating the trial should be stopped.
 #'
 #'
@@ -37,7 +37,7 @@ trial_simulation <- function(step_zero, n_sim, sample_size,
 #'
 #'Performing a simulation of several phase I clinical trials based on classical EWOC.
 #'
-#'@param step_zero an object from the classes 'ewoc_d1basic'
+#'@param step_zero an object from the classes 'ewoc_d1classic'
 #'created using dummy data.
 #'@param n_sim a number indicating the number of phase I clinical trials
 #'to be simulated.
@@ -54,11 +54,11 @@ trial_simulation <- function(step_zero, n_sim, sample_size,
 #'Its only imput is 'dose' and output is the ndicator of DLT.
 #'@param stop_rule_sim a function having as an imput an object containing all
 #'the information related to the trial as the returned object trial from
-#'\code{ewoc_d1basic} and as output a logical valuel indicating the trial
+#'\code{ewoc_d1classic} and as output a logical valuel indicating the trial
 #'should be stopped.
 #'
 #'@export
-trial_simulation.d1basic <- function(step_zero, n_sim, sample_size,
+trial_simulation.d1classic <- function(step_zero, n_sim, sample_size,
                                      alpha_strategy =
                                        c("fixed", "increasing", "conditional"),
                                      alpha_rate = 0.05,
@@ -94,7 +94,7 @@ trial_simulation.d1basic <- function(step_zero, n_sim, sample_size,
                                        resolution = resolution[1:(j-1)],
                                        rate = alpha_rate)
 
-        update <- ewoc_d1basic(formula,
+        update <- ewoc_d1classic(formula,
                                type = step_zero$trial$type,
                                theta = step_zero$trial$theta,
                                alpha = alpha_sim[i, j],

@@ -8,7 +8,7 @@ trial_simulation(step_zero, n_sim, sample_size, alpha_strategy = "fixed",
   alpha_rate = NULL, response_sim, stop_rule_sim = NULL)
 }
 \arguments{
-\item{step_zero}{an object from the classes 'ewoc_d1basic', 'ewoc_d1extended',
+\item{step_zero}{an object from the classes 'ewoc_d1classic', 'ewoc_d1extended',
 'ewoc_d1ph' created using dummy data.}
 
 \item{n_sim}{a number indicating the number of phase I clinical trials
@@ -32,7 +32,7 @@ extended EWOC and the time until DLT for PH EWOC.}
 
 \item{stop_rule_sim}{a function having as an imput an object containing all
 the information related to the trial as the returned object trial from either
-\code{ewoc_d1basic}, \code{ewoc_d1extended}, \code{ewoc_d1ph} and as
+\code{ewoc_d1classic}, \code{ewoc_d1extended}, \code{ewoc_d1ph} and as
 output a logical valuel indicating the trial should be stopped.}
 }
 \description{

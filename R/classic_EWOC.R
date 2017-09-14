@@ -2,7 +2,7 @@
 #'
 #'Finding the next dose for a phase I clinical trial based on the
 #'Escalation Over Dose Control (EWOC) design considering the
-#'basic parametrization for binary responses and single agent.
+#'classic parametrization for binary responses and single agent.
 #'
 #'@param formula an object of class \code{\link[Formula]{Formula}}: a symbolic
 #'description of the model to be fitted with only one regressor term
@@ -51,7 +51,7 @@
 #'@import stats
 #'
 #'@export
-ewoc_d1basic <- function(formula, theta, alpha,
+ewoc_d1classic <- function(formula, theta, alpha,
                          mtd_prior, rho_prior,
                          min_dose, max_dose,
                          type = c('continuous', 'discrete'),
@@ -118,7 +118,7 @@ ewoc_d1basic <- function(formula, theta, alpha,
                   dose_set = dose_set,
                   rho_prior = rho_prior, mtd_prior = mtd_prior,
                   type = type[1], rounding = rounding)
-  class(my_data) <- "d1basic"
+  class(my_data) <- "d1classic"
 
   out <- qmtd_jags(my_data, n_adapt, burn_in, n_mcmc, n_thin, n_chains)
 
@@ -138,11 +138,11 @@ ewoc_d1basic <- function(formula, theta, alpha,
                 n_thin = n_thin, n_chains = n_chains)
   out$trial <- trial
 
-  class(out) <- c("ewoc_d1basic", "d1basic")
+  class(out) <- c("ewoc_d1classic", "d1classic")
   return(out)
 }
 
-ewoc_jags.d1basic <- function(data, n_adapt, burn_in,
+ewoc_jags.d1classic <- function(data, n_adapt, burn_in,
                               n_mcmc, n_thin, n_chains) {
 
   # JAGS model function
