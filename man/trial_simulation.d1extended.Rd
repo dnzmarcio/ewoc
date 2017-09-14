@@ -9,7 +9,7 @@
   alpha_rate = 0.05, response_sim = NULL, stop_rule_sim = NULL)
 }
 \arguments{
-\item{step_zero}{an object from the classes 'ewoc_d1basic'
+\item{step_zero}{an object from the class 'ewoc_d1extended'
 created using dummy data.}
 
 \item{n_sim}{a number indicating the number of phase I clinical trials

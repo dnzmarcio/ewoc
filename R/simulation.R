@@ -138,7 +138,7 @@ trial_simulation.d1classic <- function(step_zero, n_sim, sample_size,
 #'
 #'Performing a simulation of several phase I clinical trials based on the extended EWOC.
 #'
-#'@param step_zero an object from the classes 'ewoc_d1basic'
+#'@param step_zero an object from the class 'ewoc_d1extended'
 #'created using dummy data.
 #'@param n_sim a number indicating the number of phase I clinical trials
 #'to be simulated.
@@ -238,7 +238,7 @@ trial_simulation.d1extended <- function(step_zero, n_sim, sample_size,
 #'
 #'Performing a simulation of several phase I clinical trials based on the proportional hazards EWOC.
 #'
-#'@param step_zero an object from the classes 'ewoc_d1basic'
+#'@param step_zero an object from the class 'ewoc_d1ph'
 #'created using dummy data.
 #'@param n_sim a number indicating the number of phase I clinical trials
 #'to be simulated.
