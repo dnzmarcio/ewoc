@@ -133,15 +133,13 @@ ewoc_d1continuous <- function(formula, theta, alpha,
                          dose_set = dose_set,
                          covariable = covariable)
 
-  design_matrix[, 2] <-
-    standard_dose(dose = design_matrix[, 2],
-                  min_dose = limits$min_dose(covariable),
-                  max_dose = limits$max_dose(covariable))
+  design_matrix[, 2] <- standard_dose(dose = design_matrix[, 2],
+                                      min_dose = limits$min_dose(covariable),
+                                      max_dose = limits$max_dose(covariable))
 
-  design_matrix[, 3] <-
-    standard_dose(dose = design_matrix[, 3],
-                  min_dose = min_cov,
-                  max_dose = max_cov)
+  design_matrix[, 3] <- standard_dose(dose = design_matrix[, 3],
+                                      min_dose = min_cov,
+                                      max_dose = max_cov)
 
   my_data <- list(response = response, design_matrix = design_matrix,
                   next_patient_cov = next_patient_cov,

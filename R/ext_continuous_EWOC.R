@@ -85,10 +85,6 @@ ewoc_d1excontinuous <- function(formula, theta, alpha,
   colnames(design_matrix) <- c("intercept", "dose", "covariable")
   response <- model.response(data_base)
 
-  if (!is.matrix(response))
-    stop("The left side of the formula should be a matrix:
-         number of DLT and number of patients for each dose!\n")
-
   if (length(type) > 1 | !(type == "continuous" | type == "discrete"))
     stop("'type' should be either 'continuous' or 'discrete'.")
 
@@ -118,10 +114,16 @@ ewoc_d1excontinuous <- function(formula, theta, alpha,
                          dose_set = dose_set,
                          covariable = covariable)
 
-  design_matrix[, 2] <-
-    standard_dose(dose = design_matrix[, 2],
-                  min_dose = limits$min_dose(covariable),
-                  max_dose = limits$max_dose(covariable))
+  lb <- - limits$min_dose(next_patient_cov)/(limits$max_dose(next_patient_cov) -
+                                         limits$min_dose(next_patient_cov))
+
+  design_matrix[, 2] <- standard_dose(dose = design_matrix[, 2],
+                                      min_dose = limits$min_dose(covariable),
+                                      max_dose = limits$max_dose(covariable))
+
+  design_matrix[, 3] <- standard_dose(dose = design_matrix[, 3],
+                                      min_dose = min_cov,
+                                      max_dose = max_cov)
 
   my_data <- list(response = response, design_matrix = design_matrix,
                   next_patient_cov = next_patient_cov,
@@ -129,7 +131,7 @@ ewoc_d1excontinuous <- function(formula, theta, alpha,
                   theta = theta, alpha = alpha, limits = limits,
                   dose_set = dose_set,
                   rho_prior = rho_prior,
-                  max_cov = max_cov, min_cov = min_cov,
+                  max_cov = max_cov, min_cov = min_cov, lb = lb,
                   type = type, rounding = rounding)
   class(my_data) <- "d1excontinuous"
 
@@ -155,64 +157,74 @@ ewoc_d1excontinuous <- function(formula, theta, alpha,
 
 #'@export
 ewoc_jags.d1excontinuous <- function(data, n_adapt, burn_in,
-                                   n_mcmc, n_thin, n_chains) {
+                                     n_mcmc, n_thin, n_chains) {
 
   # JAGS model function
   if(data$direction == "positive"){
-    jfun <- function() {
+    jfun <- "model {
 
       for(i in 1:nobs) {
-        dlt[i] ~ dbin(p[i], npatients[i])
+        dlt[i] ~ dbin(p[i], 1)
         p[i] <- 1/(1 + exp(-lp[i]))
         lp[i] <- inprod(design_matrix[i, ], beta)
       }
 
-      beta[1] <- logit(rho[1]) - min_cov*(logit(rho[2]) - logit(rho[1]))/(max_cov - min_cov)
+      beta[1] <- logit(rho[1])
       beta[2] <- logit(rho[3]) - logit(rho[1])
-      beta[3] <- (logit(rho[2]) - logit(rho[1]))/(max_cov - min_cov)
+      beta[3] <- logit(rho[2]) - logit(rho[1])
 
       rho[1] <- min*r[1]
-      min <- min(rho[2], rho[3])
+      min <- min(exp.limit, rho[2], rho[3])
       r[1] ~ dbeta(rho_prior[1, 1], rho_prior[1, 2])
       rho[2] <- theta*r[2]
       r[2] ~ dbeta(rho_prior[2, 1], rho_prior[2, 2])
       rho[3] <- r[3]
       r[3] ~ dbeta(rho_prior[3, 1], rho_prior[3, 2])
-    }
+
+      exp.limit <- plogis(limit, 0, 1)
+      limit <- (logit(theta) -
+                ((next_patient_cov - min_cov)/(max_cov - min_cov))*logit(rho[2]) -
+                lb*logit(rho[3]))/
+                (1 - lb - (next_patient_cov - min_cov)/(max_cov - min_cov))
+
+    }"
   } else {
 
-    jfun <- function() {
+    jfun <- "model {
 
       for(i in 1:nobs) {
-        dlt[i] ~ dbin(p[i], npatients[i])
+        dlt[i] ~ dbin(p[i], 1)
         p[i] <- 1/(1 + exp(-lp[i]))
         lp[i] <- inprod(design_matrix[i, ], beta)
       }
 
-      beta[1] <- logit(rho[1]) - min_cov*(logit(rho[2]) - logit(rho[1]))/(max_cov - min_cov)
+      beta[1] <- logit(rho[1])
       beta[2] <- logit(rho[3]) - logit(rho[1])
-      beta[3] <- -(logit(rho[2]) - logit(rho[1]))/(max_cov - min_cov)
+      beta[3] <- logit(rho[2]) - logit(rho[1])
 
-      rho[1] <- min*r[1]
-      min <- min(rho[2], rho[3])
+      rho[1] <- min01*r[1]
+      min01 <- min(exp.limit, rho[3])
       r[1] ~ dbeta(rho_prior[1, 1], rho_prior[1, 2])
-      rho[2] <- theta*r[2]
+      rho[2] <- min02*r[2]
+      min02 <- min(rho[2], theta)
       r[2] ~ dbeta(rho_prior[2, 1], rho_prior[2, 2])
       rho[3] <- r[3]
       r[3] ~ dbeta(rho_prior[3, 1], rho_prior[3, 2])
-    }
+
+      exp.limit <- plogis(limit, 0, 1)
+      limit <- (logit(theta) -
+                ((next_patient_cov - min_cov)/(max_cov - min_cov))*logit(rho[2]) -
+                lb*logit(rho[3]))/
+                (1 - lb - (next_patient_cov - min_cov)/(max_cov - min_cov))
+    }"
 
   }
 
-  tc1 <- textConnection("jmod", "w")
-  R2WinBUGS::write.model(jfun, tc1)
-  close(tc1)
-
-  data_base <- list('dlt' = data$response[, 1],
-                    'npatients' = data$response[, 2],
+  data_base <- list('dlt' = data$response,
                     'design_matrix' = data$design_matrix,
-                    'theta' = data$theta, 'nobs' = length(data$response[, 1]),
+                    'theta' = data$theta, 'nobs' = length(data$response),
                     'rho_prior' = data$rho_prior,
+                    'lb' = data$lb, 'next_patient_cov' = data$next_patient_cov,
                     'min_cov' = data$min_cov, 'max_cov' = data$max_cov)
 
   inits <- function() {
@@ -222,21 +234,19 @@ ewoc_jags.d1excontinuous <- function(data, n_adapt, burn_in,
   }
 
   # Calling JAGS
-  tc2 <- textConnection(jmod)
-  j <- rjags::jags.model(tc2,
+  j <- rjags::jags.model(textConnection(jfun),
                          data = data_base,
                          inits = inits(),
                          n.chains = n_chains,
                          n.adapt = n_adapt)
-  close(tc2)
   update(j, burn_in)
-  sample <- rjags::coda.samples(j, variable.names = c("rho"),
+  sample <- rjags::coda.samples(j, variable.names = c("beta", "rho"),
                                 n.iter = n_mcmc, thin = n_thin,
                                 n.chains = n_chains)
-  rho <- sample[[1]]
+  beta <- sample[[1]][, 1:3]
+  rho <- sample[[1]][, 4:6]
 
-
-  out <- list(rho = rho, sample = sample)
+  out <- list(rho = rho, beta = beta, sample = sample)
 
   return(out)
 }
