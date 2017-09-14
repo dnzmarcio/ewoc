@@ -13,9 +13,8 @@ ewoc_d1excontinuous(formula, theta, alpha, rho_prior, min_dose, max_dose,
 \arguments{
 \item{formula}{an object of class \code{\link[Formula]{Formula}}: a symbolic
 description of the model to be fitted with two regressor parts separated by `|`
-corresponding to the dose and covariable, respectively, for the right side and
-a matrix as a response containing number of DLT and number of patients for
-the left side.}
+corresponding to the dose and covariable, respectively, for the right side  and
+a numeric vector as a response containing number of DLT for the left side.}
 
 \item{theta}{a numerical value defining the proportion of expected patients
 to experience a medically unacceptable, dose-limiting toxicity (DLT) if
