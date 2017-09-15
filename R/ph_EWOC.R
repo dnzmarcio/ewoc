@@ -54,6 +54,23 @@
 #'
 #'@references Tighiouart M, Liu Y, Rogatko A. Escalation with overdose control using time to toxicity for cancer phase I clinical trials. PloS one. 2014 Mar 24;9(3):e93070.
 #'
+#'@examples
+#'\dontrun{
+#'time <- 9
+#'status <- 0
+#'dose <- 30
+#'
+#'test <- ewoc_d1ph(cbind(time, status) ~ dose, type = 'discrete',
+#'                  theta = 0.33, alpha = 0.25, tau = 10,
+#'                  min_dose = 30, max_dose = 50,
+#'                  dose_set = seq(30, 50, 5),
+#'                  rho_prior = matrix(1, ncol = 2, nrow = 1),
+#'                  mtd_prior = matrix(1, ncol = 2, nrow = 1),
+#'                  distribution = 'exponential',
+#'                  rounding = 'nearest')
+#'summary(test)
+#'}
+#'
 #'@import stats
 #'
 #'@export
@@ -64,7 +81,7 @@ ewoc_d1ph <- function(formula, theta, alpha, tau,
                       first_dose = NULL, last_dose = NULL,
                       dose_set = NULL,
                       distribution = c('exponential', 'weibull'),
-                      rounding = c("down", "nearest"),
+                      rounding = c('down', 'nearest'),
                       n_adapt = 5000, burn_in = 1000,
                       n_mcmc = 1000, n_thin = 1, n_chains = 1) {
 
