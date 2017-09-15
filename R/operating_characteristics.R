@@ -263,7 +263,7 @@ optimal_toxicity <- function(dose_matrix, theta, margin, pdlt, digits = 2) {
 #'@param mtd_estimate a numerical vector of the MTD estimates.
 #'@param true_mtd a numerical value of the true Maximum Tolerable Dose.
 #'
-#'@return \code{bias} bias of the MTD estimates.
+#'@return Bias of the MTD estimates.
 #'
 #'@export
 mtd_bias <- function(mtd_estimate, true_mtd) {
@@ -278,7 +278,7 @@ mtd_bias <- function(mtd_estimate, true_mtd) {
 #'@param mtd_estimate a numerical vector of the MTD estimates.
 #'@param true_mtd a numerical value of the true Maximum Tolerable Dose.
 #'
-#'@return \code{mse} MSE of the MTD estimates.
+#'@return MSE of the MTD estimates.
 #'
 #'@export
 mtd_mse <- function(mtd_estimate, true_mtd) {
@@ -286,10 +286,30 @@ mtd_mse <- function(mtd_estimate, true_mtd) {
   return(out)
 }
 
+#'Accuracy Index
+#'
+#'Calculate the Accuracy Index.
+#'
+#'@param mtd_estimate a numerical vector of the MTD estimates.
+#'@param dose_set a numerical vector of allowable doses in the trial.
+#'@param true_prob a numerical vector of the true probabilities associated
+#'with 'dose_set'.
+#'@param theta a numerical value defining the proportion of expected patients
+#'to experience a medically unacceptable, dose-limiting toxicity (DLT) if
+#'administered the MTD.
+#'@param loss a loss function between the true probabilities of toxicity
+#''true_prob' and the target DLT rate 'theta'.
+#'@param alpha a numerical value indicating the weight of overdose for the
+#'overdose loss function.
+#'
+#'@references Cheung, Y. K. (2011). Dose finding by the continual reassessment method. CRC Press.
+#'
+#'@return Accuracy Index for given loss function of the MTD estimates.
+#'
 #'@export
 accuracy_index <- function (mtd_estimate, dose_set, true_prob, theta,
                             loss = c("squared", "absolute", "classification",
-                                     "overdose"), alpha = NULL, digits = 5) {
+                                     "overdose"), alpha = NULL) {
 
   mtd_estimate <- factor(mtd_estimate, levels = dose_set)
   estimate_prob <- prop.table(table(mtd_estimate))
@@ -299,7 +319,7 @@ accuracy_index <- function (mtd_estimate, dose_set, true_prob, theta,
   if (loss == "absolute")
     dist <- abs(true_prob -  theta)
   if (loss == "classification")
-    dist <- as.numeric(round(true_prob, digits) !=  theta)
+    dist <- as.numeric(true_prob !=  theta)
   if (loss == "overdose") {
     if (!is.null(alpha)) {
       dist <- overdose_loss(true_prob, theta, alpha)
@@ -312,6 +332,23 @@ accuracy_index <- function (mtd_estimate, dose_set, true_prob, theta,
   return(out)
 }
 
+#'Average Toxicity Number
+#'
+#'Calculate the Average Toxicity Number.
+#'
+#'@param dose a numerical matrix of assigned doses for each step of the trial (column)
+#'and for each trial (row).
+#'@param dose_set a numerical vector of allowable doses in the trial.
+#'@param true_prob a numerical vector of the true probabilities associated
+#'with 'dose_set'.
+#'@param theta a numerical value defining the proportion of expected patients
+#'to experience a medically unacceptable, dose-limiting toxicity (DLT) if
+#'administered the MTD.
+#'
+#'@references Cheung, Y. K. (2011). Dose finding by the continual reassessment method. CRC Press.
+#'
+#'@return Average Toxicity Number.
+#'
 #'@export
 average_toxicity <- function (dose, dose_set, true_prob, theta) {
 

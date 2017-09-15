@@ -24,7 +24,7 @@
 #'distribution.
 #'It is only necessary if distribution = 'weibull'.
 #'@param type a character describing the type of the Maximum Tolerable Dose
-#'(MTD) variable.
+#'(MTD) variable. It can be 'discrete' or 'continuous'.
 #'@param min_dose a numerical value defining the lower bound of the support of
 #'the MTD.
 #'@param max_dose a numerical value defining the upper bound of the support of
@@ -36,9 +36,10 @@
 #'@param dose_set a numerical vector of allowable doses in the trial. It is only
 #'necessary if type = 'discrete'.
 #'@param distribution a character establishing the distribution for the time of
-#'events.
+#'events. It can be 'exponential' or 'weibull'.
 #'@param rounding a character indicating how to round a continuous dose to the
-#'one of elements of the dose set. It is only necessary if type = 'discrete'.
+#'one of elements of the dose set. It can be 'nearest' or 'down'.
+#'It is only necessary if type = 'discrete'.
 #'@param n_adapt the number of iterations for adaptation.
 #'See \code{\link[rjags]{adapt}} for details.
 #'@param burn_in the number of iterations before to start monitoring.

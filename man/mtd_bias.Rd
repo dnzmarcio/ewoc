@@ -12,7 +12,7 @@ mtd_bias(mtd_estimate, true_mtd)
 \item{true_mtd}{a numerical value of the true Maximum Tolerable Dose.}
 }
 \value{
-\code{bias} bias of the MTD estimates.
+Bias of the MTD estimates.
 }
 \description{
 Calculate the bias.

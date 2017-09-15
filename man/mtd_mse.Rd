@@ -12,7 +12,7 @@ mtd_mse(mtd_estimate, true_mtd)
 \item{true_mtd}{a numerical value of the true Maximum Tolerable Dose.}
 }
 \value{
-\code{mse} MSE of the MTD estimates.
+MSE of the MTD estimates.
 }
 \description{
 Calculate the Mean Square Error (MSE).
