@@ -1,7 +1,8 @@
 #'@import ggplot2 graphics
-NULL
-gg_ewoc_d1basic <- function(object){
+#'@export
+plot.ewoc_d1basic <- function(x, ...){
 
+  object <- x
   sm <- summary(object, print = FALSE)
 
   mtd <- as.numeric(object$mtd)
@@ -30,9 +31,10 @@ gg_ewoc_d1basic <- function(object){
 }
 
 #'@import ggplot2 graphics
-NULL
-gg_ewoc_d1extended <- function(object){
+#'@export
+plot.ewoc_d1extended <- function(x, ...){
 
+  object <- x
   sm <- summary(object, print = FALSE)
 
   mtd <- as.numeric(object$mtd)
@@ -61,9 +63,10 @@ gg_ewoc_d1extended <- function(object){
 }
 
 #'@import ggplot2 graphics
-NULL
-gg_ewoc_d1ph <- function(object){
+#'@export
+plot.ewoc_d1ph <- function(x, ...){
 
+  object <- x
   sm <- summary(object, print = FALSE)
 
   mtd <- as.numeric(object$mtd)
