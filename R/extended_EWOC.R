@@ -72,10 +72,10 @@ ewoc_d1extended <- function(formula, theta, alpha,
   if (class(formula)[2] != "formula")
     stop("Invalid formula! \n")
 
-  data_base <- stats::model.frame(formula, na.action = na.exclude,
+  data_base <- model.frame(formula, na.action = na.exclude,
                                   drop.unused.levels = FALSE)
 
-  dose_matrix <- stats::model.matrix(formula, data_base, rhs = 1)
+  dose_matrix <- model.matrix(formula, data_base, rhs = 1)
 
   if (length(formula)[2] == 1){
     design_matrix <- dose_matrix
@@ -85,7 +85,7 @@ ewoc_d1extended <- function(formula, theta, alpha,
   }
   colnames(design_matrix) <- c("intercept", "dose")
 
-  response <- stats::model.response(data_base)
+  response <- model.response(data_base)
 
   if (length(type) > 1 | !(type == "continuous" | type == "discrete"))
     stop("'type' should be either 'continuous' or 'discrete'.")

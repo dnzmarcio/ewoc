@@ -90,10 +90,10 @@ ewoc_d1ph <- function(formula, theta, alpha, tau,
   if (class(formula)[2] != "formula")
     stop("Invalid formula! \n")
 
-  data_base <- stats::model.frame(formula, na.action = na.exclude,
+  data_base <- model.frame(formula, na.action = na.exclude,
                                   drop.unused.levels = FALSE)
 
-  dose_matrix <- stats::model.matrix(formula, data_base, rhs = 1)
+  dose_matrix <- model.matrix(formula, data_base, rhs = 1)
 
   if (length(formula)[2] == 1){
     covariable_matrix <- NULL
@@ -103,7 +103,7 @@ ewoc_d1ph <- function(formula, theta, alpha, tau,
     stop("This design cannot accommodate a covariable.")
   }
 
-  response <- stats::model.response(data_base)
+  response <- model.response(data_base)
 
   if (!is.matrix(response))
     stop("The left side of the formula should be a matrix: time and status!\n")
