@@ -1,4 +1,4 @@
-#'@import ggplot2 graphics
+#'@import ggptlot2 graphics
 #'@export
 plot.ewoc_d1classic <- function(x, ...){
 
@@ -13,7 +13,7 @@ plot.ewoc_d1classic <- function(x, ...){
 
   label <- paste("Next dose:", round(sm$next_dose, 2))
 
-  gp <- ggplot(data_plot, aes_string(x = 'mtd')) + geom_density() +
+  out <- ggplot(data_plot, aes_string(x = 'mtd')) + geom_density() +
     geom_vline(xintercept = as.numeric(sm$next_dose),
                linetype = 2, size = 1.2) +
     geom_ribbon(data = shade[shade$x > sm$hpd_dose[1] &
@@ -26,8 +26,7 @@ plot.ewoc_d1classic <- function(x, ...){
              label = label) +
     theme_bw()
 
-  plot(gp)
-  return(gp)
+  return(out)
 }
 
 #'@import ggplot2 graphics
@@ -45,7 +44,7 @@ plot.ewoc_d1extended <- function(x, ...){
 
   label <- paste("Next dose:", round(sm$next_dose, 2))
 
-  gp <- ggplot(data_plot, aes_string(x = 'mtd')) + geom_density() +
+  out <- ggplot(data_plot, aes_string(x = 'mtd')) + geom_density() +
     geom_vline(xintercept = as.numeric(sm$next_dose),
                linetype = 2, size = 1.2) +
     geom_ribbon(data = shade[
@@ -58,8 +57,7 @@ plot.ewoc_d1extended <- function(x, ...){
              label = label) +
     theme_bw()
 
-  plot(gp)
-  return(gp)
+  return(out)
 }
 
 #'@import ggplot2 graphics
@@ -77,7 +75,7 @@ plot.ewoc_d1ph <- function(x, ...){
 
   label <- paste("Next dose:", round(sm$next_dose, 2))
 
-  gp <- ggplot(data_plot, aes_string(x = 'mtd')) + geom_density() +
+  out <- ggplot(data_plot, aes_string(x = 'mtd')) + geom_density() +
     geom_vline(xintercept = as.numeric(sm$next_dose),
                linetype = 2, size = 1.2) +
     geom_ribbon(data = shade[shade$x > sm$hpd_dose[1] &
@@ -89,7 +87,6 @@ plot.ewoc_d1ph <- function(x, ...){
              label = label) +
     theme_bw()
 
-  plot(gp)
-  return(gp)
+  return(out)
 }
 
