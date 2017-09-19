@@ -39,7 +39,7 @@
 #'                                   min_dose = 10, max_dose = 50)
 #'sim <- trial_simulation(step_zero = step_zero,
 #'                        n_sim = 1, sample_size = 30,
-#'                        alpha_strategy = "constant",
+#'                        alpha_strategy = "increasing",
 #'                        response_sim = response_sim)
 #'
 #'### Extended EWOC
@@ -55,7 +55,7 @@
 #'                                    min_dose = 10, max_dose = 50)
 #'sim <- trial_simulation(step_zero = step_zero,
 #'                        n_sim = 1, sample_size = 30,
-#'                        alpha_strategy = "constant",
+#'                        alpha_strategy = "increasing",
 #'                        response_sim = response_sim)
 #'
 #'### PH EWOC
