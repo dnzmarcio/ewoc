@@ -51,7 +51,6 @@ test <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
 
 ```{r results}
 summary(test)
-plot(test)
 ```
 
 In addition, simulations also can be performed to evaluate a design:

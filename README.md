@@ -48,15 +48,12 @@ summary(test)
 #> 
 #> Next Dose
 #>   Estimate         95% HPD
-#> 1       40 (14.26 ; 99.84)
+#> 1       40 (16.83 ; 99.95)
 #> 
 #> P(DLT| next dose)
 #>   Estimate      95% HPD
 #> 1     0.29 (0.04 ; 0.6)
-plot(test)
 ```
-
-![](README-results-1.png)
 
 In addition, simulations also can be performed to evaluate a design:
 
