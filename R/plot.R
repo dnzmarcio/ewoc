@@ -1,6 +1,6 @@
 #'@import ggplot2 graphics
 #'@export
-plot.ewoc_d1basic <- function(x, ...){
+plot.ewoc_d1classic <- function(x, ...){
 
   object <- x
   sm <- summary(object, print = FALSE)

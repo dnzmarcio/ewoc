@@ -105,6 +105,7 @@ test <- ewoc_d1ph(cbind(time, status) ~ dose, type = 'discrete',
                  distribution = 'exponential',
                  rounding = 'nearest')
 summary(test)
+plot(test)
 }
 
 }

@@ -88,6 +88,7 @@ test <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
                       mtd_prior = matrix(1, ncol = 2, nrow = 1),
                       rounding = "nearest")
 summary(test)
+plot(test)
 }
 
 }

@@ -70,6 +70,7 @@
 #'                  distribution = 'exponential',
 #'                  rounding = 'nearest')
 #'summary(test)
+#'plot(test)
 #'}
 #'
 #'@import stats
