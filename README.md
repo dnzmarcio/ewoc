@@ -48,11 +48,11 @@ summary(test)
 #> 
 #> Next Dose
 #>   Estimate         95% HPD
-#> 1       40 (15.43 ; 99.91)
+#> 1       40 (14.26 ; 99.84)
 #> 
 #> P(DLT| next dose)
-#>   Estimate       95% HPD
-#> 1     0.29 (0.02 ; 0.57)
+#>   Estimate      95% HPD
+#> 1     0.29 (0.04 ; 0.6)
 plot(test)
 ```
 
