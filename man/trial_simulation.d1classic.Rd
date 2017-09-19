@@ -28,11 +28,11 @@ feasibility strategy. Only necessary if alpha_strategy is either
 
 \item{response_sim}{a function which is self-contained and will be used
 as a generator function of the response variables in the simulation.
-Its only imput is 'dose' and output is the ndicator of DLT.}
+Its only imput is 'dose' and output is the indicator of DLT.}
 
 \item{stop_rule_sim}{a function having as an imput an object containing all
 the information related to the trial as the returned object trial from
-\code{ewoc_d1classic} and as output a logical valuel indicating the trial
+\code{ewoc_d1classic} and as output a logical value indicating the trial
 should be stopped.}
 }
 \description{

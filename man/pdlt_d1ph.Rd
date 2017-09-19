@@ -32,7 +32,7 @@ toxicity be observed.}
 events.}
 }
 \value{
-A function with dose as an imput and a probability based on the
+A function with dose as an input and a probability based on the
 logistic regression and parameters as an output.
 }
 \description{

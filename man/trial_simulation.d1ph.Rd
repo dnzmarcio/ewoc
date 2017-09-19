@@ -32,7 +32,7 @@ Its only imput is 'dose' and output is the time of DLT.}
 
 \item{stop_rule_sim}{a function having as an imput an object containing all
 the information related to the trial as the returned object trial from
-\code{ewoc_d1ph} and as output a logical valuel indicating the trial
+\code{ewoc_d1ph} and as output a logical value indicating the trial
 should be stopped.}
 }
 \description{

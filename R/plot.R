@@ -1,4 +1,4 @@
-#'@import ggptlot2 graphics
+#'@import ggplot2 graphics
 #'@export
 plot.ewoc_d1classic <- function(x, ...){
 
