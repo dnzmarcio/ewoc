@@ -15,7 +15,6 @@ Imports:
     Formula(>= 1.2-1),
     rjags(>= 4-6),
     coda(>= 0.18-1),
-Depends:
     ggplot2(>= 2.2.0),
     graphics(>= 3.3.1),
     stats(>= 3.3.1)
