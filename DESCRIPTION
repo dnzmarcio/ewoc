@@ -1,6 +1,6 @@
 Package: ewoc
 Type: Package
-Title: Escalation With Overdose Control
+Title: Escalation with Overdose Control
 Version: 0.1.0
 Author: Marcio A. Diniz <marcio.diniz@cshs.org>
 Maintainer: Marcio A. Diniz <marcio.diniz@cshs.org>

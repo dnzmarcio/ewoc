@@ -2,7 +2,7 @@
 % Please edit documentation in R/classic_EWOC.R
 \name{ewoc_d1classic}
 \alias{ewoc_d1classic}
-\title{Escalation Over with Dose Control}
+\title{Escalation With Overdose Control}
 \usage{
 ewoc_d1classic(formula, theta, alpha, mtd_prior, rho_prior, min_dose, max_dose,
   type = c("continuous", "discrete"), first_dose = NULL, last_dose = NULL,
@@ -73,7 +73,7 @@ See \code{\link[rjags]{adapt}} for details.}
 }
 \description{
 Finding the next dose for a phase I clinical trial based on the
-Escalation Over Dose Control (EWOC) design considering the
+Escalation With Overdose Control (EWOC) design considering the
 classic parametrization for binary responses and single agent.
 }
 \examples{

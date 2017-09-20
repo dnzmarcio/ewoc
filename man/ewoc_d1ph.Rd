@@ -2,7 +2,7 @@
 % Please edit documentation in R/ph_ewoc.R
 \name{ewoc_d1ph}
 \alias{ewoc_d1ph}
-\title{Escalation Over with Dose Control}
+\title{Escalation With Overdose Control}
 \usage{
 ewoc_d1ph(formula, theta, alpha, tau, type = c("continuous", "discrete"),
   rho_prior, mtd_prior, shape_prior = NULL, min_dose, max_dose,
@@ -86,8 +86,8 @@ See \code{\link[rjags]{adapt}} for details.}
 \code{trial} a list of the trial conditions.
 }
 \description{
-Finding the next dose for a phase I clinical trial based on Escalation Over
-Dose Control (EWOC) design considering parametrization for time
+Finding the next dose for a phase I clinical trial based on Escalation
+With Overdose Control (EWOC) design considering parametrization for time
 to event response and single agent.
 }
 \examples{

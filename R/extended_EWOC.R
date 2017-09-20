@@ -1,7 +1,7 @@
-#'Escalation Over with Dose Control
+#'Escalation With Overdose Control
 #'
 #'Finding the next dose for a phase I clinical trial based on the
-#'Escalation Over Dose Control (EWOC) design considering the
+#'Escalation With Overdose Control (EWOC) design considering the
 #'extended parametrization for binary response and single agent.
 #'
 #'@param formula an object of class \code{\link[Formula]{Formula}}: a symbolic
