@@ -14,7 +14,7 @@
 #'@param alpha a numerical value defining the probability that the dose selected
 #'by EWOC is higher than the MTD.
 #'@param rho_prior a matrix 3 x 2 of hyperparameters for the Beta prior
-#'distribution associated with each parameter rho. Each row corresponds to a paramater.
+#'distribution associated with each parameter rho. Each row corresponds to a parameter.
 #'@param type a character describing the type of the Maximum Tolerable Dose
 #'(MTD) variable.
 #'@param min_dose a numerical value defining the lower bound of the support of
