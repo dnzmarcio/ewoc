@@ -23,7 +23,7 @@ administered the MTD.}
 by EWOC is higher than the MTD.}
 
 \item{rho_prior}{a matrix 3 x 2 of hyperparameters for the Beta prior
-distribution associated with each parameter rho. Each row corresponds to a paramater.}
+distribution associated with each parameter rho. Each row corresponds to a parameter.}
 
 \item{min_dose}{a numerical value defining the lower bound of the support of
 the MTD.}
