@@ -1,7 +1,7 @@
 #'Escalation With Overdose Control
 #'
 #'Finding the next dose for a phase I clinical trial based on the
-#'Escalation With Overdose Control (EWOC) design considering the
+#'Escalation with Overdose Control (EWOC) design considering the
 #'classic parametrization for binary responses and single agent.
 #'
 #'@param formula an object of class \code{\link[Formula]{Formula}}: a symbolic
@@ -49,7 +49,6 @@
 #'control. Statistics in medicine, 17(10), pp.1103-1120.
 #'
 #'@examples
-#'\dontrun{
 #'DLT <- 0
 #'dose <- 30
 #'test <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
@@ -61,7 +60,6 @@
 #'                       rounding = "nearest")
 #'summary(test)
 #'plot(test)
-#'}
 #'
 #'@import stats
 #'

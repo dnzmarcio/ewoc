@@ -1,7 +1,7 @@
 #'Escalation With Overdose Control
 #'
 #'Finding the next dose for a phase I clinical trial based on Escalation
-#'With Overdose Control (EWOC) design considering parametrization for time
+#'with Overdose Control (EWOC) design considering parametrization for time
 #'to event response and single agent.
 #'
 #'@param formula an object of class \code{\link[Formula]{Formula}}: a symbolic
@@ -56,7 +56,6 @@
 #'@references Tighiouart M, Liu Y, Rogatko A. Escalation with overdose control using time to toxicity for cancer phase I clinical trials. PloS one. 2014 Mar 24;9(3):e93070.
 #'
 #'@examples
-#'\dontrun{
 #'time <- 9
 #'status <- 0
 #'dose <- 30
@@ -71,7 +70,6 @@
 #'                  rounding = 'nearest')
 #'summary(test)
 #'plot(test)
-#'}
 #'
 #'@import stats
 #'

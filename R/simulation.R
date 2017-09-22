@@ -24,7 +24,6 @@
 #'output a logical value indicating the trial should be stopped.
 #'
 #'@examples
-#'\dontrun{
 #'### Classic EWOC
 #'DLT <- 0
 #'dose <- 30
@@ -38,7 +37,7 @@
 #'response_sim <- response_d1classic(rho = 0.05, mtd = 20, theta = 0.33,
 #'                                   min_dose = 10, max_dose = 50)
 #'sim <- trial_simulation(step_zero = step_zero,
-#'                        n_sim = 1, sample_size = 30,
+#'                        n_sim = 1, sample_size = 10,
 #'                        alpha_strategy = "increasing",
 #'                        response_sim = response_sim)
 #'
@@ -54,7 +53,7 @@
 #'response_sim <- response_d1extended(rho = c(0.05, 0.5), theta = 0.33,
 #'                                    min_dose = 10, max_dose = 50)
 #'sim <- trial_simulation(step_zero = step_zero,
-#'                        n_sim = 1, sample_size = 30,
+#'                        n_sim = 1, sample_size = 10,
 #'                        alpha_strategy = "increasing",
 #'                        response_sim = response_sim)
 #'
@@ -75,10 +74,9 @@
 #'                              min_dose = 30, max_dose = 50,
 #'                              tau = 10, distribution = "exponential")
 #'sim <- trial_simulation(step_zero = step_zero,
-#'                        n_sim = 1, sample_size = 30,
+#'                        n_sim = 1, sample_size = 10,
 #'                        alpha_strategy = "increasing",
 #'                        response_sim = response_sim)
-#'}
 #'
 #'@export
 trial_simulation <- function(step_zero, n_sim, sample_size,

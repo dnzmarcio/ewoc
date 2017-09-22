@@ -87,11 +87,10 @@ See \code{\link[rjags]{adapt}} for details.}
 }
 \description{
 Finding the next dose for a phase I clinical trial based on Escalation
-With Overdose Control (EWOC) design considering parametrization for time
+with Overdose Control (EWOC) design considering parametrization for time
 to event response and single agent.
 }
 \examples{
-\dontrun{
 time <- 9
 status <- 0
 dose <- 30
@@ -106,7 +105,6 @@ test <- ewoc_d1ph(cbind(time, status) ~ dose, type = 'discrete',
                  rounding = 'nearest')
 summary(test)
 plot(test)
-}
 
 }
 \references{

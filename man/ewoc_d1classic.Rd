@@ -73,11 +73,10 @@ See \code{\link[rjags]{adapt}} for details.}
 }
 \description{
 Finding the next dose for a phase I clinical trial based on the
-Escalation With Overdose Control (EWOC) design considering the
+Escalation with Overdose Control (EWOC) design considering the
 classic parametrization for binary responses and single agent.
 }
 \examples{
-\dontrun{
 DLT <- 0
 dose <- 30
 test <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
@@ -89,7 +88,6 @@ test <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
                       rounding = "nearest")
 summary(test)
 plot(test)
-}
 
 }
 \references{
