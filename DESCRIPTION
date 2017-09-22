@@ -4,7 +4,7 @@ Title: Escalation with Overdose Control
 Version: 0.1.0
 Author: Marcio A. Diniz <marcio.diniz@cshs.org>
 Maintainer: Marcio A. Diniz <marcio.diniz@cshs.org>
-Description: An implementation of a variety of Escalation with Overdose Control designs introduced by Babb, Rogatko and Zacks (1998) <doi:10.1002/(SICI)1097-0258(19980530)17:10<1103::AID>.It calculates the next dose as a clinical trial proceeds as well as performs simulations to obtain operating characteristics.
+Description: An implementation of a variety of Escalation with Overdose Control designs introduced by Babb, Rogatko and Zacks (1998) <doi:10.1002/(SICI)1097-0258(19980530)17:10<1103::AID-SIM793>3.0.CO;2-9>.It calculates the next dose as a clinical trial proceeds as well as performs simulations to obtain operating characteristics.
 License: GPL(>= 2)
 LazyData: TRUE
 URL: https://github.com/dnzmarcio/ewoc/
