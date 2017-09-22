@@ -30,11 +30,11 @@ standard_dose <- function(dose, min_dose, max_dose) {
 #'Rescaling standardized dose
 #'
 #'@param dose A numerical value indicating the standardized dose to be
-#'reescaled between \code{min_dose} and \code{max_dose}.
+#'rescaled between \code{min_dose} and \code{max_dose}.
 #'@param min_dose A numerical value indicating the minimum dose.
 #'@param max_dose A numerical value indicating the maximum dose.
 #'
-#'@return A reescaled dose between \code{min_dose} and \code{max_dose}.
+#'@return A rescaled dose between \code{min_dose} and \code{max_dose}.
 #'
 #'@export
 inv_standard_dose <- function(dose, min_dose, max_dose) {

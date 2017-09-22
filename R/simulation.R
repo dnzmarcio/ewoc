@@ -16,9 +16,9 @@
 #''increasing' or 'conditional'.
 #'@param response_sim a function which is self-contained and will be used
 #'as a generator function of the response variables in the simulation.
-#'Its only imput is 'dose' and output is the indicator of DLT for classical and
+#'Its only input is 'dose' and output is the indicator of DLT for classical and
 #'extended EWOC and the time until DLT for PH EWOC.
-#'@param stop_rule_sim a function having as an imput an object containing all
+#'@param stop_rule_sim a function having as an input an object containing all
 #'the information related to the trial as the returned object trial from either
 #'\code{ewoc_d1classic}, \code{ewoc_d1extended}, \code{ewoc_d1ph} and as
 #'output a logical value indicating the trial should be stopped.
@@ -105,8 +105,8 @@ trial_simulation <- function(step_zero, n_sim, sample_size,
 #''increasing' or 'conditional'.
 #'@param response_sim a function which is self-contained and will be used
 #'as a generator function of the response variables in the simulation.
-#'Its only imput is 'dose' and output is the indicator of DLT.
-#'@param stop_rule_sim a function having as an imput an object containing all
+#'Its only input is 'dose' and output is the indicator of DLT.
+#'@param stop_rule_sim a function having as an input an object containing all
 #'the information related to the trial as the returned object trial from
 #'\code{ewoc_d1classic} and as output a logical value indicating the trial
 #'should be stopped.
@@ -206,8 +206,8 @@ trial_simulation.d1classic <- function(step_zero, n_sim, sample_size,
 #''increasing' or 'conditional'.
 #'@param response_sim a function which is self-contained and will be used
 #'as a generator function of the response variables in the simulation.
-#'Its only imput is 'dose' and output is the indicator of DLT.
-#'@param stop_rule_sim a function having as an imput an object containing all
+#'Its only input is 'dose' and output is the indicator of DLT.
+#'@param stop_rule_sim a function having as an input an object containing all
 #'the information related to the trial as the returned object trial from
 #'\code{ewoc_d1extended} and as output a logical value indicating the trial
 #'should be stopped.
@@ -306,8 +306,8 @@ trial_simulation.d1extended <- function(step_zero, n_sim, sample_size,
 #''increasing' or 'conditional'.
 #'@param response_sim a function which is self-contained and will be used
 #'as a generator function of the response variables in the simulation.
-#'Its only imput is 'dose' and output is the time of DLT.
-#'@param stop_rule_sim a function having as an imput an object containing all
+#'Its only input is 'dose' and output is the time of DLT.
+#'@param stop_rule_sim a function having as an input an object containing all
 #'the information related to the trial as the returned object trial from
 #'\code{ewoc_d1ph} and as output a logical value indicating the trial
 #'should be stopped.

@@ -8,7 +8,7 @@ inv_standard_dose(dose, min_dose, max_dose)
 }
 \arguments{
 \item{dose}{A numerical value indicating the standardized dose to be
-reescaled between \code{min_dose} and \code{max_dose}.}
+rescaled between \code{min_dose} and \code{max_dose}.}
 
 \item{min_dose}{A numerical value indicating the minimum dose.}
 
