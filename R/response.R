@@ -1,5 +1,7 @@
 #'Generating a binary response function based on the EWOC classic model
-#
+#'
+#'@import stats
+#'
 #'@param rho a numerical value indicating the true value of the parameter rho.
 #'@param mtd a numerical value indicating the true value of the parameter mtd.
 #'@param theta a numerical value defining the proportion of expected patients
@@ -43,7 +45,9 @@ response_d1classic <- function(rho, mtd, theta, min_dose, max_dose) {
 
 
 #'Generating a binary response function based on the EWOC extended model
-#
+#'
+#'@import stats
+#'
 #'@param rho a numerical vector indicating the true value of the parameters
 #'rho_0 and rho_1.
 #'@param theta a numerical value defining the proportion of expected patients
@@ -82,7 +86,9 @@ response_d1extended <- function(rho, theta, min_dose, max_dose) {
 }
 
 #'Generating a response function based on the EWOC Proportional Hazards model
-#
+#'
+#'@import stats
+#'
 #'@param rho a numerical value indicating the true value of the parameter rho.
 #'@param mtd a numerical value indicating the true value of the parameter mtd.
 #'@param theta a numerical value defining the proportion of expected patients
