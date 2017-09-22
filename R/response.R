@@ -10,10 +10,8 @@
 #'@param max_dose a numerical value defining the upper bound of the support of
 #'the MTD.
 #'
-#'@return A function with dose as an imput and a Binomial variable based on the
+#'@return A function with dose as an input and a Binomial variable based on the
 #'parameters as an output.
-#'
-#'@importFrom stats plogis rbinom
 #'
 #'@export
 response_d1classic <- function(rho, mtd, theta, min_dose, max_dose) {
@@ -56,10 +54,8 @@ response_d1classic <- function(rho, mtd, theta, min_dose, max_dose) {
 #'@param max_dose a numerical value defining the upper bound of the support of
 #'the MTD.
 #'
-#'@return A function with dose as an imput and a Binomial variable based on the
+#'@return A function with dose as an input and a Binomial variable based on the
 #'parameters as an output.
-#'
-#'@importFrom stats plogis rbinom
 #'
 #'@export
 response_d1extended <- function(rho, theta, min_dose, max_dose) {
@@ -103,10 +99,8 @@ response_d1extended <- function(rho, theta, min_dose, max_dose) {
 #'@param shape a numerical value indicating the true value of the parameter shape.
 #'It is only necessary if 'distribution' = "weibull".
 #'
-#'@return A function with dose as an imput and a Binomial variable based on the
+#'@return A function with dose as an input and a Binomial variable based on the
 #'parameters as an output.
-#'
-#'@importFrom stats runif
 #'
 #'@export
 response_d1ph <- function(rho, mtd, theta, min_dose, max_dose,

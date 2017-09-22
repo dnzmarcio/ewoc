@@ -32,7 +32,7 @@ events.}
 It is only necessary if 'distribution' = "weibull".}
 }
 \value{
-A function with dose as an imput and a Binomial variable based on the
+A function with dose as an input and a Binomial variable based on the
 parameters as an output.
 }
 \description{

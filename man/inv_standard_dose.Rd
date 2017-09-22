@@ -15,7 +15,7 @@ rescaled between \code{min_dose} and \code{max_dose}.}
 \item{max_dose}{A numerical value indicating the maximum dose.}
 }
 \value{
-A reescaled dose between \code{min_dose} and \code{max_dose}.
+A rescaled dose between \code{min_dose} and \code{max_dose}.
 }
 \description{
 Rescaling standardized dose
