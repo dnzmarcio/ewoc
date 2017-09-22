@@ -45,13 +45,15 @@ Please unwrap the examples if that is feasible and if they can be executed in < 
 }
 would be desirable.
 
-Please fix and resubmit.
 
 ## Round 2
 
 ### Submission comments
 
 Addressed all previous comments.
+
+The correct DOI in DESCRIPTION is 10.1002/(SICI)1097-0258(19980530)17:10<1103::AID-SIM793>3.0.CO;2-9, but R Check considers only 10.1002/(SICI)1097-0258(19980530)17:10<1103::AID-SIM793 ignoring the
+last part >3.0.CO;2-9 .
 
 
 ---
