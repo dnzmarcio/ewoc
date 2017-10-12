@@ -13,6 +13,13 @@
 #'@return A function with dose as an input and a probability based on the
 #'logistic regression and parameters as an output.
 #'
+#'@examples
+#'pdlt <- pdlt_d1classic(rho = 0.05, mtd = 20, theta = 0.33,
+#'                       min_dose = 10, max_dose = 50)
+#'
+#'pdlt(20)
+#'
+#'
 #'@export
 pdlt_d1classic <- function(rho, mtd, theta, min_dose, max_dose){
 
@@ -50,6 +57,11 @@ pdlt_d1classic <- function(rho, mtd, theta, min_dose, max_dose){
 #'
 #'@return A function with dose as an input and a probability based on the
 #'logistic regression and parameters as an output.
+#'
+#'@examples
+#'pdlt <- pdlt_d1extended(rho = c(0.05, 0.5),
+#'                        min_dose = 10, max_dose = 50)
+#'pdlt(20)
 #'
 #'@export
 pdlt_d1extended <- function(rho, min_dose, max_dose){
@@ -93,6 +105,12 @@ pdlt_d1extended <- function(rho, min_dose, max_dose){
 #'
 #'@return A function with dose as an input and a probability based on the
 #'logistic regression and parameters as an output.
+#'
+#'@examples
+#'pdlt <- pdlt_d1ph(rho = 0.05, mtd = 40, theta = 0.33,
+#'                  min_dose = 30, max_dose = 50,
+#'                  tau = 10, distribution = "exponential")
+#'pdlt(40)
 #'
 #'@export
 pdlt_d1ph <- function(rho, mtd, shape = NULL, theta, min_dose, max_dose,

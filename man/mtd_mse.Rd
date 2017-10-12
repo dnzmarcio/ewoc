@@ -17,3 +17,43 @@ MSE of the MTD estimates.
 \description{
 Calculate the Mean Square Error (MSE).
 }
+\examples{
+\dontshow{
+DLT <- 0
+dose <- 30
+step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
+                           theta = 0.33, alpha = 0.25,
+                           min_dose = 0, max_dose = 100,
+                           dose_set = seq(0, 100, 20),
+                           rho_prior = matrix(1, ncol = 2, nrow = 1),
+                           mtd_prior = matrix(1, ncol = 2, nrow = 1),
+                           rounding = "nearest")
+response_sim <- response_d1classic(rho = 0.05, mtd = 20, theta = 0.33,
+                                  min_dose = 10, max_dose = 50)
+sim <- trial_simulation(step_zero = step_zero,
+                       n_sim = 1, sample_size = 2,
+                       alpha_strategy = "increasing",
+                       response_sim = response_sim)
+mtd_mse(sim$mtd_sim, true_mtd = 20)
+}
+
+\dontrun{
+DLT <- 0
+dose <- 30
+step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
+                           theta = 0.33, alpha = 0.25,
+                           min_dose = 0, max_dose = 100,
+                           dose_set = seq(0, 100, 20),
+                           rho_prior = matrix(1, ncol = 2, nrow = 1),
+                           mtd_prior = matrix(1, ncol = 2, nrow = 1),
+                           rounding = "nearest")
+response_sim <- response_d1classic(rho = 0.05, mtd = 20, theta = 0.33,
+                                  min_dose = 10, max_dose = 50)
+sim <- trial_simulation(step_zero = step_zero,
+                       n_sim = 2, sample_size = 30,
+                       alpha_strategy = "increasing",
+                       response_sim = response_sim)
+mtd_mse(sim$mtd_sim, true_mtd = 20)
+}
+
+}

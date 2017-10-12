@@ -15,6 +15,11 @@
 #'@return A function with dose as an input and a Binomial variable based on the
 #'parameters as an output.
 #'
+#'@examples
+#'response_sim <- response_d1classic(rho = 0.05, mtd = 20, theta = 0.33,
+#'                                   min_dose = 10, max_dose = 50)
+#'response_sim(20)
+#'
 #'@export
 response_d1classic <- function(rho, mtd, theta, min_dose, max_dose) {
 
@@ -50,9 +55,6 @@ response_d1classic <- function(rho, mtd, theta, min_dose, max_dose) {
 #'
 #'@param rho a numerical vector indicating the true value of the parameters
 #'rho_0 and rho_1.
-#'@param theta a numerical value defining the proportion of expected patients
-#'to experience a medically unacceptable, dose-limiting toxicity (DLT) if
-#'administered the MTD.
 #'@param min_dose a numerical value defining the lower bound of the support of
 #'the MTD.
 #'@param max_dose a numerical value defining the upper bound of the support of
@@ -61,8 +63,13 @@ response_d1classic <- function(rho, mtd, theta, min_dose, max_dose) {
 #'@return A function with dose as an input and a Binomial variable based on the
 #'parameters as an output.
 #'
+#'@examples
+#'response_sim <- response_d1extended(rho = c(0.05, 0.5),
+#'                                    min_dose = 10, max_dose = 50)
+#'response_sim(20)
+#'
 #'@export
-response_d1extended <- function(rho, theta, min_dose, max_dose) {
+response_d1extended <- function(rho, min_dose, max_dose) {
 
   response_sim <- function(dose){
 
@@ -107,6 +114,12 @@ response_d1extended <- function(rho, theta, min_dose, max_dose) {
 #'
 #'@return A function with dose as an input and a Binomial variable based on the
 #'parameters as an output.
+#'
+#'@examples
+#'response_sim <- response_d1ph(rho = 0.05, mtd = 40, theta = 0.33,
+#'                              min_dose = 30, max_dose = 50,
+#'                              tau = 10, distribution = "exponential")
+#'response_sim(40)
 #'
 #'@export
 response_d1ph <- function(rho, mtd, theta, min_dose, max_dose,

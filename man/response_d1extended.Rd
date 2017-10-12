@@ -4,15 +4,11 @@
 \alias{response_d1extended}
 \title{Generating a binary response function based on the EWOC extended model}
 \usage{
-response_d1extended(rho, theta, min_dose, max_dose)
+response_d1extended(rho, min_dose, max_dose)
 }
 \arguments{
 \item{rho}{a numerical vector indicating the true value of the parameters
 rho_0 and rho_1.}
-
-\item{theta}{a numerical value defining the proportion of expected patients
-to experience a medically unacceptable, dose-limiting toxicity (DLT) if
-administered the MTD.}
 
 \item{min_dose}{a numerical value defining the lower bound of the support of
 the MTD.}
@@ -26,4 +22,10 @@ parameters as an output.
 }
 \description{
 Generating a binary response function based on the EWOC extended model
+}
+\examples{
+response_sim <- response_d1extended(rho = c(0.05, 0.5),
+                                   min_dose = 10, max_dose = 50)
+response_sim(20)
+
 }

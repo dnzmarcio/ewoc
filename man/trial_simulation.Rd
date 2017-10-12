@@ -35,10 +35,30 @@ the information related to the trial as the returned object trial from either
 \code{ewoc_d1classic}, \code{ewoc_d1extended}, \code{ewoc_d1ph} and as
 output a logical value indicating the trial should be stopped.}
 }
+\value{
+\code{alpha_sim} a matrix \code{n_sim} x \code{sample_size} containing
+the values of feasibility used for each step in the trial and each trial in
+the simulation.
+
+\code{dlt_sim} a matrix \code{n_sim} x \code{sample_size} containing
+ones and zeros indicating the ocurrence of DLT (1) and the absence of DLT (0)
+for each step in the trial and each trial in the simulation.
+
+\code{dose_sim} a matrix \code{n_sim} x \code{sample_size} containing
+the doses assigned for each step in the trial and each trial in the simulation.
+
+\code{mtd_sim} a numeric vector \code{n_sim} x 1 containing
+the recommended MTD for each trial in the simulation.
+
+\code{mtd_sim} a numeric vector \code{n_sim} x k containing
+the estimated rho parameter(s) for each trial in the simulation, where k = 1
+for ewoc_d1classic, ewoc_d1ph, and k = 2 for ewoc_d1extended.
+}
 \description{
 Generic function for simulating EWOC trials.
 }
 \examples{
+\dontshow{
 ### Classic EWOC
 DLT <- 0
 dose <- 30
@@ -52,7 +72,7 @@ step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
 response_sim <- response_d1classic(rho = 0.05, mtd = 20, theta = 0.33,
                                   min_dose = 10, max_dose = 50)
 sim <- trial_simulation(step_zero = step_zero,
-                       n_sim = 1, sample_size = 10,
+                       n_sim = 1, sample_size = 2,
                        alpha_strategy = "increasing",
                        response_sim = response_sim)
 
@@ -65,10 +85,10 @@ step_zero <- ewoc_d1extended(DLT ~ dose, type = 'discrete',
                            dose_set = seq(0, 100, 20),
                            rho_prior = matrix(1, ncol = 2, nrow = 2),
                            rounding = "nearest")
-response_sim <- response_d1extended(rho = c(0.05, 0.5), theta = 0.33,
+response_sim <- response_d1extended(rho = c(0.05, 0.5),
                                    min_dose = 10, max_dose = 50)
 sim <- trial_simulation(step_zero = step_zero,
-                       n_sim = 1, sample_size = 10,
+                       n_sim = 1, sample_size = 2,
                        alpha_strategy = "increasing",
                        response_sim = response_sim)
 
@@ -89,8 +109,65 @@ response_sim <- response_d1ph(rho = 0.05, mtd = 40, theta = 0.33,
                              min_dose = 30, max_dose = 50,
                              tau = 10, distribution = "exponential")
 sim <- trial_simulation(step_zero = step_zero,
-                       n_sim = 1, sample_size = 10,
+                       n_sim = 1, sample_size = 2,
                        alpha_strategy = "increasing",
                        response_sim = response_sim)
+}
+
+\dontrun{
+#'### Classic EWOC
+DLT <- 0
+dose <- 30
+step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
+                           theta = 0.33, alpha = 0.25,
+                           min_dose = 0, max_dose = 100,
+                           dose_set = seq(0, 100, 20),
+                           rho_prior = matrix(1, ncol = 2, nrow = 1),
+                           mtd_prior = matrix(1, ncol = 2, nrow = 1),
+                           rounding = "nearest")
+response_sim <- response_d1classic(rho = 0.05, mtd = 20, theta = 0.33,
+                                  min_dose = 10, max_dose = 50)
+sim <- trial_simulation(step_zero = step_zero,
+                       n_sim = 2, sample_size = 30,
+                       alpha_strategy = "increasing",
+                       response_sim = response_sim)
+
+### Extended EWOC
+DLT <- 0
+dose <- 30
+step_zero <- ewoc_d1extended(DLT ~ dose, type = 'discrete',
+                           theta = 0.33, alpha = 0.25,
+                           min_dose = 0, max_dose = 100,
+                           dose_set = seq(0, 100, 20),
+                           rho_prior = matrix(1, ncol = 2, nrow = 2),
+                           rounding = "nearest")
+response_sim <- response_d1extended(rho = c(0.05, 0.5), theta = 0.33,
+                                   min_dose = 10, max_dose = 50)
+sim <- trial_simulation(step_zero = step_zero,
+                       n_sim = 2, sample_size = 30,
+                       alpha_strategy = "increasing",
+                       response_sim = response_sim)
+
+### PH EWOC
+time <- 0
+status <- 0
+dose <- 30
+
+step_zero <- ewoc_d1ph(cbind(time, status) ~ dose, type = 'discrete',
+                      theta = 0.33, alpha = 0.25, tau = 10,
+                      min_dose = 30, max_dose = 50,
+                      dose_set = seq(30, 50, 5),
+                      rho_prior = matrix(1, ncol = 2, nrow = 1),
+                      mtd_prior = matrix(1, ncol = 2, nrow = 1),
+                      distribution = 'exponential',
+                      rounding = 'nearest')
+response_sim <- response_d1ph(rho = 0.05, mtd = 40, theta = 0.33,
+                             min_dose = 30, max_dose = 50,
+                             tau = 10, distribution = "exponential")
+sim <- trial_simulation(step_zero = step_zero,
+                       n_sim = 2, sample_size = 30,
+                       alpha_strategy = "increasing",
+                       response_sim = response_sim)
+}
 
 }

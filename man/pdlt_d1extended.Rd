@@ -23,3 +23,9 @@ logistic regression and parameters as an output.
 \description{
 Generating a probability of DLT function based on the EWOC extended model
 }
+\examples{
+pdlt <- pdlt_d1extended(rho = c(0.05, 0.5),
+                       min_dose = 10, max_dose = 50)
+pdlt(20)
+
+}

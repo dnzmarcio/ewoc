@@ -1,42 +1,16 @@
-#'Transform a probability into logit scale
-#'
-#'@param p A numerical value indicating the probability.
-#'
-#'@return A numerical value of the logit transformation calculated based on
-#'\code{p}.
-#'
-#'@export
 logit <- function(p) {
   out <- log(p/(1 - p))
   return(out)
 }
 
-#'Standardizing dose
-#'
-#'@param dose A numerical value indicating the dose to be standardized between
-#'\code{min_dose} and \code{max_dose}.
-#'@param min_dose A numerical value indicating the minimum dose.
-#'@param max_dose A numerical value indicating the maximum dose.
-#'
-#'@return A standardized dose between 0 and 1.
-#'
-#'@export
+
 standard_dose <- function(dose, min_dose, max_dose) {
 
   out <- (dose - min_dose)/(max_dose - min_dose)
   return(out)
 }
 
-#'Rescaling standardized dose
-#'
-#'@param dose A numerical value indicating the standardized dose to be
-#'rescaled between \code{min_dose} and \code{max_dose}.
-#'@param min_dose A numerical value indicating the minimum dose.
-#'@param max_dose A numerical value indicating the maximum dose.
-#'
-#'@return A rescaled dose between \code{min_dose} and \code{max_dose}.
-#'
-#'@export
+
 inv_standard_dose <- function(dose, min_dose, max_dose) {
 
   out <- dose*(max_dose - min_dose) + min_dose
