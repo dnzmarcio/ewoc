@@ -55,6 +55,42 @@ Addressed all previous comments.
 The correct DOI in DESCRIPTION is 10.1002/(SICI)1097-0258(19980530)17:10<1103::AID-SIM793>3.0.CO;2-9, but R Check considers only 10.1002/(SICI)1097-0258(19980530)17:10<1103::AID-SIM793 ignoring the
 last part >3.0.CO;2-9 .
 
+### Reviewer Comments
 
+Swetlana Herbrant 10-04-17:
+
+Thanks, we get:
+Found the following (possibly) invalid DOIs:
+   DOI: 10.1002/(SICI)1097-0258(19980530)17:10<1103::AID-SIM793
+     From: DESCRIPTION
+     Status: Not Found
+     Message: 404
+
+Please do not capitalize 'Escalation with Overdose Control' in your description.
+
+Please add space after periods.
+
+Please add more small executable examples in your Rd-files for checks and users.
+
+
+Please fix and resubmit.
+
+Uwe Ligges 10-04-17:
+
+Reason: the DOI contains the special chars "<" and ">", hence please write it as
+
+
+URLencode("10.1002/(SICI)1097-0258(19980530)17:10<1103::AID-SIM793>3.0.CO;2-9")
+
+i.e.<doi:10.1002/(SICI)1097-0258(19980530)17:10%3C1103::AID-SIM793%3E3.0.CO;2-9>.
+
+## Round 3
+
+### Submission comments
+
+'Escalation with Overdose Control' is no longer capitalized and space after 
+periods was added.
+
+Simple examples were added to all Rd-files.
 ---
 
