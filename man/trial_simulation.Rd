@@ -41,7 +41,7 @@ the values of feasibility used for each step in the trial and each trial in
 the simulation.
 
 \code{dlt_sim} a matrix \code{n_sim} x \code{sample_size} containing
-ones and zeros indicating the ocurrence of DLT (1) and the absence of DLT (0)
+ones and zeros indicating the occurrence of DLT (1) and the absence of DLT (0)
 for each step in the trial and each trial in the simulation.
 
 \code{dose_sim} a matrix \code{n_sim} x \code{sample_size} containing
