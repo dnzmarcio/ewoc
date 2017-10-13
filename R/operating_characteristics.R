@@ -1,17 +1,3 @@
-#'Overdose loss function
-#'
-#'Calculate the overdose loss function given by \eqn{alpha(true_mtd -
-#'mtd_estimate)} if \eqn{true_mtd > mtd_estimate} and \eqn{(1 - alpha)
-#'(mtd_estimate - true_mtd)} if \eqn{true_mtd < mtd_estimate}.
-#'
-#'@param mtd_estimate a numerical value of the MTD estimate.
-#'@param true_mtd a numerical value of the true MTD.
-#'@param alpha Value of the loss for an underdose while the loss for
-#'an overdose is (1 - \code{alpha}).
-#'
-#'@return value of the evaluated loss function.
-#'
-#'@export
 overdose_loss <- function (mtd_estimate, true_mtd, alpha) {
 
   out <- ifelse(mtd_estimate < true_mtd, alpha*(true_mtd - mtd_estimate),

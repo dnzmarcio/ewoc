@@ -50,7 +50,7 @@ the doses assigned for each step in the trial and each trial in the simulation.
 \code{mtd_sim} a numeric vector \code{n_sim} x 1 containing
 the recommended MTD for each trial in the simulation.
 
-\code{mtd_sim} a numeric vector \code{n_sim} x k containing
+\code{rho_sim} a numeric vector \code{n_sim} x k containing
 the estimated rho parameter(s) for each trial in the simulation, where k = 1
 for ewoc_d1classic, ewoc_d1ph, and k = 2 for ewoc_d1extended.
 }
@@ -115,7 +115,7 @@ sim <- trial_simulation(step_zero = step_zero,
 }
 
 \dontrun{
-#'### Classic EWOC
+### Classic EWOC
 DLT <- 0
 dose <- 30
 step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
