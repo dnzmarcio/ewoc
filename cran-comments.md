@@ -91,6 +91,24 @@ i.e.<doi:10.1002/(SICI)1097-0258(19980530)17:10%3C1103::AID-SIM793%3E3.0.CO;2-9>
 'Escalation with Overdose Control' is no longer capitalized and space after 
 periods was added.
 
+DOI written in the form  URLencode("10.1002/(SICI)1097-0258(19980530)17:10<1103::AID-SIM793>3.0.CO;2-9")
+
 Simple examples were added to all Rd-files.
+
+### Reviewer comments
+
+Thanks, please write the DOI in the form:
+
+<doi:10.1002/(SICI)1097-0258(19980530)17:10%3C1103::AID-SIM793%3E3.0.CO;2-9>
+
+Please fix and resubmit.
+
+### Round
+
+### Submission comments
+
+DOI written in the form 
+<doi:10.1002/(SICI)1097-0258(19980530)17:10%3C1103::AID-SIM793%3E3.0.CO;2-9>
+
 ---
 
