@@ -3,7 +3,7 @@
 EWOC
 ====
 
-[![Travis-CI Build Status](https://travis-ci.org/dnzmarcio/ewoc.svg?branch=master)](https://travis-ci.org/dnzmarcio/ewoc)
+[![Travis-CI Build Status](https://travis-ci.org/dnzmarcio/ewoc.svg?branch=master)](https://travis-ci.org/dnzmarcio/ewoc) [![](http://cranlogs.r-pkg.org/badges/ewoc)](http://cran.rstudio.com/web/packages/ewoc/index.html)
 
 Escalation With Overdose Control is a dose escalation design for phase I clinical trials such that the probability of overdose is controlled explicitly.
 
@@ -28,7 +28,6 @@ A new dose using the classical EWOC can be calculated:
 
 ``` r
 library(ewoc)
-#> Loading required package: ggplot2
 DLT <- 0
 dose <- 30
 test <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
@@ -48,11 +47,11 @@ summary(test)
 #> 
 #> Next Dose
 #>   Estimate         95% HPD
-#> 1       40 (16.83 ; 99.95)
+#> 1       40 (15.78 ; 99.97)
 #> 
 #> P(DLT| next dose)
-#>   Estimate      95% HPD
-#> 1     0.29 (0.04 ; 0.6)
+#>   Estimate       95% HPD
+#> 1     0.29 (0.05 ; 0.64)
 ```
 
 In addition, simulations also can be performed to evaluate a design:
