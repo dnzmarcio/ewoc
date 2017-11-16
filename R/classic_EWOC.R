@@ -156,7 +156,7 @@ ewoc_d1classic <- function(formula, theta, alpha,
 }
 
 #'@importFrom rjags jags.model coda.samples
-ewoc_jags.d1classic <- function(data, n_adapt, burn_in,
+jags.d1classic <- function(data, n_adapt, burn_in,
                               n_mcmc, n_thin, n_chains) {
 
   # JAGS model function

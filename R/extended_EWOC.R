@@ -148,7 +148,7 @@ ewoc_d1extended <- function(formula, theta, alpha,
 }
 
 #'@importFrom rjags jags.model coda.samples
-ewoc_jags.d1extended <- function(data, n_adapt, burn_in,
+jags.d1extended <- function(data, n_adapt, burn_in,
                                  n_mcmc, n_thin, n_chains) {
 
   min_dose <- data$limits$min_dose

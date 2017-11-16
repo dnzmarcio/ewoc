@@ -80,8 +80,7 @@ next_dose.d1ph <- function(data){
 
   if (data$distribution != "weibull")
     shape <- 1
-  pdlt <- as.numeric(1 -
-                       exp(-exp(cbind(1, next_gamma)%*%t(beta))*
+  pdlt <- as.numeric(1 - exp(-exp(cbind(1, next_gamma)%*%t(beta))*
                              (data$tau^shape)))
 
   out <- list(mtd = mtd, pdlt = pdlt, next_dose = next_dose,
