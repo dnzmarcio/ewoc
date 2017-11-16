@@ -3,6 +3,10 @@ logit <- function(p) {
   return(out)
 }
 
+comb <- function(...) {
+  mapply('rbind', ..., SIMPLIFY=FALSE)
+}
+
 
 standard_dose <- function(dose, min_dose, max_dose) {
 
