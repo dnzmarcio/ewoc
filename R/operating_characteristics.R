@@ -476,7 +476,7 @@ optimal_toxicity <- function(dose_matrix, theta, margin, pdlt, digits = 2) {
 #'
 #'@export
 mtd_bias <- function(mtd_estimate, true_mtd) {
-  out <- mean(mtd_estimate - true_mtd, na.rm = TRUE)
+  out <- mean(mtd_estimate[, 1] - true_mtd, na.rm = TRUE)
   return(out)
 }
 
@@ -532,7 +532,7 @@ mtd_bias <- function(mtd_estimate, true_mtd) {
 #'
 #'@export
 mtd_mse <- function(mtd_estimate, true_mtd) {
-  out <- mean((mtd_estimate - true_mtd)^2, na.rm = TRUE)
+  out <- mean((mtd_estimate[, 1] - true_mtd)^2, na.rm = TRUE)
   return(out)
 }
 
