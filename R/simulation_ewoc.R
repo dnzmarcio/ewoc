@@ -246,11 +246,11 @@ ewoc_simulation.ewoc_d1classic <- function(step_zero, n_sim, sample_size,
             }
 
 
-  dose_sim <- result[[1]]
-  dlt_sim <- result[[2]]
-  mtd_sim <- result[[3]]
-  rho_sim <- result[[4]]
-  alpha_sim <- result[[5]]
+  dose_sim <- matrix(as.numeric(result[[1]]), nrow = n_sim, ncol = sample_size)
+  dlt_sim <-  matrix(as.numeric(result[[2]]), nrow = n_sim, ncol = sample_size)
+  mtd_sim <- as.numeric(result[[3]])
+  rho_sim <- as.numeric(result[[4]])
+  alpha_sim <- matrix(as.numeric(result[[5]]), nrow = n_sim, ncol = sample_size)
 
   out <- list(dose_sim = dose_sim, dlt_sim = dlt_sim,
               mtd_sim = mtd_sim, rho_sim = rho_sim, alpha_sim = alpha_sim)
@@ -333,11 +333,11 @@ ewoc_simulation.ewoc_d1extended <- function(step_zero, n_sim, sample_size,
               list(dose, dlt, mtd_estimate, rho_estimate, alpha)
             }
 
-  dose_sim <- result[[1]]
-  dlt_sim <- result[[2]]
-  mtd_sim <- result[[3]]
-  rho_sim <- result[[4]]
-  alpha_sim <- result[[5]]
+  dose_sim <- matrix(as.numeric(result[[1]]), nrow = n_sim, ncol = sample_size)
+  dlt_sim <-  matrix(as.numeric(result[[2]]), nrow = n_sim, ncol = sample_size)
+  mtd_sim <- as.numeric(result[[3]])
+  rho_sim <- matrix(as.numeric(result[[4]]), nrow = n_sim, ncol = 2)
+  alpha_sim <- matrix(as.numeric(result[[5]]), nrow = n_sim, ncol = sample_size)
 
   out <- list(dose_sim = dose_sim, dlt_sim = dlt_sim,
               mtd_sim = mtd_sim, rho_sim = rho_sim, alpha_sim = alpha_sim)
@@ -454,12 +454,13 @@ ewoc_simulation.ewoc_d1ph <- function(step_zero, n_sim, sample_size,
               list(event_time, dose, dlt, mtd_estimate, rho_estimate, alpha)
             }
 
-  time_sim <- result[[1]]
-  dose_sim <- result[[2]]
-  dlt_sim <- result[[3]]
-  mtd_sim <- result[[4]]
-  rho_sim <- result[[5]]
-  alpha_sim <- result[[6]]
+  time_sim <- as.numeric(result[[1]])
+  dose_sim <- matrix(as.numeric(result[[2]]), nrow = n_sim, ncol = sample_size)
+  dlt_sim <-  matrix(as.numeric(result[[3]]), nrow = n_sim, ncol = sample_size)
+  mtd_sim <- as.numeric(result[[4]])
+  rho_sim <- as.numeric(result[[5]])
+  alpha_sim <- matrix(as.numeric(result[[6]]), nrow = n_sim, ncol = sample_size)
+
 
   out <- list(time_sim = time_sim, dose_sim = dose_sim, dlt_sim = dlt_sim,
               mtd_sim = mtd_sim, rho_sim = rho_sim, alpha_sim = alpha_sim)
