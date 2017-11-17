@@ -75,10 +75,10 @@ step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
 response_sim <- response_d1classic(rho = 0.05, mtd = 20, theta = 0.33,
                                   min_dose = 10, max_dose = 50)
 sim <- ewoc_simulation(step_zero = step_zero,
-                       n_sim = 1, sample_size = 2,
-                       alpha_strategy = "increasing",
-                       response_sim = response_sim,
-                       ncores = 2)
+                      n_sim = 1, sample_size = 2,
+                      alpha_strategy = "increasing",
+                      response_sim = response_sim,
+                      ncores = 2)
 
 ### Extended EWOC
 DLT <- 0
@@ -92,10 +92,10 @@ step_zero <- ewoc_d1extended(DLT ~ dose, type = 'discrete',
 response_sim <- response_d1extended(rho = c(0.05, 0.5),
                                    min_dose = 10, max_dose = 50)
 sim <- ewoc_simulation(step_zero = step_zero,
-                       n_sim = 1, sample_size = 2,
-                       alpha_strategy = "increasing",
-                       response_sim = response_sim,
-                       ncores = 2)
+                      n_sim = 1, sample_size = 2,
+                      alpha_strategy = "increasing",
+                      response_sim = response_sim,
+                      ncores = 2)
 
 ### PH EWOC
 time <- 0
@@ -114,10 +114,10 @@ response_sim <- response_d1ph(rho = 0.05, mtd = 40, theta = 0.33,
                              min_dose = 30, max_dose = 50,
                              tau = 10, distribution = "exponential")
 sim <- ewoc_simulation(step_zero = step_zero,
-                       n_sim = 1, sample_size = 2,
-                       alpha_strategy = "increasing",
-                       response_sim = response_sim,
-                       ncores = 2)
+                      n_sim = 1, sample_size = 2,
+                      alpha_strategy = "increasing",
+                      response_sim = response_sim,
+                      ncores = 2)
 }
 
 \dontrun{
