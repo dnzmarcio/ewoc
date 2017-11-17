@@ -244,7 +244,7 @@ ewoc_simulation.ewoc_d1classic <- function(step_zero, n_sim, sample_size,
 
               list(dose, dlt, mtd_estimate, rho_estimate, alpha)
             }
-
+  stopImplicitCluster()
 
   dose_sim <- matrix(as.numeric(result[[1]]), nrow = n_sim, ncol = sample_size)
   dlt_sim <-  matrix(as.numeric(result[[2]]), nrow = n_sim, ncol = sample_size)
@@ -332,6 +332,7 @@ ewoc_simulation.ewoc_d1extended <- function(step_zero, n_sim, sample_size,
 
               list(dose, dlt, mtd_estimate, rho_estimate, alpha)
             }
+  stopImplicitCluster()
 
   dose_sim <- matrix(as.numeric(result[[1]]), nrow = n_sim, ncol = sample_size)
   dlt_sim <-  matrix(as.numeric(result[[2]]), nrow = n_sim, ncol = sample_size)
@@ -453,6 +454,7 @@ ewoc_simulation.ewoc_d1ph <- function(step_zero, n_sim, sample_size,
 
               list(event_time, dose, dlt, mtd_estimate, rho_estimate, alpha)
             }
+  stopImplicitCluster()
 
   time_sim <- as.numeric(result[[1]])
   dose_sim <- matrix(as.numeric(result[[2]]), nrow = n_sim, ncol = sample_size)
