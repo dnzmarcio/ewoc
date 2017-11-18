@@ -346,7 +346,7 @@ ewoc_simulation.ewoc_d1extended <- function(step_zero, n_sim, sample_size,
 }
 
 #'@importFrom foreach foreach %dopar%
-#'@importFrom doParallel registerDoParallel
+#'@importFrom doParallel registerDoParallel stopImplicitCluster
 #'@export
 ewoc_simulation.ewoc_d1ph <- function(step_zero, n_sim, sample_size,
                                  alpha_strategy =
