@@ -3,6 +3,10 @@ logit <- function(p) {
   return(out)
 }
 
+comb <- function(...) {
+  mapply('rbind', ..., SIMPLIFY=FALSE)
+}
+
 
 standard_dose <- function(dose, min_dose, max_dose) {
 
@@ -50,8 +54,8 @@ next_dose <- function(data) {
   UseMethod("next_dose")
 }
 
-ewoc_jags <- function(data, n_adapt, burn_in, n_mcmc, n_thin, n_chains) {
-  UseMethod("ewoc_jags")
+jags <- function(data, n_adapt, burn_in, n_mcmc, n_thin, n_chains) {
+  UseMethod("jags")
 }
 
 feasibility <- function(alpha, strategy, rate, dlt, resolution){

@@ -178,7 +178,8 @@ ewoc_d1ph <- function(formula, theta, alpha, tau,
   return(out)
 }
 
-ewoc_jags.d1ph <- function(data, n_adapt, burn_in,
+#'@importFrom rjags jags.model coda.samples
+jags.d1ph <- function(data, n_adapt, burn_in,
                          n_mcmc, n_thin, n_chains) {
 
   time_cens <- data$response[, 1]
@@ -275,19 +276,19 @@ ewoc_jags.d1ph <- function(data, n_adapt, burn_in,
 
   initial <- inits()
   # Calling JAGS
-  j <- rjags::jags.model(textConnection(jfun),
-                         data = data_base,
-                         inits = initial,
-                         n.chains = n_chains,
-                         n.adapt = n_adapt)
+  j <- jags.model(textConnection(jfun),
+                  data = data_base,
+                  inits = initial,
+                  n.chains = n_chains,
+                  n.adapt = n_adapt)
   update(j, burn_in)
 
   if (data$distribution == "weibull"){
-    sample <- rjags::coda.samples(j,
-                                  variable.names =
-                                    c("beta", "gamma", "rho", "shape"),
-                                  n.iter = n_mcmc, thin = n_thin,
-                                  n.chains = n_chains)
+    sample <- coda.samples(j,
+                           variable.names =
+                             c("beta", "gamma", "rho", "shape"),
+                           n.iter = n_mcmc, thin = n_thin,
+                           n.chains = n_chains)
 
     beta <- sample[[1]][, 1:2]
     gamma <- sample[[1]][, 3]
@@ -297,9 +298,9 @@ ewoc_jags.d1ph <- function(data, n_adapt, burn_in,
     out <- list(beta = beta, gamma = gamma, rho = rho, shape = shape,
                 sample = sample)
   } else {
-    sample <- rjags::coda.samples(j, variable.names =  c("beta", "gamma", "rho"),
-                                  n.iter = n_mcmc, thin = n_thin,
-                                  n.chains = n_chains)
+    sample <- coda.samples(j, variable.names =  c("beta", "gamma", "rho"),
+                           n.iter = n_mcmc, thin = n_thin,
+                           n.chains = n_chains)
 
     beta <- sample[[1]][, 1:2]
     gamma <- sample[[1]][, 3]

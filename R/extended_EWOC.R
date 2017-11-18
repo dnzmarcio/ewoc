@@ -147,7 +147,8 @@ ewoc_d1extended <- function(formula, theta, alpha,
   return(out)
 }
 
-ewoc_jags.d1extended <- function(data, n_adapt, burn_in,
+#'@importFrom rjags jags.model coda.samples
+jags.d1extended <- function(data, n_adapt, burn_in,
                                  n_mcmc, n_thin, n_chains) {
 
   min_dose <- data$limits$min_dose
@@ -193,15 +194,15 @@ ewoc_jags.d1extended <- function(data, n_adapt, burn_in,
   }
 
   # Calling JAGS
-  j <- rjags::jags.model(textConnection(jfun),
+  j <- jags.model(textConnection(jfun),
                   data = data_base,
                   inits = list(v = inits()),
                   n.chains = n_chains,
                   n.adapt = n_adapt)
   update(j, burn_in)
-  sample <- rjags::coda.samples(j, variable.names = c("beta", "rho"),
-                                n.iter = n_mcmc, thin = n_thin,
-                                n.chains = n_chains)
+  sample <- coda.samples(j, variable.names = c("beta", "rho"),
+                         n.iter = n_mcmc, thin = n_thin,
+                         n.chains = n_chains)
 
   beta <- sample[[1]][, 1:2]
   rho <- sample[[1]][, 3:4]

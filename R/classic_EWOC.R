@@ -65,14 +65,14 @@
 #'
 #'@export
 ewoc_d1classic <- function(formula, theta, alpha,
-                         mtd_prior, rho_prior,
-                         min_dose, max_dose,
-                         type = c('continuous', 'discrete'),
-                         first_dose = NULL, last_dose = NULL,
-                         dose_set = NULL,
-                         rounding = c("down", "nearest"),
-                         n_adapt = 5000, burn_in = 1000,
-                         n_mcmc = 1000, n_thin = 1, n_chains = 1) {
+                           mtd_prior, rho_prior,
+                           min_dose, max_dose,
+                           type = c('continuous', 'discrete'),
+                           first_dose = NULL, last_dose = NULL,
+                           dose_set = NULL,
+                           rounding = c("down", "nearest"),
+                           n_adapt = 5000, burn_in = 1000,
+                           n_mcmc = 1000, n_thin = 1, n_chains = 1) {
 
 
   formula <- Formula::Formula(formula)
@@ -113,7 +113,7 @@ ewoc_d1classic <- function(formula, theta, alpha,
   if (nrow(mtd_prior) != 1 | ncol(mtd_prior) != 2)
     stop(paste0("'mtd_prior' should be a matrix with 2 columns and 1 row."))
 
-  if (nrow(rho_prior) != 1 | ncol(mtd_prior) != 2)
+  if (nrow(rho_prior) != 1 | ncol(rho_prior) != 2)
     stop(paste0("'rho_prior' should be a matrix with 2 columns and 1 row."))
 
   limits <- limits_d1nocov(first_dose = first_dose, last_dose = last_dose,
@@ -155,7 +155,8 @@ ewoc_d1classic <- function(formula, theta, alpha,
   return(out)
 }
 
-ewoc_jags.d1classic <- function(data, n_adapt, burn_in,
+#'@importFrom rjags jags.model coda.samples
+jags.d1classic <- function(data, n_adapt, burn_in,
                               n_mcmc, n_thin, n_chains) {
 
   # JAGS model function
@@ -193,15 +194,15 @@ ewoc_jags.d1classic <- function(data, n_adapt, burn_in,
   }
 
   # Calling JAGS
-  j <- rjags::jags.model(textConnection(jfun),
-                         data = data_base,
-                         inits = list(v = inits()),
-                         n.chains = n_chains,
-                         n.adapt = n_adapt)
+  j <- jags.model(textConnection(jfun),
+                  data = data_base,
+                  inits = list(v = inits()),
+                  n.chains = n_chains,
+                  n.adapt = n_adapt)
   update(j, burn_in)
-  sample <- rjags::coda.samples(j, variable.names = c("beta", "gamma", "rho"),
-                                n.iter = n_mcmc, thin = n_thin,
-                                n.chains = n_chains)
+  sample <- coda.samples(j, variable.names = c("beta", "gamma", "rho"),
+                         n.iter = n_mcmc, thin = n_thin,
+                         n.chains = n_chains)
 
   beta <- sample[[1]][, 1:2]
   gamma <- sample[[1]][, 3]

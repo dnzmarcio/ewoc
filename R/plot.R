@@ -1,6 +1,6 @@
 #'@import ggplot2 graphics
 #'@export
-plot.ewoc_d1classic <- function(x, ...){
+plot.d1classic <- function(x, ...){
 
   object <- x
   sm <- summary(object, print = FALSE)
@@ -31,7 +31,7 @@ plot.ewoc_d1classic <- function(x, ...){
 
 #'@import ggplot2 graphics
 #'@export
-plot.ewoc_d1extended <- function(x, ...){
+plot.d1extended <- function(x, ...){
 
   object <- x
   sm <- summary(object, print = FALSE)
@@ -62,7 +62,7 @@ plot.ewoc_d1extended <- function(x, ...){
 
 #'@import ggplot2 graphics
 #'@export
-plot.ewoc_d1ph <- function(x, ...){
+plot.d1ph <- function(x, ...){
 
   object <- x
   sm <- summary(object, print = FALSE)

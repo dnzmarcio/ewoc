@@ -45,11 +45,12 @@ overdose_loss <- function (mtd_estimate, true_mtd, alpha) {
 #'stop_rule_sim(step_zero)
 #'response_sim <- response_d1classic(rho = 0.05, mtd = 20, theta = 0.33,
 #'                                   min_dose = 10, max_dose = 50)
-#'sim <- trial_simulation(step_zero = step_zero,
+#'sim <- ewoc_simulation(step_zero = step_zero,
 #'                        n_sim = 1, sample_size = 2,
 #'                        alpha_strategy = "increasing",
 #'                        response_sim = response_sim,
-#'                        stop_rule_sim = stop_rule_sim)
+#'                        stop_rule_sim = stop_rule_sim,
+#'                        ncores = 2)
 #'dlt_rate(sim$dlt_sim)
 #'}
 #'
@@ -66,11 +67,12 @@ overdose_loss <- function (mtd_estimate, true_mtd, alpha) {
 #'stop_rule_sim(step_zero)
 #'response_sim <- response_d1classic(rho = 0.05, mtd = 20, theta = 0.33,
 #'                                   min_dose = 10, max_dose = 50)
-#'sim <- trial_simulation(step_zero = step_zero,
+#'sim <- ewoc_simulation(step_zero = step_zero,
 #'                        n_sim = 2, sample_size = 30,
 #'                        alpha_strategy = "increasing",
 #'                        response_sim = response_sim,
-#'                        stop_rule_sim = stop_rule_sim)
+#'                        stop_rule_sim = stop_rule_sim,
+#'                        ncores = 2)
 #'dlt_rate(sim$dlt_sim)
 #'}
 #'
@@ -155,11 +157,12 @@ dlt_rate <- function(dlt_matrix, trial = FALSE,
 #'stop_rule_sim(step_zero)
 #'response_sim <- response_d1classic(rho = 0.05, mtd = 20, theta = 0.33,
 #'                                   min_dose = 10, max_dose = 50)
-#'sim <- trial_simulation(step_zero = step_zero,
+#'sim <- ewoc_simulation(step_zero = step_zero,
 #'                        n_sim = 1, sample_size = 2,
 #'                        alpha_strategy = "increasing",
 #'                        response_sim = response_sim,
-#'                        stop_rule_sim = stop_rule_sim)
+#'                        stop_rule_sim = stop_rule_sim,
+#'                        ncores = 2)
 #'stop_rule(sim$dlt_sim)
 #'}
 #'
@@ -176,11 +179,12 @@ dlt_rate <- function(dlt_matrix, trial = FALSE,
 #'stop_rule_sim(step_zero)
 #'response_sim <- response_d1classic(rho = 0.05, mtd = 20, theta = 0.33,
 #'                                   min_dose = 10, max_dose = 50)
-#'sim <- trial_simulation(step_zero = step_zero,
+#'sim <- ewoc_simulation(step_zero = step_zero,
 #'                        n_sim = 2, sample_size = 30,
 #'                        alpha_strategy = "increasing",
 #'                        response_sim = response_sim,
-#'                        stop_rule_sim = stop_rule_sim)
+#'                        stop_rule_sim = stop_rule_sim,
+#'                        ncores = 2)
 #'stop_rule(sim$dlt_sim)
 #'}
 #'
@@ -240,10 +244,11 @@ stop_rule <- function(dlt_matrix, sample_size, digits = 2) {
 #'                            rounding = "nearest")
 #'response_sim <- response_d1classic(rho = 0.05, mtd = 20, theta = 0.33,
 #'                                   min_dose = 10, max_dose = 50)
-#'sim <- trial_simulation(step_zero = step_zero,
+#'sim <- ewoc_simulation(step_zero = step_zero,
 #'                        n_sim = 1, sample_size = 2,
 #'                        alpha_strategy = "increasing",
-#'                        response_sim = response_sim)
+#'                        response_sim = response_sim,
+#'                        ncores = 2)
 #'optimal_mtd(sim$mtd_sim, true_mtd = 20, margin = 0.1*20)
 #'optimal_mtd(sim$dose_sim, true_mtd = 20, margin = 0.1*20)
 #'}
@@ -260,10 +265,11 @@ stop_rule <- function(dlt_matrix, sample_size, digits = 2) {
 #'                            rounding = "nearest")
 #'response_sim <- response_d1classic(rho = 0.05, mtd = 20, theta = 0.33,
 #'                                   min_dose = 10, max_dose = 50)
-#'sim <- trial_simulation(step_zero = step_zero,
+#'sim <- ewoc_simulation(step_zero = step_zero,
 #'                        n_sim = 2, sample_size = 30,
 #'                        alpha_strategy = "increasing",
-#'                        response_sim = response_sim)
+#'                        response_sim = response_sim,
+#'                        ncores = 2)
 #'optimal_mtd(sim$mtd_sim, true_mtd = 20, margin = 0.1*20)
 #'optimal_mtd(sim$dose_sim, true_mtd = 20, margin = 0.1*20)
 #'}
@@ -341,10 +347,11 @@ optimal_mtd <- function(dose_matrix, true_mtd, margin, digits = 2) {
 #'                                   min_dose = 10, max_dose = 50)
 #'pdlt_sim <- pdlt_d1classic(rho = 0.05, mtd = 20, theta = 0.33,
 #'                           min_dose = 10, max_dose = 50)
-#'sim <- trial_simulation(step_zero = step_zero,
+#'sim <- ewoc_simulation(step_zero = step_zero,
 #'                        n_sim = 1, sample_size = 2,
 #'                        alpha_strategy = "increasing",
-#'                        response_sim = response_sim)
+#'                        response_sim = response_sim,
+#'                        ncores = 2)
 #'optimal_toxicity(sim$mtd_sim, theta = 0.33, margin = 0.05, pdlt = pdlt_sim)
 #'optimal_toxicity(sim$dose_sim, theta = 0.33, margin = 0.05, pdlt = pdlt_sim)
 #'}
@@ -363,10 +370,11 @@ optimal_mtd <- function(dose_matrix, true_mtd, margin, digits = 2) {
 #'                                   min_dose = 10, max_dose = 50)
 #'pdlt_sim <- pdlt_d1classic(rho = 0.05, mtd = 20, theta = 0.33,
 #'                           min_dose = 10, max_dose = 50)
-#'sim <- trial_simulation(step_zero = step_zero,
+#'sim <- ewoc_simulation(step_zero = step_zero,
 #'                        n_sim = 2, sample_size = 30,
 #'                        alpha_strategy = "increasing",
-#'                        response_sim = response_sim)
+#'                        response_sim = response_sim,
+#'                        ncores = 2)
 #'optimal_toxicity(sim$mtd_sim, theta = 0.33, margin = 0.05, pdlt = pdlt_sim)
 #'optimal_toxicity(sim$dose_sim, theta = 0.33, margin = 0.05, pdlt = pdlt_sim)
 #'}
@@ -438,10 +446,11 @@ optimal_toxicity <- function(dose_matrix, theta, margin, pdlt, digits = 2) {
 #'                            rounding = "nearest")
 #'response_sim <- response_d1classic(rho = 0.05, mtd = 20, theta = 0.33,
 #'                                   min_dose = 10, max_dose = 50)
-#'sim <- trial_simulation(step_zero = step_zero,
+#'sim <- ewoc_simulation(step_zero = step_zero,
 #'                        n_sim = 1, sample_size = 2,
 #'                        alpha_strategy = "increasing",
-#'                        response_sim = response_sim)
+#'                        response_sim = response_sim,
+#'                        ncores = 2)
 #'mtd_bias(sim$mtd_sim, true_mtd = 20)
 #'}
 #'
@@ -457,10 +466,11 @@ optimal_toxicity <- function(dose_matrix, theta, margin, pdlt, digits = 2) {
 #'                            rounding = "nearest")
 #'response_sim <- response_d1classic(rho = 0.05, mtd = 20, theta = 0.33,
 #'                                   min_dose = 10, max_dose = 50)
-#'sim <- trial_simulation(step_zero = step_zero,
+#'sim <- ewoc_simulation(step_zero = step_zero,
 #'                        n_sim = 2, sample_size = 30,
 #'                        alpha_strategy = "increasing",
-#'                        response_sim = response_sim)
+#'                        response_sim = response_sim,
+#'                        ncores = 2)
 #'mtd_bias(sim$mtd_sim, true_mtd = 20)
 #'}
 #'
@@ -492,10 +502,11 @@ mtd_bias <- function(mtd_estimate, true_mtd) {
 #'                            rounding = "nearest")
 #'response_sim <- response_d1classic(rho = 0.05, mtd = 20, theta = 0.33,
 #'                                   min_dose = 10, max_dose = 50)
-#'sim <- trial_simulation(step_zero = step_zero,
+#'sim <- ewoc_simulation(step_zero = step_zero,
 #'                        n_sim = 1, sample_size = 2,
 #'                        alpha_strategy = "increasing",
-#'                        response_sim = response_sim)
+#'                        response_sim = response_sim,
+#'                        ncores = 2)
 #'mtd_mse(sim$mtd_sim, true_mtd = 20)
 #'}
 #'
@@ -511,10 +522,11 @@ mtd_bias <- function(mtd_estimate, true_mtd) {
 #'                            rounding = "nearest")
 #'response_sim <- response_d1classic(rho = 0.05, mtd = 20, theta = 0.33,
 #'                                   min_dose = 10, max_dose = 50)
-#'sim <- trial_simulation(step_zero = step_zero,
+#'sim <- ewoc_simulation(step_zero = step_zero,
 #'                        n_sim = 2, sample_size = 30,
 #'                        alpha_strategy = "increasing",
-#'                        response_sim = response_sim)
+#'                        response_sim = response_sim,
+#'                        ncores = 2)
 #'mtd_mse(sim$mtd_sim, true_mtd = 20)
 #'}
 #'
