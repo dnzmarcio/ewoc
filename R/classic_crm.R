@@ -157,6 +157,6 @@ crm_d1classic <- function(formula, theta,
                 n_thin = n_thin, n_chains = n_chains)
   out$trial <- trial
 
-  class(out) <- c("ewoc_d1classic", "d1classic")
+  class(out) <- c("crm_d1classic", "d1classic")
   return(out)
 }
