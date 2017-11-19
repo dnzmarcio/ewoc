@@ -132,11 +132,6 @@ ewoc_d1extended <- function(formula, theta, alpha,
                   rho_prior = rho_prior,
                   type = type, rounding = rounding)
   class(my_data) <- c("ewoc_d1extended", "d1extended")
-<<<<<<< HEAD
-=======
-
-  out <- qmtd_jags(my_data, n_adapt, burn_in, n_mcmc, n_thin, n_chains)
->>>>>>> b0743e5fa6e1afe1a76236c33285f872416f16f5
 
   my_data$mcmc <- jags(my_data, n_adapt, burn_in, n_mcmc, n_thin, n_chains)
   out <- next_dose(my_data)
