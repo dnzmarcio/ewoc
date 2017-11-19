@@ -131,7 +131,7 @@ ewoc_d1classic <- function(formula, theta, alpha,
                   dose_set = dose_set,
                   rho_prior = rho_prior, mtd_prior = mtd_prior,
                   type = type[1], rounding = rounding)
-  class(my_data) <- "d1classic"
+  class(my_data) <- c("ewoc_d1classic", "d1classic")
 
   out <- qmtd_jags(my_data, n_adapt, burn_in, n_mcmc, n_thin, n_chains)
 

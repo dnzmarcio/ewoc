@@ -156,7 +156,7 @@ ewoc_d1ph <- function(formula, theta, alpha, tau,
                   shape_prior = shape_prior,
                   distribution = distribution, tau = tau,
                   type = type, rounding = rounding)
-  class(my_data) <- "d1ph"
+  class(my_data) <- c("ewoc_d1ph", "d1ph")
 
   out <- qmtd_jags(my_data, n_adapt, burn_in, n_mcmc, n_thin, n_chains)
 

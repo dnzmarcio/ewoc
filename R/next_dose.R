@@ -1,4 +1,4 @@
-next_dose.d1classic <- function(data){
+next_dose.ewoc_d1classic <- function(data){
 
   rho <- data$mcmc$rho
   gamma <- data$mcmc$gamma
@@ -27,7 +27,7 @@ next_dose.d1classic <- function(data){
 }
 
 
-next_dose.d1extended <- function(data){
+next_dose.ewoc_d1extended <- function(data){
 
   rho <- data$mcmc$rho
   beta <- data$mcmc$beta
@@ -56,7 +56,7 @@ next_dose.d1extended <- function(data){
   return(out)
 }
 
-next_dose.d1ph <- function(data){
+next_dose.ewoc_d1ph <- function(data){
 
   gamma <- data$mcmc$gamma - 10^(-2)
   shape <- data$mcmc$shape
