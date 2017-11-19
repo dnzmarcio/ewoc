@@ -1,32 +1,44 @@
 #'Continual Reassessment Method
 #'
-#'Finding the next dose for a phase I clinical trial based on the
-#'Continual Reassessment Method (CRM) design considering the
-#'extended parametrization of EWOC for binary response and single agent.
+#'Finding the next dose for a phase I clinical trial based on
+#'Continual Reassessment Method (CRM) design considering parametrization of EWOC for time
+#'to event response and single agent.
 #'
 #'@param formula an object of class \code{\link[Formula]{Formula}}: a symbolic
 #'description of the model to be fitted with only one regressor term
-#'corresponding to the dose for the right side and a numeric vector as a response
-#'containing number of DLT for the left side.
+#'corresponding to the dose for the right side and a matrix as a response
+#'containing time and status for the left side.
 #'@param theta a numerical value defining the proportion of expected patients
 #'to experience a medically unacceptable, dose-limiting toxicity (DLT) if
 #'administered the MTD.
-#'@param rho_prior a matrix 3 x 2 of hyperparameters for the Beta prior
-#'distribution associated with each parameter rho. Each row corresponds to a parameter.
+#'@param tau a numerical value defining the period of time for a possible
+#'toxicity be observed.
+#'@param mtd_prior a matrix 1x2 of hyperparameters for the Beta prior
+#'distribution associated with the parameter MTD.
+#'@param rho_prior a matrix 1x2 of hyperparameters for the Beta prior
+#'distribution associated with the parameter rho.
+#'@param shape_prior a matrix 1x2 of hyperparameters for the Gamma prior
+#'distribution associated with the shape parameter r for the Weibull
+#'distribution.
+#'It is only necessary if distribution = 'weibull'.
 #'@param type a character describing the type of the Maximum Tolerable Dose
-#'(MTD) variable.
+#'(MTD) variable. It can be 'discrete' or 'continuous'.
 #'@param min_dose a numerical value defining the lower bound of the support of
 #'the MTD.
 #'@param max_dose a numerical value defining the upper bound of the support of
 #'the MTD.
 #'@param first_dose a numerical value for the first allowable dose in the trial.
+#'It is only necessary if type = 'continuous'.
 #'@param last_dose a numerical value for the last allowable dose in the trial.
+#'It is only necessary if type = 'continuous'.
 #'@param dose_set a numerical vector of allowable doses in the trial. It is only
-#'necessary if type = "discrete".
+#'necessary if type = 'discrete'.
 #'@param max_increment a numerical value indicating the maximum increment from the current dose to the next dose.
+#'@param distribution a character establishing the distribution for the time of
+#'events. It can be 'exponential' or 'weibull'.
 #'@param rounding a character indicating how to round a continuous dose to the
-#'one of elements of the dose set.
-#'It is only necessary if type = "discrete".
+#'one of elements of the dose set. It can be 'nearest' or 'down'.
+#'It is only necessary if type = 'discrete'.
 #'@param n_adapt the number of iterations for adaptation.
 #'See \code{\link[rjags]{adapt}} for details.
 #'@param burn_in the number of iterations before to start monitoring.
@@ -35,36 +47,42 @@
 #'@param n_chains the number of parallel chains for the model.
 #'
 #'@return \code{next_dose} the next recommend dose.
-#'@return \code{mtd} a numerical vector for the posterior MTD distribution considering the next patient covariable.
-#'@return \code{rho} a matrix for the posterior rho_0 and rho_1 distributions.
+#'@return \code{mtd} the posterior MTD distribution.
+#'@return \code{rho} the posterior rho_0 distribution.
 #'@return \code{sample} a list of the MCMC chains distribution.
 #'@return \code{trial} a list of the trial conditions.
 #'
+#'@references Tighiouart M, Liu Y, Rogatko A. Escalation with overdose control using time to toxicity for cancer phase I clinical trials. PloS one. 2014 Mar 24;9(3):e93070.
+#'
 #'@examples
-#'DLT <- 0
+#'time <- 9
+#'status <- 0
 #'dose <- 30
 #'
-#'test <- crm_d1extended(DLT ~ dose, type = 'discrete',
-#'                        theta = 0.33,
-#'                        dose_set = c(30, 40, 50),
-#'                        min_dose = 20, max_dose = 100,
-#'                        rho_prior = matrix(1, ncol = 2, nrow = 2),
-#'                        rounding = "nearest")
+#'test <- crm_d1ph(cbind(time, status) ~ dose, type = 'discrete',
+#'                  theta = 0.33, tau = 10,
+#'                  min_dose = 30, max_dose = 50,
+#'                  dose_set = seq(30, 50, 5),
+#'                  rho_prior = matrix(1, ncol = 2, nrow = 1),
+#'                  mtd_prior = matrix(1, ncol = 2, nrow = 1),
+#'                  distribution = 'exponential',
+#'                  rounding = 'nearest')
 #'summary(test)
 #'plot(test)
 #'
 #'@import stats
 #'
 #'@export
-crm_d1extended <- function(formula, theta,
-                            rho_prior,
-                            min_dose, max_dose,
-                            type = c('continuous', 'discrete'),
-                            first_dose = NULL, last_dose = NULL,
-                            dose_set = NULL, max_increment = NULL,
-                            rounding = c("down", "nearest"),
-                            n_adapt = 5000, burn_in = 1000,
-                            n_mcmc = 1000, n_thin = 1, n_chains = 1) {
+crm_d1ph <- function(formula, theta, tau,
+                      type = c('continuous', 'discrete'),
+                      rho_prior, mtd_prior, shape_prior = NULL,
+                      min_dose, max_dose,
+                      first_dose = NULL, last_dose = NULL,
+                      dose_set = NULL, max_increment = NULL,
+                      distribution = c('exponential', 'weibull'),
+                      rounding = c('down', 'nearest'),
+                      n_adapt = 5000, burn_in = 1000,
+                      n_mcmc = 1000, n_thin = 1, n_chains = 1) {
 
   formula <- Formula::Formula(formula)
   if (class(formula)[2] != "formula")
@@ -76,14 +94,17 @@ crm_d1extended <- function(formula, theta,
   dose_matrix <- model.matrix(formula, data_base, rhs = 1)
 
   if (length(formula)[2] == 1){
+    covariable_matrix <- NULL
     design_matrix <- dose_matrix
     colnames(design_matrix) <- c("intercept", "dose")
   } else {
     stop("This design cannot accommodate a covariable.")
   }
-  colnames(design_matrix) <- c("intercept", "dose")
 
   response <- model.response(data_base)
+
+  if (!is.matrix(response))
+    stop("The left side of the formula should be a matrix: time and status!\n")
 
   if (length(type) > 1 | !(type == "continuous" | type == "discrete"))
     stop("'type' should be either 'continuous' or 'discrete'.")
@@ -102,8 +123,19 @@ crm_d1extended <- function(formula, theta,
   if (!(theta > 0 & theta < 1))
     stop("'theta' should be in the interval (0, 1).")
 
-  if (nrow(rho_prior) != 2 | ncol(rho_prior) != 2)
-    stop(paste0("'rho_prior' should be a matrix with 2 columns and 2 rows."))
+  if (nrow(rho_prior) != 1 | ncol(rho_prior) != 2)
+    stop("'rho_prior' should be a matrix with 1 column and 2 rows.")
+
+  if (nrow(mtd_prior) != 1 | ncol(mtd_prior) != 2)
+    stop("'mtd_prior' should be a matrix with 1 column and 2 rows.")
+
+  if (distribution == 'weibull')
+    if (is.null(shape_prior)) {
+      stop("'shape_prior' should be informed if 'distribution' = 'weibull'")
+    } else {
+      if (!(nrow(shape_prior) == 1 & ncol(shape_prior) == 2))
+        stop("'shape_prior' should be a matrix with 2 columns and 1 row.")
+    }
 
   limits <- limits_d1nocov(first_dose = first_dose, last_dose = last_dose,
                            min_dose = min_dose, max_dose = max_dose,
@@ -124,9 +156,11 @@ crm_d1extended <- function(formula, theta,
                   theta = theta,
                   limits = limits,
                   dose_set = dose_set, current_dose = current_dose,
-                  rho_prior = rho_prior,
+                  rho_prior = rho_prior, mtd_prior= mtd_prior,
+                  shape_prior = shape_prior,
+                  distribution = distribution, tau = tau,
                   type = type, rounding = rounding)
-  class(my_data) <- c("crm_d1extended", "d1extended")
+  class(my_data) <- c("crm_d1ph", "d1ph")
 
   my_data$mcmc <- jags(my_data, n_adapt, burn_in, n_mcmc, n_thin, n_chains)
   out <- next_dose(my_data)
@@ -136,13 +170,19 @@ crm_d1extended <- function(formula, theta,
                 first_dose = limits$first_dose, last_dose = limits$last_dose,
                 min_dose = limits$min_dose, max_dose = limits$max_dose,
                 dose_set = dose_set, max_increment = max_increment,
-                rho_prior = rho_prior,
+                rho_prior = rho_prior, mtd_prior = mtd_prior,
+                shape_prior = shape_prior,
+                distribution = distribution, tau = tau,
                 type = type, rounding = rounding,
                 n_adapt = n_adapt, burn_in = burn_in, n_mcmc = n_mcmc,
                 n_thin = n_thin, n_chains = n_chains)
   out$trial <- trial
 
-  class(out) <- c("crm_d1extended", "d1extended")
+  class(out) <- c("crm_d1ph", "d1ph")
 
   return(out)
 }
+
+
+
+
