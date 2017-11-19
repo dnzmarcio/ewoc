@@ -143,7 +143,8 @@ ewoc_d1classic <- function(formula, theta, alpha,
                   type = type[1], rounding = rounding)
   class(my_data) <- c("ewoc_d1classic", "d1classic")
 
-  out <- qmtd_jags(my_data, n_adapt, burn_in, n_mcmc, n_thin, n_chains)
+  my_data$mcmc <- jags(my_data, n_adapt, burn_in, n_mcmc, n_thin, n_chains)
+  out <- next_dose(my_data)
 
   design_matrix[, 2] <-
     inv_standard_dose(dose = design_matrix[, 2],

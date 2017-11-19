@@ -133,12 +133,8 @@ ewoc_d1extended <- function(formula, theta, alpha,
                   type = type, rounding = rounding)
   class(my_data) <- c("ewoc_d1extended", "d1extended")
 
-  out <- qmtd_jags(my_data, n_adapt, burn_in, n_mcmc, n_thin, n_chains)
-
-  if (type == "discrete")
-    out$next_dose <- rounding_system(dose = out$next_dose,
-                                     grid = dose_set,
-                                     rounding = rounding)
+  my_data$mcmc <- jags(my_data, n_adapt, burn_in, n_mcmc, n_thin, n_chains)
+  out <- next_dose(my_data)
 
   trial <- list(response = response, design_matrix = design_matrix,
                 theta = theta, alpha = alpha,
