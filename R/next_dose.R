@@ -15,6 +15,14 @@ next_dose.ewoc_d1classic <- function(data){
                       ifelse(next_dose < data$limits$first_dose,
                              data$limits$first_dose, next_dose))
 
+  if (abs(next_dose - data$last_dose) > data$max_increment)
+    next_dose <- data$last_dose + data$max_increment
+
+  if (data$type == "discrete")
+    next_dose <- rounding_system(dose = next_dose,
+                                 grid = data$dose_set,
+                                 rounding = data$rounding)
+
   next_gamma <- standard_dose(dose = next_dose,
                               min_dose = data$limits$min_dose,
                               max_dose = data$limits$max_dose)
@@ -45,6 +53,14 @@ next_dose.ewoc_d1extended <- function(data){
                       ifelse(next_dose < data$limits$first_dose,
                              data$limits$first_dose, next_dose))
 
+  if (abs(next_dose - data$last_dose) > data$max_increment)
+    next_dose <- data$last_dose + data$max_increment
+
+  if (data$type == "discrete")
+    next_dose <- rounding_system(dose = next_dose,
+                                 grid = data$dose_set,
+                                 rounding = data$rounding)
+
   next_gamma <- standard_dose(dose = next_dose,
                               min_dose = data$limits$min_dose,
                               max_dose = data$limits$max_dose)
@@ -73,6 +89,14 @@ next_dose.ewoc_d1ph <- function(data){
                       data$limits$last_dose,
                       ifelse(next_dose < data$limits$first_dose,
                              data$limits$first_dose, next_dose))
+
+  if (abs(next_dose - data$last_dose) > data$max_increment)
+    next_dose <- data$last_dose + data$max_increment
+
+  if (data$type == "discrete")
+    next_dose <- rounding_system(dose = next_dose,
+                                 grid = data$dose_set,
+                                 rounding = data$rounding)
 
   next_gamma <- standard_dose(dose = next_dose,
                               min_dose = data$limits$min_dose,
