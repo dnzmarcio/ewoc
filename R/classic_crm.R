@@ -27,6 +27,7 @@
 #'It is only necessary if type = 'continuous'.
 #'@param dose_set a numerical vector of allowable doses in the trial.
 #'It is only necessary if type = 'discrete'.
+#'@param max_increment a numerical value indicating the maximum increment from the current dose to the next dose.
 #'@param rounding a character indicating how to round a continuous dose to the
 #'one of elements of the dose set. It is only necessary if type = 'discrete'.
 #'@param n_adapt the number of iterations for adaptation.
@@ -67,7 +68,7 @@ crm_d1classic <- function(formula, theta,
                            min_dose, max_dose,
                            type = c('continuous', 'discrete'),
                            first_dose = NULL, last_dose = NULL,
-                           dose_set = NULL,
+                           dose_set = NULL, max_increment,
                            rounding = c("down", "nearest"),
                            n_adapt = 5000, burn_in = 1000,
                            n_mcmc = 1000, n_thin = 1, n_chains = 1) {
@@ -100,6 +101,9 @@ crm_d1classic <- function(formula, theta,
 
     if (length(rounding) > 1 | !(rounding == "down" | rounding == "nearest"))
       stop("'rounding' should be either 'down' or 'nearest'.")
+
+    if (is.null(max_increment))
+      max_increment <- max(diff(dose_set))
   }
 
   if (!(theta > 0 & theta < 1))
@@ -116,6 +120,11 @@ crm_d1classic <- function(formula, theta,
                            type = type, rounding = rounding,
                            dose_set = dose_set)
 
+  if (is.null(max_increment))
+    max_increment <- limits$last_dose - limits$first_dose
+
+  current_dose <- design_matrix[nrow(design_matrix), 2]
+
   design_matrix[, 2] <-
     standard_dose(dose = design_matrix[, 2],
                   min_dose = limits$min_dose,
@@ -123,12 +132,13 @@ crm_d1classic <- function(formula, theta,
 
   my_data <- list(response = response, design_matrix = design_matrix,
                   theta = theta, limits = limits,
-                  dose_set = dose_set,
+                  dose_set = dose_set, max_increment = max_increment,
                   rho_prior = rho_prior, mtd_prior = mtd_prior,
                   type = type[1], rounding = rounding)
   class(my_data) <- c("crm_d1classic", "d1classic")
 
-  out <- qmtd_jags(my_data, n_adapt, burn_in, n_mcmc, n_thin, n_chains)
+  my_data$mcmc <- jags(my_data, n_adapt, burn_in, n_mcmc, n_thin, n_chains)
+  out <- next_dose(my_data)
 
   design_matrix[, 2] <-
     inv_standard_dose(dose = design_matrix[, 2],
