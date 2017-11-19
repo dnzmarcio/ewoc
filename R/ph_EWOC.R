@@ -35,6 +35,7 @@
 #'It is only necessary if type = 'continuous'.
 #'@param dose_set a numerical vector of allowable doses in the trial. It is only
 #'necessary if type = 'discrete'.
+#'@param max_increment a numerical value indicating the maximum increment from the current dose to the next dose.
 #'@param distribution a character establishing the distribution for the time of
 #'events. It can be 'exponential' or 'weibull'.
 #'@param rounding a character indicating how to round a continuous dose to the
@@ -79,7 +80,7 @@ ewoc_d1ph <- function(formula, theta, alpha, tau,
                       rho_prior, mtd_prior, shape_prior = NULL,
                       min_dose, max_dose,
                       first_dose = NULL, last_dose = NULL,
-                      dose_set = NULL,
+                      dose_set = NULL, max_increment = NULL,
                       distribution = c('exponential', 'weibull'),
                       rounding = c('down', 'nearest'),
                       n_adapt = 5000, burn_in = 1000,
@@ -116,6 +117,9 @@ ewoc_d1ph <- function(formula, theta, alpha, tau,
 
     if (length(rounding) > 1 | !(rounding == "down" | rounding == "nearest"))
       stop("'rounding' should be either 'down' or 'nearest'.")
+
+    if (is.null(max_increment))
+      max_increment <- max(diff(dose_set))
   }
 
   if (!(alpha > 0 & alpha < 1))
@@ -142,6 +146,11 @@ ewoc_d1ph <- function(formula, theta, alpha, tau,
                            min_dose = min_dose, max_dose = max_dose,
                            type = type, rounding = rounding,
                            dose_set = dose_set)
+
+  if (is.null(max_increment))
+    max_increment <- limits$last_dose - limits$first_dose
+
+  last_dose <- design_matrix[nrow(design_matrix), 2]
 
   design_matrix[, 2] <-
     standard_dose(dose = design_matrix[, 2],

@@ -7,9 +7,9 @@
 ewoc_d1ph(formula, theta, alpha, tau, type = c("continuous", "discrete"),
   rho_prior, mtd_prior, shape_prior = NULL, min_dose, max_dose,
   first_dose = NULL, last_dose = NULL, dose_set = NULL,
-  distribution = c("exponential", "weibull"), rounding = c("down",
-  "nearest"), n_adapt = 5000, burn_in = 1000, n_mcmc = 1000, n_thin = 1,
-  n_chains = 1)
+  max_increment = NULL, distribution = c("exponential", "weibull"),
+  rounding = c("down", "nearest"), n_adapt = 5000, burn_in = 1000,
+  n_mcmc = 1000, n_thin = 1, n_chains = 1)
 }
 \arguments{
 \item{formula}{an object of class \code{\link[Formula]{Formula}}: a symbolic
@@ -55,6 +55,8 @@ It is only necessary if type = 'continuous'.}
 
 \item{dose_set}{a numerical vector of allowable doses in the trial. It is only
 necessary if type = 'discrete'.}
+
+\item{max_increment}{a numerical value indicating the maximum increment from the current dose to the next dose.}
 
 \item{distribution}{a character establishing the distribution for the time of
 events. It can be 'exponential' or 'weibull'.}

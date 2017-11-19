@@ -29,6 +29,7 @@
 #'It is only necessary if type = 'continuous'.
 #'@param dose_set a numerical vector of allowable doses in the trial.
 #'It is only necessary if type = 'discrete'.
+#'@param max_increment a numerical value indicating the maximum increment from the current dose to the next dose.
 #'@param rounding a character indicating how to round a continuous dose to the
 #'one of elements of the dose set. It is only necessary if type = 'discrete'.
 #'@param n_adapt the number of iterations for adaptation.
@@ -69,7 +70,7 @@ ewoc_d1classic <- function(formula, theta, alpha,
                            min_dose, max_dose,
                            type = c('continuous', 'discrete'),
                            first_dose = NULL, last_dose = NULL,
-                           dose_set = NULL,
+                           dose_set = NULL, max_increment = NULL,
                            rounding = c("down", "nearest"),
                            n_adapt = 5000, burn_in = 1000,
                            n_mcmc = 1000, n_thin = 1, n_chains = 1) {
@@ -102,6 +103,9 @@ ewoc_d1classic <- function(formula, theta, alpha,
 
     if (length(rounding) > 1 | !(rounding == "down" | rounding == "nearest"))
       stop("'rounding' should be either 'down' or 'nearest'.")
+
+    if (is.null(max_increment))
+      max_increment <- max(diff(dose_set))
   }
 
   if (!(alpha > 0 & alpha < 1))
@@ -121,6 +125,11 @@ ewoc_d1classic <- function(formula, theta, alpha,
                            type = type, rounding = rounding,
                            dose_set = dose_set)
 
+  if (is.null(max_increment))
+    max_increment <- limits$last_dose - limits$first_dose
+
+  last_dose <- design_matrix[nrow(design_matrix), 2]
+
   design_matrix[, 2] <-
     standard_dose(dose = design_matrix[, 2],
                   min_dose = limits$min_dose,
@@ -129,6 +138,7 @@ ewoc_d1classic <- function(formula, theta, alpha,
   my_data <- list(response = response, design_matrix = design_matrix,
                   theta = theta, alpha = alpha, limits = limits,
                   dose_set = dose_set,
+                  max_increment = max_increment, last_dose = last_dose,
                   rho_prior = rho_prior, mtd_prior = mtd_prior,
                   type = type[1], rounding = rounding)
   class(my_data) <- c("ewoc_d1classic", "d1classic")

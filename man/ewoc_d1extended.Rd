@@ -6,8 +6,9 @@
 \usage{
 ewoc_d1extended(formula, theta, alpha, rho_prior, min_dose, max_dose,
   type = c("continuous", "discrete"), first_dose = NULL, last_dose = NULL,
-  dose_set = NULL, rounding = c("down", "nearest"), n_adapt = 5000,
-  burn_in = 1000, n_mcmc = 1000, n_thin = 1, n_chains = 1)
+  dose_set = NULL, max_increment = NULL, rounding = c("down", "nearest"),
+  n_adapt = 5000, burn_in = 1000, n_mcmc = 1000, n_thin = 1,
+  n_chains = 1)
 }
 \arguments{
 \item{formula}{an object of class \code{\link[Formula]{Formula}}: a symbolic
@@ -40,6 +41,8 @@ the MTD.}
 
 \item{dose_set}{a numerical vector of allowable doses in the trial. It is only
 necessary if type = "discrete".}
+
+\item{max_increment}{a numerical value indicating the maximum increment from the current dose to the next dose.}
 
 \item{rounding}{a character indicating how to round a continuous dose to the
 one of elements of the dose set.
