@@ -106,7 +106,7 @@ sim <- crm_simulation(step_zero = step_zero,
 }
 
 \dontrun{
-### Classic CRM
+### CRM with Classic EWOC parametrization
 DLT <- 0
 dose <- 30
 step_zero <- crm_d1classic(DLT ~ dose, type = 'discrete',
@@ -123,7 +123,7 @@ sim <- crm_simulation(step_zero = step_zero,
                      response_sim = response_sim,
                      ncores = 2)
 
-### Extended CRM
+### CRM with Extended EWOC parametrization
 DLT <- 0
 dose <- 30
 step_zero <- crm_d1extended(DLT ~ dose, type = 'discrete',
@@ -139,7 +139,7 @@ sim <- crm_simulation(step_zero = step_zero,
                      response_sim = response_sim,
                      ncores = 2)
 
-### PH CRM
+### PH CRM with PH EWOC parametrization
 time <- 0
 status <- 0
 dose <- 30
