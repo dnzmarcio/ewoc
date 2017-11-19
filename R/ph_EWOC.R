@@ -150,7 +150,7 @@ ewoc_d1ph <- function(formula, theta, alpha, tau,
   if (is.null(max_increment))
     max_increment <- limits$last_dose - limits$first_dose
 
-  last_dose <- design_matrix[nrow(design_matrix), 2]
+  current_dose <- design_matrix[nrow(design_matrix), 2]
 
   design_matrix[, 2] <-
     standard_dose(dose = design_matrix[, 2],
@@ -160,7 +160,7 @@ ewoc_d1ph <- function(formula, theta, alpha, tau,
   my_data <- list(response = response, design_matrix = design_matrix,
                   theta = theta, alpha = alpha,
                   limits = limits,
-                  dose_set = dose_set,
+                  dose_set = dose_set, current_dose = current_dose,
                   rho_prior = rho_prior, mtd_prior= mtd_prior,
                   shape_prior = shape_prior,
                   distribution = distribution, tau = tau,
