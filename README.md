@@ -3,7 +3,7 @@
 EWOC
 ====
 
-[![Travis-CI Build Status](https://travis-ci.org/dnzmarcio/ewoc.svg?branch=master)](https://travis-ci.org/dnzmarcio/ewoc) [![](http://cranlogs.r-pkg.org/badges/ewoc)](http://cran.rstudio.com/web/packages/ewoc/index.html)
+[![Travis-CI Build Status](https://travis-ci.org/dnzmarcio/ewoc.svg?branch=master)](https://travis-ci.org/dnzmarcio/ewoc) [![](http://cranlogs.r-pkg.org/badges/grand-total/ewoc)](http://cran.rstudio.com/web/packages/ewoc/index.html)
 
 Escalation With Overdose Control is a dose escalation design for phase I clinical trials such that the probability of overdose is controlled explicitly.
 
@@ -47,11 +47,11 @@ summary(test)
 #> 
 #> Next Dose
 #>   Estimate         95% HPD
-#> 1       40 (15.78 ; 99.97)
+#> 1       40 (16.45 ; 99.98)
 #> 
 #> P(DLT| next dose)
 #>   Estimate       95% HPD
-#> 1     0.29 (0.05 ; 0.64)
+#> 1     0.29 (0.03 ; 0.59)
 ```
 
 In addition, simulations also can be performed to evaluate a design:
