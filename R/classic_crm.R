@@ -68,7 +68,7 @@ crm_d1classic <- function(formula, theta,
                            min_dose, max_dose,
                            type = c('continuous', 'discrete'),
                            first_dose = NULL, last_dose = NULL,
-                           dose_set = NULL, max_increment,
+                           dose_set = NULL, max_increment = NULL,
                            rounding = c("down", "nearest"),
                            n_adapt = 5000, burn_in = 1000,
                            n_mcmc = 1000, n_thin = 1, n_chains = 1) {
@@ -132,7 +132,8 @@ crm_d1classic <- function(formula, theta,
 
   my_data <- list(response = response, design_matrix = design_matrix,
                   theta = theta, limits = limits,
-                  dose_set = dose_set, max_increment = max_increment,
+                  dose_set = dose_set,
+                  max_increment = max_increment, current_dose = current_dose,
                   rho_prior = rho_prior, mtd_prior = mtd_prior,
                   type = type[1], rounding = rounding)
   class(my_data) <- c("crm_d1classic", "d1classic")
