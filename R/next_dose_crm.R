@@ -3,6 +3,10 @@ next_dose.crm_d1classic <- function(data){
   beta <- data$mcmc$beta
   beta_est <- apply(beta, 2, median)
 
+  mtd <- inv_standard_dose(dose = data$mcmc$gamma,
+                           min_dose = data$limits$min_dose,
+                           max_dose = data$limits$max_dose)
+
   crm_criterion <- function(dose){
     design_matrix <- cbind(1, dose)
     lp <- design_matrix %*% beta_est
@@ -35,7 +39,7 @@ next_dose.crm_d1classic <- function(data){
 
   pdlt <- as.numeric(plogis(cbind(1, next_gamma)%*%t(beta)))
 
-    out <- list(mtd = data$mcmc$mtd, pdlt = pdlt, next_dose = next_dose,
+    out <- list(mtd = mtd, pdlt = pdlt, next_dose = next_dose,
                 rho = data$mcmc$rho, gamma = data$mcmc$gamma,
                 sample = data$mcmc$sample)
   return(out)
@@ -46,6 +50,13 @@ next_dose.crm_d1extended <- function(data){
 
   beta <- data$mcmc$beta
   beta_est <- apply(beta, 2, median)
+
+  scale <- logit(data$mcmc$rho[, 2]) - logit(data$mcmc$rho[, 1])
+  gamma <- (logit(data$theta) - logit(data$mcmc$rho[, 1]))/scale
+
+  mtd <- inv_standard_dose(dose = gamma,
+                           min_dose = data$limits$min_dose,
+                           max_dose = data$limits$max_dose)
 
   crm_criterion <- function(dose){
     design_matrix <- cbind(1, dose)
@@ -80,7 +91,7 @@ next_dose.crm_d1extended <- function(data){
 
   pdlt <- as.numeric(plogis(cbind(1, next_gamma)%*%t(beta)))
 
-  out <- list(mtd = data$mcmc$mtd, pdlt = pdlt, next_dose = next_dose,
+  out <- list(mtd = mtd, pdlt = pdlt, next_dose = next_dose,
               rho = data$mcmc$rho, gamma = data$mcmc$gamma,
               sample = data$mcmc$sample)
   return(out)
@@ -91,6 +102,10 @@ next_dose.crm_d1ph <- function(data){
   shape <- data$mcmc$shape
   beta <- data$mcmc$beta
   beta_est <- apply(beta, 2, median)
+
+  mtd <- inv_standard_dose(dose = data$mcmc$gamma,
+                           min_dose = data$limits$min_dose,
+                           max_dose = data$limits$max_dose)
 
   crm_criterion <- function(dose){
     design_matrix <- cbind(1, dose)
@@ -132,7 +147,7 @@ next_dose.crm_d1ph <- function(data){
   pdlt <- as.numeric(1 - exp(-exp(cbind(1, next_gamma)%*%t(beta))*
                                (data$tau^shape)))
 
-  out <- list(mtd = data$mcmc$mtd, pdlt = pdlt, next_dose = next_dose,
+  out <- list(mtd = mtd, pdlt = pdlt, next_dose = next_dose,
               rho = data$mcmc$rho, shape = data$mcmc$shape, gamma = data$mcmc$gamma,
               sample = data$mcmc$sample)
   return(out)
