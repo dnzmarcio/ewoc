@@ -128,7 +128,8 @@ ewoc_d1extended <- function(formula, theta, alpha,
   my_data <- list(response = response, design_matrix = design_matrix,
                   theta = theta, alpha = alpha,
                   limits = limits,
-                  dose_set = dose_set, current_dose = current_dose,
+                  dose_set = dose_set,
+                  max_increment = max_increment, current_dose = current_dose,
                   rho_prior = rho_prior,
                   type = type, rounding = rounding)
   class(my_data) <- c("ewoc_d1extended", "d1extended")
