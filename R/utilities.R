@@ -1,3 +1,11 @@
+#'Logit
+#'
+#'Calculating the logit of a probability
+#'
+#'@param p a numerical value defining the probability to be transformed into logit scale.
+#'
+#'@return \code{logit} a numerical value in logit scale.
+#'
 logit <- function(p) {
   out <- log(p/(1 - p))
   return(out)
@@ -7,14 +15,38 @@ comb <- function(...) {
   mapply('rbind', ..., SIMPLIFY=FALSE)
 }
 
-
+#'Standardization of the dose
+#'
+#'Standardizing a dose between 0 and 1.
+#'
+#'@param dose a numerical value defining the dose to be standardized.
+#'@param min_dose a numerical value defining the lower bound of the support of
+#'the MTD.
+#'@param max_dose a numerical value defining the upper bound of the support of
+#'the MTD.
+#'
+#'@return \code{standardized dose} a numerical value between 0 and 1.
+#'
+#'@export
 standard_dose <- function(dose, min_dose, max_dose) {
 
   out <- (dose - min_dose)/(max_dose - min_dose)
   return(out)
 }
 
-
+#'Inverse standardization of the dose
+#'
+#'Unstandardizing a dose between minimum and maximum doses.
+#'
+#'@param dose a numerical value defining the standardized dose to be unstandardized.
+#'@param min_dose a numerical value defining the lower bound of the support of
+#'the MTD.
+#'@param max_dose a numerical value defining the upper bound of the support of
+#'the MTD.
+#'
+#'@return \code{dose} a numerical value between \code{min_dose} and \code{max_dose}.
+#'
+#'@export
 inv_standard_dose <- function(dose, min_dose, max_dose) {
 
   out <- dose*(max_dose - min_dose) + min_dose
