@@ -160,7 +160,8 @@ ewoc_d1ph <- function(formula, theta, alpha, tau,
   my_data <- list(response = response, design_matrix = design_matrix,
                   theta = theta, alpha = alpha,
                   limits = limits,
-                  dose_set = dose_set, current_dose = current_dose,
+                  dose_set = dose_set,
+                  max_increment = max_increment, current_dose = current_dose,
                   rho_prior = rho_prior, mtd_prior= mtd_prior,
                   shape_prior = shape_prior,
                   distribution = distribution, tau = tau,
@@ -174,7 +175,7 @@ ewoc_d1ph <- function(formula, theta, alpha, tau,
                 theta = theta, alpha = alpha,
                 first_dose = limits$first_dose, last_dose = limits$last_dose,
                 min_dose = limits$min_dose, max_dose = limits$max_dose,
-                dose_set = dose_set,
+                dose_set = dose_set, max_increment = max_increment,
                 rho_prior = rho_prior, mtd_prior = mtd_prior,
                 shape_prior = shape_prior,
                 distribution = distribution, tau = tau,
@@ -188,137 +189,6 @@ ewoc_d1ph <- function(formula, theta, alpha, tau,
   return(out)
 }
 
-#'@importFrom rjags jags.model coda.samples
-jags.d1ph <- function(data, n_adapt, burn_in,
-                         n_mcmc, n_thin, n_chains) {
 
-  time_cens <- data$response[, 1]
-  status <- data$response[, 2]
-  time_mod <- time_cens
-  time_mod[status == 0] <- NA
-  censored <- as.numeric(!status)
-
-  # JAGS model function
-
-  if (data$distribution == "weibull") {
-    jfun <- "model {
-
-      for(i in 1:nobs) {
-        censored[i] ~ dinterval(time_mod[i], time_cens[i])
-        time_mod[i] ~ dweib(shape, rate[i])
-        rate[i] <- exp(inprod(design_matrix[i, ], beta))
-      }
-
-      beta[1] <- log(-log(1 - rho)) - shape*log(tau)
-      beta[2] <- (log(-log(1 - theta)) -
-        log(-log(1 - rho)))*
-        exp(-log(gamma))
-
-      rho <- theta*r
-      gamma <- g + 10^(-2)
-      shape <- s + 10^(-2)
-      r ~ dbeta(rho_prior[1, 1], rho_prior[1, 2])
-      g ~ dbeta(mtd_prior[1, 1], mtd_prior[1, 2])
-      s ~ dgamma(shape_prior[1, 1], shape_prior[1, 2])
-    }"
-
-    inits <- function() {
-      time_init <- rep(NA, length(time_mod))
-      time_init[which(!status)] <- time_cens[which(!status)] + 1
-
-      out <- list(r = rbeta(nrow(data$rho_prior),
-                            data$rho_prior[, 1], data$rho_prior[, 2]),
-                  g = rbeta(nrow(data$mtd_prior),
-                            data$mtd_prior[, 1], data$mtd_prior[, 2]),
-                  s = rgamma(nrow(data$shape_prior),
-                                 data$shape_prior[, 1], data$shape_prior[, 2]),
-                  time_mod = time_init)
-      return(out)
-    }
-
-    data_base <- list('time_mod' = time_mod, 'time_cens' = time_cens,
-                      'censored' = censored, 'tau' = data$tau,
-                      'design_matrix' = data$design_matrix,
-                      'theta' = data$theta,
-                      'nobs' = length(time_cens[!is.na(time_cens)]),
-                      'rho_prior' = data$rho_prior,
-                      'mtd_prior' = data$mtd_prior,
-                      'shape_prior' = data$shape_prior)
-  } else {
-    jfun <- "model {
-
-      for(i in 1:nobs) {
-        censored[i] ~ dinterval(time_mod[i], time_cens[i])
-        time_mod[i] ~ dexp(rate[i])
-        rate[i] <- exp(inprod(design_matrix[i, ], beta) + 10^(-3))
-      }
-
-      beta[1] <- log(-log(1 - rho[1])) - log(tau)
-      beta[2] <- (log(-log(1 - theta)) -
-                    log(-log(1 - rho[1])))*
-        exp(-log(gamma + 10^(-2)))
-
-      rho[1] <- theta*r
-      r ~ dbeta(rho_prior[1, 1], rho_prior[1, 2])
-      gamma ~ dbeta(mtd_prior[1, 1], mtd_prior[1, 2])
-    }"
-
-      inits <- function() {
-      time_init <- rep(NA, length(time_mod))
-      time_init[which(!status)] <- time_cens[which(!status)] + 1
-
-      out <- list(r = rbeta(nrow(data$rho_prior),
-                            data$rho_prior[, 1], data$rho_prior[, 2]),
-                  gamma = rbeta(nrow(data$mtd_prior),
-                            data$mtd_prior[, 1], data$mtd_prior[, 2]),
-                  time_mod = time_init)
-      return(out)
-    }
-
-    data_base <- list('time_mod' = time_mod, 'time_cens' = time_cens,
-                      'censored' = censored, 'tau' = data$tau,
-                      'design_matrix' = data$design_matrix,
-                      'theta' = data$theta,
-                      'nobs' = length(time_cens[!is.na(time_cens)]),
-                      'rho_prior' = data$rho_prior,
-                      'mtd_prior' = data$mtd_prior)
-  }
-
-  initial <- inits()
-  # Calling JAGS
-  j <- jags.model(textConnection(jfun),
-                  data = data_base,
-                  inits = initial,
-                  n.chains = n_chains,
-                  n.adapt = n_adapt)
-  update(j, burn_in)
-
-  if (data$distribution == "weibull"){
-    sample <- coda.samples(j,
-                           variable.names =
-                             c("beta", "gamma", "rho", "shape"),
-                           n.iter = n_mcmc, thin = n_thin,
-                           n.chains = n_chains)
-
-    beta <- sample[[1]][, 1:2]
-    gamma <- sample[[1]][, 3]
-    rho <- sample[[1]][, 4]
-    shape <- sample[[1]][, 5]
-
-    out <- list(beta = beta, gamma = gamma, rho = rho, shape = shape,
-                sample = sample)
-  } else {
-    sample <- coda.samples(j, variable.names =  c("beta", "gamma", "rho"),
-                           n.iter = n_mcmc, thin = n_thin,
-                           n.chains = n_chains)
-
-    beta <- sample[[1]][, 1:2]
-    gamma <- sample[[1]][, 3]
-    rho <- sample[[1]][, 4]
-
-    out <- list(beta = beta, gamma = gamma, rho = rho, sample = sample)
-  }
-  return(out)
-}
 
 
