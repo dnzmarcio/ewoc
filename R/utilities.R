@@ -5,7 +5,7 @@
 #'@param p a numerical value defining the probability to be transformed into logit scale.
 #'
 #'@return \code{logit} a numerical value in logit scale.
-#'
+#'@export
 logit <- function(p) {
   out <- log(p/(1 - p))
   return(out)
