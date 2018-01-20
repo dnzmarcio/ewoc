@@ -207,7 +207,7 @@ ewoc_simulation.ewoc_d1classic <- function(step_zero, n_sim, sample_size,
                 resolution <- ifelse(!is.na(dlt), 1, 0)
 
                 if (j <= sample_size){
-                  alpha[j] <- feasibility(alpha = alpha[(j-1)],
+                  alpha[j] <- feasibility(alpha = alpha[1:(j-1)],
                                           strategy = alpha_strategy,
                                           dlt = dlt[1:(j-1)],
                                           resolution = resolution[1:(j-1)],
