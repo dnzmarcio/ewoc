@@ -15,7 +15,7 @@ next_dose.ewoc_d1classic <- function(data){
                       ifelse(next_dose < data$limits$first_dose,
                              data$limits$first_dose, next_dose))
 
-  if (abs(next_dose - data$current_dose) > data$max_increment)
+  if ((next_dose - data$current_dose) > data$max_increment)
     next_dose <- data$current_dose + data$max_increment
 
   if (data$type == "discrete")
@@ -53,7 +53,7 @@ next_dose.ewoc_d1extended <- function(data){
                       ifelse(next_dose < data$limits$first_dose,
                              data$limits$first_dose, next_dose))
 
-  if (abs(next_dose - data$current_dose) > data$max_increment)
+  if ((next_dose - data$current_dose) > data$max_increment)
     next_dose <- data$current_dose + data$max_increment
 
   if (data$type == "discrete")
@@ -90,7 +90,7 @@ next_dose.ewoc_d1ph <- function(data){
                       ifelse(next_dose < data$limits$first_dose,
                              data$limits$first_dose, next_dose))
 
-  if (abs(next_dose - data$current_dose) > data$max_increment)
+  if ((next_dose - data$current_dose) > data$max_increment)
     next_dose <- data$current_dose + data$max_increment
 
   if (data$type == "discrete")
