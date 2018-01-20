@@ -132,4 +132,4 @@ Non-standard files/directories found at top level:
 
 ### Reverse dependencies
 
-This is a new release, so there are no reverse dependencies.
+There is no reverse dependencies.
