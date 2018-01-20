@@ -122,7 +122,13 @@ DOI written in the form
 ### R CMD check results
 
 R CMD check results
-0 errors | 0 warnings | 0 notes
+0 errors | 0 warnings | 2 notes
+
+Found the following hidden files and directories:
+  .travis.yml
+
+Non-standard files/directories found at top level:
+  'README.Rmd' 'cran-comments.md'
 
 ### Reverse dependencies
 
