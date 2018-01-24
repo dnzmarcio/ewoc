@@ -112,7 +112,7 @@ DOI written in the form
 
 ---
 
-# Version 0.1.1
+# Version 0.2.0
 
 ### Test environments
 * local OS X install, R 3.4.1
@@ -122,13 +122,25 @@ DOI written in the form
 ### R CMD check results
 
 R CMD check results
-0 errors | 0 warnings | 2 notes
+0 errors | 0 warnings | 0 notes
 
-Found the following hidden files and directories:
-  .travis.yml
+### Reverse dependencies
 
-Non-standard files/directories found at top level:
-  'README.Rmd' 'cran-comments.md'
+There is no reverse dependencies.
+
+---
+
+# Version 0.2.1
+
+### Test environments
+* local OS X install, R 3.4.1
+* ubuntu 12.04 (on travis-ci), R 3.4.1
+* win-builder (devel and release)
+
+### R CMD check results
+
+R CMD check results
+0 errors | 0 warnings | 0 notes
 
 ### Reverse dependencies
 

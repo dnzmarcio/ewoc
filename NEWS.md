@@ -1,3 +1,8 @@
+# Version 0.2.1 (2018-01-23)
+
+- Corrected README.
+- Added detectCores to the documentation.
+
 # Version 0.2.0 (2018-01-19)
 
 - Fixed conditional feasibility bug.
