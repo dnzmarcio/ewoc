@@ -47,11 +47,11 @@ summary(test)
 #> 
 #> Next Dose
 #>   Estimate         95% HPD
-#> 1       40 (15.94 ; 99.97)
+#> 1       40 (12.87 ; 98.77)
 #> 
 #> P(DLT| next dose)
 #>   Estimate      95% HPD
-#> 1     0.29 (0.04 ; 0.6)
+#> 1      0.3 (0.07 ; 0.7)
 ```
 
 In addition, simulations also can be performed to evaluate a design:
@@ -73,7 +73,7 @@ sim <- ewoc_simulation(step_zero = step_zero,
                         n_sim = 1, sample_size = 30,
                         alpha_strategy = "conditional",
                         response_sim = response_sim,
-                        ncores = (detectCores() - 1))
+                        ncores = 1)
 ```
 
 References
