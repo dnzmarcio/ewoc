@@ -36,7 +36,8 @@ the information related to the trial as the returned object trial from either
 output a logical value indicating the trial should be stopped.}
 
 \item{ncores}{a numeric value indicating the number of cores to be used in the
-simulation performed in parallel.}
+simulation performed in parallel. Use parallel::detectCores() to check the number of
+cores available.}
 }
 \value{
 \code{alpha_sim} a matrix \code{n_sim} x \code{sample_size} containing

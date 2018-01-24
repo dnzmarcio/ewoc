@@ -3,7 +3,7 @@
 EWOC
 ====
 
-[![Travis-CI Build Status](https://travis-ci.org/dnzmarcio/ewoc.svg?branch=master)](https://travis-ci.org/dnzmarcio/ewoc) [![](http://cranlogs.r-pkg.org/badges/grand-total/ewoc)](https://cran.r-project.org/package=ewoc)
+[![Travis-CI Build Status](https://travis-ci.org/dnzmarcio/ewoc.svg?branch=master)](https://travis-ci.org/dnzmarcio/ewoc) [![](http://cranlogs.r-pkg.org/badges/grand-total/ewoc)](http://cran.rstudio.com/web/packages/ewoc/index.html)
 
 Escalation With Overdose Control is a dose escalation design for phase I clinical trials such that the probability of overdose is controlled explicitly.
 
@@ -47,11 +47,11 @@ summary(test)
 #> 
 #> Next Dose
 #>   Estimate         95% HPD
-#> 1       40 (16.45 ; 99.98)
+#> 1       40 (15.94 ; 99.97)
 #> 
 #> P(DLT| next dose)
-#>   Estimate       95% HPD
-#> 1     0.29 (0.03 ; 0.59)
+#>   Estimate      95% HPD
+#> 1     0.29 (0.04 ; 0.6)
 ```
 
 In addition, simulations also can be performed to evaluate a design:
@@ -69,10 +69,11 @@ step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
                             rounding = "nearest")
 response_sim <- response_d1classic(rho = 0.05, mtd = 20, theta = 0.33,
                                    min_dose = 10, max_dose = 50)
-sim <- trial_simulation(step_zero = step_zero,
+sim <- ewoc_simulation(step_zero = step_zero,
                         n_sim = 1, sample_size = 30,
-                        alpha_strategy = "increasing",
-                        response_sim = response_sim)
+                        alpha_strategy = "conditional",
+                        response_sim = response_sim,
+                        ncores = (detectCores() - 1))
 ```
 
 References

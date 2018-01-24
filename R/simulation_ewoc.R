@@ -23,7 +23,8 @@
 #'\code{ewoc_d1classic}, \code{ewoc_d1extended}, \code{ewoc_d1ph} and as
 #'output a logical value indicating the trial should be stopped.
 #'@param ncores a numeric value indicating the number of cores to be used in the
-#'simulation performed in parallel.
+#'simulation performed in parallel. Use parallel::detectCores() to check the number of
+#'cores available.
 #'
 #'@return \code{alpha_sim} a matrix \code{n_sim} x \code{sample_size} containing
 #'the values of feasibility used for each step in the trial and each trial in
@@ -259,6 +260,7 @@ ewoc_simulation.ewoc_d1classic <- function(step_zero, n_sim, sample_size,
 
 #'@importFrom foreach foreach %dopar%
 #'@importFrom doParallel registerDoParallel
+#'@importFrom parallel detectCores
 #'@export
 ewoc_simulation.ewoc_d1extended <- function(step_zero, n_sim, sample_size,
                                        alpha_strategy =
