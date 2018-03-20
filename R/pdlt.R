@@ -143,3 +143,60 @@ pdlt_d1ph <- function(rho, mtd, shape = NULL, theta, min_dose, max_dose,
   return(pdlt)
 }
 
+#'Generating a probability of DLT function based on the EWOC Proportional Odds model
+#
+#'@param rho a numerical value indicating the true value of the parameter rho.
+#'@param mtd a numerical value indicating the true value of the parameter mtd.
+#'@param theta a numerical value defining the proportion of expected patients
+#'to experience a medically unacceptable, dose-limiting toxicity (DLT) if
+#'administered the MTD.
+#'@param min_dose a numerical value defining the lower bound of the support of
+#'the MTD.
+#'@param max_dose a numerical value defining the upper bound of the support of
+#'the MTD.
+#'@param tau a numerical value defining the period of time for a possible
+#'toxicity be observed.
+#'@param distribution a character establishing the distribution for the time of
+#'events.
+#'@param shape a numerical value indicating the true value of the parameter shape.
+#'It is only necessary if 'distribution' = "weibull".
+#'
+#'@return A function with dose as an input and a probability based on the
+#'logistic regression and parameters as an output.
+#'
+#'@examples
+#'pdlt <- pdlt_d1pos(rho = 0.05, mtd = 40, theta = 0.33,
+#'                  min_dose = 30, max_dose = 50,
+#'                  tau = 10, distribution = "exponential")
+#'pdlt(40)
+#'
+#'@export
+pdlt_d1pos <- function(rho, mtd, shape = NULL, theta, min_dose, max_dose,
+                       tau, distribution) {
+
+  gamma <- standard_dose(dose = mtd,
+                         min_dose = min_dose,
+                         max_dose = max_dose)
+
+  pdlt <- function(dose){
+
+    dose <- standard_dose(dose = dose,
+                          min_dose = min_dose,
+                          max_dose = max_dose)
+
+    if (distribution != "weibull")
+      shape <- 1
+
+    beta <- rep(NA, 2)
+    beta[1] <- - (1/ tau) * log( (1 - rho ) )
+    beta[2] <-   log( (1 - theta ) * rho / ( (1 - rho) * theta) ) / gamma
+
+    design_matrix <- cbind(1, dose)
+    out <- 1 - (exp(-(beta[1] * tau)^shape)*exp(beta[2]*design_matrix[, 2])) /
+      ( 1 + exp(-(beta[1] * tau)^shape)*(exp(beta[2]*design_matrix[, 2]) - 1))
+
+    return(as.numeric(out))
+  }
+
+  return(pdlt)
+}
