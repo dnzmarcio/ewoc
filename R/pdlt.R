@@ -188,8 +188,8 @@ pdlt_d1pos <- function(rho, mtd, shape = NULL, theta, min_dose, max_dose,
       shape <- 1
 
     beta <- rep(NA, 2)
-    beta[1] <- - (1/ tau) * log( (1 - rho ) )
-    beta[2] <-   log( (1 - theta ) * rho / ( (1 - rho) * theta) ) / gamma
+    beta[1] <- (1/ tau) * (-log( (1 - rho )) ) ^ (1/shape)
+    beta[2] <- log( (1-theta) * rho / ((1-rho) * (theta))) / gamma
 
     design_matrix <- cbind(1, dose)
     out <- 1 - (exp(-(beta[1] * tau)^shape)*exp(beta[2]*design_matrix[, 2])) /
