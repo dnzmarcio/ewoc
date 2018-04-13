@@ -157,3 +157,68 @@ response_d1ph <- function(rho, mtd, theta, min_dose, max_dose,
   return(out)
 }
 
+
+#'Generating a response function based on the EWOC Proportional Odds model
+#'
+#'@import stats
+#'
+#'@param rho a numerical value indicating the true value of the parameter rho.
+#'@param mtd a numerical value indicating the true value of the parameter mtd.
+#'@param theta a numerical value defining the proportion of expected patients
+#'to experience a medically unacceptable, dose-limiting toxicity (DLT) if
+#'administered the MTD.
+#'@param min_dose a numerical value defining the lower bound of the support of
+#'the MTD.
+#'@param max_dose a numerical value defining the upper bound of the support of
+#'the MTD.
+#'@param tau a numerical value defining the period of time for a possible
+#'toxicity be observed.
+#'@param distribution a character establishing the distribution for the time of
+#'events.
+#'@param shape a numerical value indicating the true value of the parameter shape.
+#'It is only necessary if 'distribution' = "weibull".
+#'
+#'@return A function with dose as an input and a Binomial variable based on the
+#'parameters as an output.
+#'
+#'@examples
+#'response_sim <- response_d1ph(rho = 0.05, mtd = 40, theta = 0.33,
+#'                              min_dose = 30, max_dose = 50,
+#'                              tau = 10, distribution = "exponential")
+#'response_sim(40)
+#'
+#'@export
+response_d1pos <- function(rho, mtd, theta, min_dose, max_dose,
+                           tau, distribution, shape = NULL) {
+
+  gamma <- standard_dose(dose = mtd,
+                         min_dose = min_dose,
+                         max_dose = max_dose)
+
+  response_sim <- function(dose){
+
+    dose <- standard_dose(dose = dose,
+                          min_dose = min_dose,
+                          max_dose = max_dose)
+
+    if (distribution == "weibull") {
+      if (is.null(shape))
+        stop("Weibull distribution requires a shape parameter.")
+    } else {
+      shape <- 1
+    }
+
+    u <- runif(length(dose))
+    design <- cbind(1, dose)
+
+    beta <- rep(NA, 2)
+    beta[1] <-  (1/tau)*(-log((1 - rho)))^(1/shape)
+    beta[2] <-  log((1-theta)*rho/((1-rho)*(theta)))/gamma
+    out <- as.numeric(-1/beta[1]*log(u/(u + exp(beta[2]*design[2])*(1 - u))))
+
+    return(out)
+  }
+
+  out <- response_sim
+  return(out)
+}

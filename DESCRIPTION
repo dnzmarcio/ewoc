@@ -20,4 +20,4 @@ Imports:
     doParallel(>= 1.0.11),
     parallel (>= 3.4.0),
     doRNG (>= 1.7.1)
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1

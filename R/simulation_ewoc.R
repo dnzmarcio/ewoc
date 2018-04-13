@@ -3,7 +3,7 @@
 #'Generic function for simulating EWOC trials.
 #'
 #'@param step_zero an object from the classes either 'ewoc_d1classical' or 'ewoc_d1extended' or
-#''ewoc_d1ph' created using the first cohort data.
+#''ewoc_d1ph', 'ewoc_d1pos created using the first cohort data.
 #'@param n_sim a number indicating the number of phase I clinical trials
 #'to be simulated.
 #'@param sample_size a number indicating the number of patients enrolled for
@@ -102,11 +102,32 @@
 #'                             min_dose = 20, max_dose = 100,
 #'                             tau = 10, distribution = "exponential")
 #'sim <- ewoc_simulation(step_zero = step_zero,
-#'                      n_sim = 1, sample_size = 2, n_cohort = 1,
-#'                      alpha_strategy = "conditional",
-#'                      response_sim = response_sim,
-#'                      fixed_first_cohort = TRUE,
-#'                      ncores = 1)
+#'                       n_sim = 1, sample_size = 2, n_cohort = 1,
+#'                       alpha_strategy = "conditional",
+#'                       response_sim = response_sim,
+#'                       fixed_first_cohort = TRUE,
+#'                       ncores = 1)
+#'
+#'### POS EWOC
+#'time <- 0
+#'status <- 0
+#'dose <- 30
+#'
+#'step_zero <- ewoc_d1pos(cbind(time, status) ~ dose, type = 'continuous',
+#'                        theta = 0.33, alpha = 0.25, tau = 10,
+#'                        min_dose = 30, max_dose = 50,
+#'                        rho_prior = matrix(1, ncol = 2, nrow = 1),
+#'                        mtd_prior = matrix(1, ncol = 2, nrow = 1),
+#'                        distribution = 'exponential',
+#'                        rounding = 'nearest')
+#'response_sim <- response_d1pos(rho = 0.05, mtd = 40, theta = 0.33,
+#'                               min_dose = 30, max_dose = 50,
+#'                               tau = 10, distribution = "exponential")
+#'sim <- ewoc_simulation(step_zero = step_zero,
+#'                       n_sim = 1, sample_size = 2,
+#'                       alpha_strategy = "increasing",
+#'                       response_sim = response_sim,
+#'                       ncores = 1)
 #'}
 #'
 #'\dontrun{
@@ -166,6 +187,27 @@
 #'                       alpha_strategy = "conditional",
 #'                       response_sim = response_sim,
 #'                       ncores = 1)
+#'
+#'### POS EWOC
+#'time <- 0
+#'status <- 0
+#'dose <- 30
+#'
+#'step_zero <- ewoc_d1pos(cbind(time, status) ~ dose, type = 'continuous',
+#'                        theta = 0.33, alpha = 0.25, tau = 10,
+#'                        min_dose = 30, max_dose = 50,
+#'                        rho_prior = matrix(1, ncol = 2, nrow = 1),
+#'                        mtd_prior = matrix(1, ncol = 2, nrow = 1),
+#'                        distribution = 'exponential',
+#'                        rounding = 'nearest')
+#'response_sim <- response_d1pos(rho = 0.05, mtd = 40, theta = 0.33,
+#'                               min_dose = 30, max_dose = 50,
+#'                               tau = 10, distribution = "exponential")
+#'sim <- ewoc_simulation(step_zero = step_zero,
+#'                       n_sim = 2, sample_size = 30,
+#'                       alpha_strategy = "increasing",
+#'                       response_sim = response_sim,
+#'                       ncores = 2)
 #'}
 #'
 #'@importFrom foreach foreach %dopar%
@@ -576,4 +618,127 @@ ewoc_simulation.ewoc_d1ph <- function(step_zero, n_sim, sample_size, response_si
   return(out)
 }
 
+
+#'@importFrom foreach foreach %dopar%
+#'@importFrom doParallel registerDoParallel stopImplicitCluster
+#'@export
+ewoc_simulation.ewoc_d1pos <- function(step_zero, n_sim, sample_size,
+                                       alpha_strategy =
+                                         c("fixed", "increasing", "conditional"),
+                                       alpha_rate = 0.05,
+                                       response_sim = NULL,
+                                       stop_rule_sim = NULL,
+                                       ncores = 1){
+
+  if (is.null(response_sim))
+    stop("'response_sim' function should be defined.")
+  if (length(alpha_strategy) != 1)
+    stop("'alpha_strategy' should be defined.")
+
+  n_dose <- sample_size + 1
+  dose_sim <- matrix(NA, ncol = sample_size, nrow = n_sim)
+  dlt_sim <- matrix(NA, ncol = sample_size, nrow = n_sim)
+  time_sim <- matrix(NA, ncol = sample_size, nrow = n_sim)
+  mtd_sim <- matrix(NA, ncol = 1, nrow = n_sim)
+  rho_sim <- matrix(NA, ncol = 1, nrow = n_sim)
+  alpha_sim <- matrix(NA, ncol = sample_size, nrow = n_sim)
+
+  registerDoParallel(ncores)
+  result <-
+    foreach(i = 1:n_sim,
+            .combine='comb',
+            .multicombine=TRUE,
+            .init=list(list(), list(), list(), list(), list(), list())) %dopar% {
+
+              dlt <- as.numeric(step_zero$trial$response[, 2])
+              dose <- as.numeric(step_zero$trial$design_matrix[, 2])
+              alpha <- as.numeric(step_zero$trial$alpha)
+
+              event_time <- ifelse(dlt == 1, as.numeric(step_zero$trial$response[, 1]),
+                                   (response_sim(dose = dose) +
+                                      max(as.numeric(step_zero$trial$response[, 1]))))
+              event_time <- c(event_time, rep(NA, (sample_size - length(event_time))))
+              current_time <- max(step_zero$trial$response[, 1])
+              initial_time <- rep(0, sample_size)
+              j <- length(dose)
+
+              while ((current_time - initial_time[sample_size]) <= step_zero$trial$tau) {
+
+                current_time <- current_time + rexp(1, 1)
+
+                j <- j + 1
+
+                if (j <= sample_size)
+                  initial_time[j:sample_size] <- current_time
+
+                time_cens <- ifelse(event_time > (current_time - initial_time),
+                                    ifelse((current_time - initial_time) >
+                                             step_zero$trial$tau, step_zero$trial$tau,
+                                           (current_time - initial_time)),
+                                    ifelse(event_time > step_zero$trial$tau,
+                                           step_zero$trial$tau, event_time))
+
+                dlt <- ifelse(event_time > (current_time - initial_time), 0,
+                              ifelse(event_time > step_zero$trial$tau, 0, 1))
+
+                resolution <- ifelse(dlt == 1, 1,
+                                     ifelse((current_time - initial_time) >
+                                              step_zero$trial$tau, 1, 0))
+
+                if (j <= sample_size){
+                  alpha[j] <- feasibility(alpha = alpha[(j-1)],
+                                          strategy = alpha_strategy,
+                                          dlt = dlt[1:(j-1)],
+                                          resolution = resolution[1:(j-1)],
+                                          rate = alpha_rate)
+
+                  formula <- cbind(time_cens[1:(j-1)], dlt[1:(j-1)]) ~ dose[1:(j-1)]
+                  update <- ewoc_d1pos(formula,
+                                       type = step_zero$trial$type,
+                                       theta = step_zero$trial$theta,
+                                       alpha = alpha[j],
+                                       tau = step_zero$trial$tau,
+                                       min_dose = step_zero$trial$min_dose,
+                                       max_dose = step_zero$trial$max_dose,
+                                       first_dose = step_zero$trial$first_dose,
+                                       last_dose = step_zero$trial$last_dose,
+                                       dose_set = step_zero$trial$dose_set,
+                                       rho_prior = step_zero$trial$rho_prior,
+                                       mtd_prior = step_zero$trial$mtd_prior,
+                                       shape_prior = step_zero$trial$shape_prior,
+                                       distribution = step_zero$trial$distribution,
+                                       rounding = step_zero$trial$rounding)
+
+                  if (!is.null(stop_rule_sim))
+                    if (stop_rule_sim(update)){
+                      dose[j:sample_size] <- NA
+                      dlt[j:sample_size] <- NA
+                      event_time[j:sample_size] <- NA
+                      mtd_estimate <- NA
+                      rho_estimate <- NA
+                      break
+                    }
+
+                  dose[j] <- update$next_dose
+                  event_time[j] <- response_sim(dose = dose[j])
+                  mtd_estimate <- update$next_dose
+                  rho_estimate <- median(update$rho)
+                }
+              }
+
+              list(event_time, dose, dlt, mtd_estimate, rho_estimate, alpha)
+            }
+  stopImplicitCluster()
+
+  time_sim <- as.numeric(result[[1]])
+  dose_sim <- matrix(as.numeric(result[[2]]), nrow = n_sim, ncol = sample_size)
+  dlt_sim <-  matrix(as.numeric(result[[3]]), nrow = n_sim, ncol = sample_size)
+  mtd_sim <- as.numeric(result[[4]])
+  rho_sim <- as.numeric(result[[5]])
+  alpha_sim <- matrix(as.numeric(result[[6]]), nrow = n_sim, ncol = sample_size)
+
+
+  out <- list(time_sim = time_sim, dose_sim = dose_sim, dlt_sim = dlt_sim,
+              mtd_sim = mtd_sim, rho_sim = rho_sim, alpha_sim = alpha_sim)
+}
 
