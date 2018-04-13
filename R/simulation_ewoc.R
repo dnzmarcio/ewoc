@@ -45,10 +45,9 @@
 #'### Classic EWOC
 #'DLT <- 0
 #'dose <- 30
-#'step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
+#'step_zero <- ewoc_d1classic(DLT ~ dose, type = 'continuous',
 #'                            theta = 0.33, alpha = 0.25,
 #'                            min_dose = 0, max_dose = 100,
-#'                            dose_set = seq(0, 100, 20),
 #'                            rho_prior = matrix(1, ncol = 2, nrow = 1),
 #'                            mtd_prior = matrix(1, ncol = 2, nrow = 1),
 #'                            rounding = "nearest")
@@ -63,10 +62,9 @@
 #'### Extended EWOC
 #'DLT <- 0
 #'dose <- 30
-#'step_zero <- ewoc_d1extended(DLT ~ dose, type = 'discrete',
+#'step_zero <- ewoc_d1extended(DLT ~ dose, type = 'continuous',
 #'                            theta = 0.33, alpha = 0.25,
 #'                            min_dose = 0, max_dose = 100,
-#'                            dose_set = seq(0, 100, 20),
 #'                            rho_prior = matrix(1, ncol = 2, nrow = 2),
 #'                            rounding = "nearest")
 #'response_sim <- response_d1extended(rho = c(0.05, 0.5),
@@ -82,10 +80,9 @@
 #'status <- 0
 #'dose <- 30
 #'
-#'step_zero <- ewoc_d1ph(cbind(time, status) ~ dose, type = 'discrete',
+#'step_zero <- ewoc_d1ph(cbind(time, status) ~ dose, type = 'continuous',
 #'                       theta = 0.33, alpha = 0.25, tau = 10,
 #'                       min_dose = 30, max_dose = 50,
-#'                       dose_set = seq(30, 50, 5),
 #'                       rho_prior = matrix(1, ncol = 2, nrow = 1),
 #'                       mtd_prior = matrix(1, ncol = 2, nrow = 1),
 #'                       distribution = 'exponential',
@@ -125,47 +122,44 @@
 #'### Classic EWOC
 #'DLT <- 0
 #'dose <- 30
-#'step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
+#'step_zero <- ewoc_d1classic(DLT ~ dose, type = 'continuous',
 #'                            theta = 0.33, alpha = 0.25,
 #'                            min_dose = 0, max_dose = 100,
-#'                            dose_set = seq(0, 100, 20),
 #'                            rho_prior = matrix(1, ncol = 2, nrow = 1),
 #'                            mtd_prior = matrix(1, ncol = 2, nrow = 1),
 #'                            rounding = "nearest")
 #'response_sim <- response_d1classic(rho = 0.05, mtd = 20, theta = 0.33,
 #'                                   min_dose = 10, max_dose = 50)
 #'sim <- ewoc_simulation(step_zero = step_zero,
-#'                        n_sim = 2, sample_size = 30,
-#'                        alpha_strategy = "increasing",
-#'                        response_sim = response_sim,
-#'                        ncores = 2)
+#'                       n_sim = 2, sample_size = 30,
+#'                       alpha_strategy = "increasing",
+#'                       response_sim = response_sim,
+#'                       ncores = 2)
 #'
 #'### Extended EWOC
 #'DLT <- 0
 #'dose <- 30
-#'step_zero <- ewoc_d1extended(DLT ~ dose, type = 'discrete',
+#'step_zero <- ewoc_d1extended(DLT ~ dose, type = 'continuous',
 #'                            theta = 0.33, alpha = 0.25,
 #'                            min_dose = 0, max_dose = 100,
-#'                            dose_set = seq(0, 100, 20),
 #'                            rho_prior = matrix(1, ncol = 2, nrow = 2),
 #'                            rounding = "nearest")
 #'response_sim <- response_d1extended(rho = c(0.05, 0.5),
 #'                                    min_dose = 10, max_dose = 50)
 #'sim <- ewoc_simulation(step_zero = step_zero,
-#'                        n_sim = 2, sample_size = 30,
-#'                        alpha_strategy = "increasing",
-#'                        response_sim = response_sim,
-#'                        ncores = 2)
+#'                       n_sim = 2, sample_size = 30,
+#'                       alpha_strategy = "increasing",
+#'                       response_sim = response_sim,
+#'                       ncores = 2)
 #'
 #'### PH EWOC
 #'time <- 0
 #'status <- 0
 #'dose <- 30
 #'
-#'step_zero <- ewoc_d1ph(cbind(time, status) ~ dose, type = 'discrete',
+#'step_zero <- ewoc_d1ph(cbind(time, status) ~ dose, type = 'continuous',
 #'                       theta = 0.33, alpha = 0.25, tau = 10,
 #'                       min_dose = 30, max_dose = 50,
-#'                       dose_set = seq(30, 50, 5),
 #'                       rho_prior = matrix(1, ncol = 2, nrow = 1),
 #'                       mtd_prior = matrix(1, ncol = 2, nrow = 1),
 #'                       distribution = 'exponential',
@@ -174,10 +168,10 @@
 #'                              min_dose = 30, max_dose = 50,
 #'                              tau = 10, distribution = "exponential")
 #'sim <- ewoc_simulation(step_zero = step_zero,
-#'                        n_sim = 2, sample_size = 30,
-#'                        alpha_strategy = "increasing",
-#'                        response_sim = response_sim,
-#'                        ncores = 2)
+#'                       n_sim = 2, sample_size = 30,
+#'                       alpha_strategy = "increasing",
+#'                       response_sim = response_sim,
+#'                       ncores = 2)
 #'
 #'### POS EWOC
 #'time <- 0
@@ -635,4 +629,5 @@ ewoc_simulation.ewoc_d1pos <- function(step_zero, n_sim, sample_size,
   out <- list(time_sim = time_sim, dose_sim = dose_sim, dlt_sim = dlt_sim,
               mtd_sim = mtd_sim, rho_sim = rho_sim, alpha_sim = alpha_sim)
 }
+
 
