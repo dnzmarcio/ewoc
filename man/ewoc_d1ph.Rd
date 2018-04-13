@@ -111,8 +111,8 @@ See \code{\link[rjags]{adapt}} for details.}
 }
 \description{
 Finding the next dose for a phase I clinical trial based on Escalation
-with Overdose Control (EWOC) design considering parametrization for time
-to event response and single agent.
+with Overdose Control (EWOC) design using the parametrization for time
+to event response with the proportional hazards assumption and single agent.
 }
 \examples{
 time <- 9

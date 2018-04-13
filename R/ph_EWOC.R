@@ -1,8 +1,8 @@
 #'Escalation With Overdose Control
 #'
 #'Finding the next dose for a phase I clinical trial based on Escalation
-#'with Overdose Control (EWOC) design considering parametrization for time
-#'to event response and single agent.
+#'with Overdose Control (EWOC) design using the parametrization for time
+#'to event response with the proportional hazards assumption and single agent.
 #'
 #'@param formula an object of class \code{\link[Formula]{Formula}}: a symbolic
 #'description of the model to be fitted with only one regressor term
