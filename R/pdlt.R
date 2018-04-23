@@ -148,10 +148,6 @@ pdlt_d1continuous <- function(mtd, rho, theta, direction,
 pdlt_d1excontinuous <- function(rho, direction,
                                 min_dose, max_dose, min_cov, max_cov) {
 
-  gamma <- standard_dose(dose = mtd,
-                         min_dose = min_dose(max_cov),
-                         max_dose = max_dose(max_cov))
-
   pdlt <- function(dose, cov){
 
     dose <- standard_dose(dose = dose,
