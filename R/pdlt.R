@@ -114,24 +114,26 @@ pdlt_d1multinomial <- function(rho, mtd, theta, min_dose, max_dose, levels_cov) 
 
 
 #'@export
-pdlt_d1continuous <- function(mtd, rho, theta, min_dose, max_dose,
-                              min_cov, max_cov, cov) {
+pdlt_d1continuous <- function(mtd, rho, theta, direction,
+                              min_dose, max_dose,
+                              min_cov, max_cov) {
 
   gamma <- standard_dose(dose = mtd,
                          min_dose = min_dose(cov),
                          max_dose = max_dose(cov))
 
-  pdlt <- function(dose){
+  pdlt <- function(dose, cov){
 
     dose <- standard_dose(dose = dose,
                           min_dose = min_dose(cov),
                           max_dose = max_dose(cov))
 
     beta <- rep(NA, 3)
-    beta[1] <- logit(rho[1]) - min_cov*(logit(rho[2]) - logit(rho[1]))/
-      (max_cov - min_cov)
-    beta[2] <- (logit(theta) - logit(rho[1]))/mtd
-    beta[3] <- (logit(rho[2]) - logit(rho[1]))/(max_cov - min_cov)
+    beta[1] <- logit(rho[1])
+    beta[2] <- (logit(theta) - logit(rho[1]))/gamma
+    beta[3] <- (logit(rho[2]) - logit(rho[1]))
+
+    cov <- (cov - min_cov)/(max_cov - min_cov)
 
     design_matrix <- cbind(1, dose, cov)
     lp <- design_matrix%*%beta
@@ -143,7 +145,7 @@ pdlt_d1continuous <- function(mtd, rho, theta, min_dose, max_dose,
 }
 
 #'@export
-pdlt_d1excontinuous <- function(rho, theta, direction,
+pdlt_d1excontinuous <- function(rho, direction,
                                 min_dose, max_dose, min_cov, max_cov) {
 
   gamma <- standard_dose(dose = mtd,
@@ -159,11 +161,11 @@ pdlt_d1excontinuous <- function(rho, theta, direction,
     if (direction == "positive"){
       beta[1] <- logit(rho[1])
       beta[2] <- logit(rho[2]) - logit(rho[1])
-      beta[3] <- (logit(theta) - logit(rho[1]))/gamma
+      beta[3] <- logit(rho[3]) - logit(rho[1])
     } else {
       beta[1] <- logit(rho[1])
       beta[2] <- logit(rho[2]) - logit(rho[1])
-      beta[3] <- -(logit(theta) - logit(rho[1]))/gamma
+      beta[3] <- -(logit(rho[3]) - logit(rho[1]))
     }
 
     cov <- (cov - min_cov)/(max_cov - min_cov)
