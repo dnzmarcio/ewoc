@@ -127,11 +127,17 @@ pdlt_d1continuous <- function(mtd, rho, theta, direction,
     dose <- standard_dose(dose = dose,
                           min_dose = min_dose(cov),
                           max_dose = max_dose(cov))
-
     beta <- rep(NA, 3)
-    beta[1] <- logit(rho[1])
-    beta[2] <- (logit(theta) - logit(rho[1]))/gamma
-    beta[3] <- (logit(rho[2]) - logit(rho[1]))
+
+    if (direction == "positive"){
+      beta[1] <- logit(rho[1])
+      beta[2] <- (logit(theta) - logit(rho[1]))/gamma
+      beta[3] <- (logit(rho[2]) - logit(rho[1]))
+    } else {
+      beta[1] <- logit(rho[1])
+      beta[2] <- logit(rho[2]) - logit(rho[1])
+      beta[3] <- -(logit(rho[3]) - logit(rho[1]))
+    }
 
     cov <- (cov - min_cov)/(max_cov - min_cov)
 
@@ -153,6 +159,7 @@ pdlt_d1excontinuous <- function(rho, direction,
     dose <- standard_dose(dose = dose,
                           min_dose = min_dose(cov),
                           max_dose = max_dose(cov))
+    beta <- rep(NA, 3)
 
     if (direction == "positive"){
       beta[1] <- logit(rho[1])
