@@ -235,7 +235,7 @@ ewoc_simulation.ewoc_d1classic <- function(step_zero, n_sim, sample_size,
             .init=list(list(), list(), list(), list(), list())) %dopar% {
 
               dlt <- as.numeric(step_zero$trial$response)
-              dose <- as.numeric(step_zero$trial$design_matrix[, 2])
+              dose <- as.numeric(step_zero$trial$first_dose)
               alpha <- as.numeric(step_zero$trial$alpha)
 
               for (j in (length(dose)+1):n_dose) {
@@ -325,7 +325,7 @@ ewoc_simulation.ewoc_d1extended <- function(step_zero, n_sim, sample_size,
             .init=list(list(), list(), list(), list(), list())) %dopar% {
 
               dlt <- as.numeric(step_zero$trial$response)
-              dose <- as.numeric(step_zero$trial$design_matrix[, 2])
+              dose <- as.numeric(step_zero$trial$first_dose)
               alpha <- as.numeric(step_zero$trial$alpha)
 
               for (j in (length(dose)+1):n_dose) {
@@ -415,7 +415,7 @@ ewoc_simulation.ewoc_d1ph <- function(step_zero, n_sim, sample_size,
             .init=list(list(), list(), list(), list(), list(), list())) %dopar% {
 
               dlt <- as.numeric(step_zero$trial$response[, 2])
-              dose <- as.numeric(step_zero$trial$design_matrix[, 2])
+              dose <- as.numeric(step_zero$trial$first_dose)
               alpha <- as.numeric(step_zero$trial$alpha)
 
               event_time <- ifelse(dlt == 1, as.numeric(step_zero$trial$response[, 1]),
@@ -494,7 +494,7 @@ ewoc_simulation.ewoc_d1ph <- function(step_zero, n_sim, sample_size,
             }
   stopImplicitCluster()
 
-  time_sim <- as.numeric(result[[1]])
+  time_sim <- matrix(as.numeric(result[[1]]), nrow = n_sim, ncol = sample_size)
   dose_sim <- matrix(as.numeric(result[[2]]), nrow = n_sim, ncol = sample_size)
   dlt_sim <-  matrix(as.numeric(result[[3]]), nrow = n_sim, ncol = sample_size)
   mtd_sim <- as.numeric(result[[4]])
@@ -533,13 +533,13 @@ ewoc_simulation.ewoc_d1pos <- function(step_zero, n_sim, sample_size,
 
   registerDoParallel(ncores)
   result <-
-    foreach(i = 1:n_sim,
-            .combine='comb',
-            .multicombine=TRUE,
-            .init=list(list(), list(), list(), list(), list(), list())) %dopar% {
-
+  foreach(i = 1:n_sim,
+          .combine='comb',
+          .multicombine=TRUE,
+          .init=list(list(), list(), list(), list(), list(), list())) %dopar% {
+# for (i in 1:n_sim){
               dlt <- as.numeric(step_zero$trial$response[, 2])
-              dose <- as.numeric(step_zero$trial$design_matrix[, 2])
+              dose <- as.numeric(step_zero$trial$first_dose)
               alpha <- as.numeric(step_zero$trial$alpha)
 
               event_time <- ifelse(dlt == 1, as.numeric(step_zero$trial$response[, 1]),
@@ -618,7 +618,7 @@ ewoc_simulation.ewoc_d1pos <- function(step_zero, n_sim, sample_size,
             }
   stopImplicitCluster()
 
-  time_sim <- as.numeric(result[[1]])
+  time_sim <- matrix(as.numeric(result[[1]]), nrow = n_sim, ncol = sample_size)
   dose_sim <- matrix(as.numeric(result[[2]]), nrow = n_sim, ncol = sample_size)
   dlt_sim <-  matrix(as.numeric(result[[3]]), nrow = n_sim, ncol = sample_size)
   mtd_sim <- as.numeric(result[[4]])
