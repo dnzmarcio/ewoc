@@ -207,7 +207,7 @@ jags.d1pos <- function(data, n_adapt, burn_in,
     time_mod[i] ~ dweib(shape, rate[i])
     rate[i] <- exp(inprod(design_matrix[i, ], beta))
     }
-    beta[1] <-  (1/tau)*(-log((1 - rho)))^(1/shape)
+    beta[1] <-  log(-(1/tau)*(-log((1 - rho)))^(1/shape))
     beta[2] <-  log((1-theta)*rho/((1-rho)*theta)) * exp(-log(gamma)))
     rho <- theta*r
     gamma <- g
@@ -247,7 +247,7 @@ jags.d1pos <- function(data, n_adapt, burn_in,
       rate[i] <- exp(inprod(design_matrix[i, ], beta))
       }
 
-      beta[1] <- - (1/tau)*log((1 - rho))
+      beta[1] <- log(- (1/tau)*log((1 - rho)))
       beta[2] <- log((1-theta)*rho/((1 - rho)*theta))*exp(-log(gamma))
       rho[1] <- theta*r
       r ~ dbeta(rho_prior[1, 1], rho_prior[1, 2])
