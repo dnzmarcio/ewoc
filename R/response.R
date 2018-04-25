@@ -213,8 +213,8 @@ response_d1pos <- function(rho, mtd, theta, min_dose, max_dose,
 
     beta <- rep(NA, 2)
     beta[1] <-  (1/tau)*(-log((1 - rho)))^(1/shape)
-    beta[2] <-  log((1-theta)*rho/((1-rho)*(theta)))/gamma
-    out <- as.numeric(-1/beta[1]*log(u/(u + exp(beta[2]*design[2])*(1 - u))))
+    beta[2] <-  log(((1 - theta)*rho)/((1 - rho)*(theta)))/gamma
+    out <- (-1/beta[1]*log(u/(u + exp(beta[2]*design[2])*(1 - u))))^(1/shape)
 
     return(out)
   }
