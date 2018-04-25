@@ -207,11 +207,11 @@ jags.d1pos <- function(data, n_adapt, burn_in,
     time_mod[i] ~ dweib(shape, rate[i])
     rate[i] <- exp(inprod(design_matrix[i, ], beta))
     }
-    beta[1] <-  (1/ tau) * (-log( (1 - rho )) ) ^ (1/shape)
-    beta[2] <-  log( (1-theta) * rho / ((1-rho) * theta )) * exp(-log(gamma+ 10^(-2)))
+    beta[1] <-  (1/tau)*(-log((1 - rho)))^(1/shape)
+    beta[2] <-  log((1-theta)*rho/((1-rho)*theta)) * exp(-log(gamma)))
     rho <- theta*r
-    gamma <- g + 10^(-2)
-    shape <- s + 10^(-2)
+    gamma <- g
+    shape <- s
     r ~ dbeta(rho_prior[1, 1], rho_prior[1, 2])
     g ~ dbeta(mtd_prior[1, 1], mtd_prior[1, 2])
     s ~ dgamma(shape_prior[1, 1], shape_prior[1, 2])
@@ -244,11 +244,11 @@ jags.d1pos <- function(data, n_adapt, burn_in,
       for(i in 1:nobs) {
       censored[i] ~ dinterval(time_mod[i], time_cens[i])
       time_mod[i] ~ dexp(rate[i])
-      rate[i] <- exp(inprod(design_matrix[i, ], beta) + 10^(-3))
+      rate[i] <- exp(inprod(design_matrix[i, ], beta))
       }
 
-      beta[1] <- - (1/ tau) * log( (1 - rho ) )
-      beta[2] <- log( (1-theta) * rho / ((1-rho) * theta)) * exp(-log(gamma+ 10^(-2)))
+      beta[1] <- - (1/tau)*log((1 - rho))
+      beta[2] <- log((1-theta)*rho/((1 - rho)*theta))*exp(-log(gamma))
       rho[1] <- theta*r
       r ~ dbeta(rho_prior[1, 1], rho_prior[1, 2])
       gamma ~ dbeta(mtd_prior[1, 1], mtd_prior[1, 2])

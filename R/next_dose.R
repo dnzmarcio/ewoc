@@ -74,7 +74,7 @@ next_dose.ewoc_d1extended <- function(data){
 
 next_dose.ewoc_d1ph <- function(data){
 
-  gamma <- data$mcmc$gamma - 10^(-2)
+  gamma <- data$mcmc$gamma
   shape <- data$mcmc$shape
   rho <- data$mcmc$rho
   beta <- data$mcmc$beta
@@ -116,7 +116,7 @@ next_dose.ewoc_d1ph <- function(data){
 
 next_dose.ewoc_d1pos <- function(data){
 
-  gamma <- data$mcmc$gamma - 10^(-2)
+  gamma <- data$mcmc$gamma
   shape <- data$mcmc$shape
   rho <- data$mcmc$rho
   beta <- data$mcmc$beta
