@@ -49,7 +49,7 @@
 #'
 #'@examples
 #'\dontshow{
-#'### classical EWOC
+#'### Classical EWOC
 #'DLT <- 0
 #'dose <- 30
 #'step_zero <- ewoc_d1classical(DLT ~ dose, type = 'continuous',
@@ -176,7 +176,6 @@
 #'response_sim <- response_d1ph(rho = 0.05, mtd = 40, theta = 0.33,
 #'                              min_dose = 30, max_dose = 50,
 #'                              tau = 10, distribution = "exponential")
->>>>>>> d93283f (Remove discrete dose examples and add continuous dose examples.)
 #'sim <- ewoc_simulation(step_zero = step_zero,
 #'                       n_sim = 2, sample_size = 30,
 #'                       alpha_strategy = "increasing",
@@ -251,7 +250,8 @@ ewoc_simulation.ewoc_d1classical <- function(step_zero, n_sim, sample_size, resp
             .multicombine=TRUE,
             .init=list(list(), list(), list(), list(), list())) %dorng% {
 
-              dose <- as.numeric(step_zero$trial$design_matrix[, 2])
+              dose <- as.numeric(step_zero$trial$first_dose)
+              alpha <- as.numeric(step_zero$trial$alpha)
 
               if (fixed_first_cohort) {
                 dlt <- as.numeric(step_zero$trial$response)
@@ -370,8 +370,11 @@ ewoc_simulation.ewoc_d1extended <- function(step_zero, n_sim, sample_size, respo
     foreach(i = 1:n_sim,
             .combine='comb',
             .multicombine=TRUE,
-            .init=list(list(), list(), list(), list(), list())) %dorng% {
-              dose <- as.numeric(step_zero$trial$design_matrix[, 2])
+            .init=list(list(), list(), list(), list(), list())) %dopar% {
+
+              dlt <- as.numeric(step_zero$trial$response)
+              dose <- as.numeric(step_zero$trial$first_dose)
+              alpha <- as.numeric(step_zero$trial$alpha)
 
               if (fixed_first_cohort) {
                 dlt <- as.numeric(step_zero$trial$response)
@@ -494,7 +497,7 @@ ewoc_simulation.ewoc_d1ph <- function(step_zero, n_sim, sample_size, response_si
             .init=list(list(), list(), list(), list(), list(), list(), list())) %dorng% {
 
               dlt <- as.numeric(step_zero$trial$response[, 2])
-              dose <- as.numeric(step_zero$trial$design_matrix[, 2])
+              dose <- as.numeric(step_zero$trial$first_dose)
               alpha <- as.numeric(step_zero$trial$alpha)
 
               event_time <- ifelse(dlt == 1, as.numeric(step_zero$trial$response[, 1]),
@@ -639,13 +642,13 @@ ewoc_simulation.ewoc_d1pos <- function(step_zero, n_sim, sample_size,
 
   registerDoParallel(ncores)
   result <-
-    foreach(i = 1:n_sim,
-            .combine='comb',
-            .multicombine=TRUE,
-            .init=list(list(), list(), list(), list(), list(), list())) %dopar% {
-
+  foreach(i = 1:n_sim,
+          .combine='comb',
+          .multicombine=TRUE,
+          .init=list(list(), list(), list(), list(), list(), list())) %dopar% {
+# for (i in 1:n_sim){
               dlt <- as.numeric(step_zero$trial$response[, 2])
-              dose <- as.numeric(step_zero$trial$design_matrix[, 2])
+              dose <- as.numeric(step_zero$trial$first_dose)
               alpha <- as.numeric(step_zero$trial$alpha)
 
               event_time <- ifelse(dlt == 1, as.numeric(step_zero$trial$response[, 1]),
@@ -724,7 +727,7 @@ ewoc_simulation.ewoc_d1pos <- function(step_zero, n_sim, sample_size,
             }
   stopImplicitCluster()
 
-  time_sim <- as.numeric(result[[1]])
+  time_sim <- matrix(as.numeric(result[[1]]), nrow = n_sim, ncol = sample_size)
   dose_sim <- matrix(as.numeric(result[[2]]), nrow = n_sim, ncol = sample_size)
   dlt_sim <-  matrix(as.numeric(result[[3]]), nrow = n_sim, ncol = sample_size)
   mtd_sim <- as.numeric(result[[4]])
