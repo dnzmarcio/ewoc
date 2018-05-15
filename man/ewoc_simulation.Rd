@@ -5,7 +5,7 @@
 \title{Generic EWOC simulation}
 \usage{
 ewoc_simulation(step_zero, n_sim, sample_size, alpha_strategy = "fixed",
-  alpha_rate = NULL, response_sim, stop_rule_sim = NULL, ncores = 1)
+  alpha_rate = NULL, response_sim, stop_rule_sim = NULL, ncores = 1, ...)
 }
 \arguments{
 \item{step_zero}{an object from the classes 'ewoc_d1classic', 'ewoc_d1extended',
@@ -38,6 +38,9 @@ output a logical value indicating the trial should be stopped.}
 \item{ncores}{a numeric value indicating the number of cores to be used in the
 simulation performed in parallel. Use parallel::detectCores() to check the number of
 cores available.}
+
+\item{...}{For an object \code{step_zero} with class 'ewoc_d1ph', the argument \code{rate}
+which controls the rate of accrue of patients following a Poisson process. The default is 1.}
 }
 \value{
 \code{alpha_sim} a matrix \code{n_sim} x \code{sample_size} containing

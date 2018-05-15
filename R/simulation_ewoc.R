@@ -25,6 +25,8 @@
 #'@param ncores a numeric value indicating the number of cores to be used in the
 #'simulation performed in parallel. Use parallel::detectCores() to check the number of
 #'cores available.
+#'@param ... For an object \code{step_zero} with class 'ewoc_d1ph', the argument \code{rate}
+#'which controls the rate of accrue of patients following a Poisson process. The default is 1.
 #'
 #'@return \code{alpha_sim} a matrix \code{n_sim} x \code{sample_size} containing
 #'the values of feasibility used for each step in the trial and each trial in
@@ -167,7 +169,8 @@ ewoc_simulation <- function(step_zero, n_sim, sample_size,
                             alpha_strategy = "fixed",
                             alpha_rate = NULL, response_sim,
                             stop_rule_sim = NULL,
-                            ncores = 1){
+                            ncores = 1,
+                            ...){
   UseMethod("ewoc_simulation")
 }
 
@@ -179,7 +182,7 @@ ewoc_simulation.ewoc_d1classic <- function(step_zero, n_sim, sample_size,
                                       alpha_rate = 0.05,
                                       response_sim = NULL,
                                       stop_rule_sim = NULL,
-                                      ncores = 1){
+                                      ncores = 1, ...){
 
   if (is.null(response_sim))
     stop("'response_sim' function should be defined.")
@@ -268,7 +271,7 @@ ewoc_simulation.ewoc_d1extended <- function(step_zero, n_sim, sample_size,
                                        alpha_rate = 0.05,
                                        response_sim = NULL,
                                        stop_rule_sim = NULL,
-                                       ncores = 1){
+                                       ncores = 1, ...){
 
   if (is.null(response_sim))
     stop("'response_sim' function should be defined.")
@@ -356,7 +359,10 @@ ewoc_simulation.ewoc_d1ph <- function(step_zero, n_sim, sample_size,
                                  alpha_rate = 0.05,
                                  response_sim = NULL,
                                  stop_rule_sim = NULL,
-                                 ncores = 1){
+                                 ncores = 1, ...){
+
+  ndots <- list(...)
+  rate <- ifelse(!is.null(ndots$rate), ndots$rate, 1)
 
   if (is.null(response_sim))
     stop("'response_sim' function should be defined.")
@@ -376,7 +382,7 @@ ewoc_simulation.ewoc_d1ph <- function(step_zero, n_sim, sample_size,
     foreach(i = 1:n_sim,
             .combine='comb',
             .multicombine=TRUE,
-            .init=list(list(), list(), list(), list(), list(), list())) %dopar% {
+            .init=list(list(), list(), list(), list(), list(), list(), list())) %dopar% {
 
               dlt <- as.numeric(step_zero$trial$response[, 2])
               dose <- as.numeric(step_zero$trial$design_matrix[, 2])
@@ -392,7 +398,7 @@ ewoc_simulation.ewoc_d1ph <- function(step_zero, n_sim, sample_size,
 
               while ((current_time - initial_time[sample_size]) <= step_zero$trial$tau) {
 
-                current_time <- current_time + rexp(1, 1)
+                current_time <- current_time + rexp(1, rate)
 
                 j <- j + 1
 
@@ -454,20 +460,22 @@ ewoc_simulation.ewoc_d1ph <- function(step_zero, n_sim, sample_size,
                 }
               }
 
-              list(event_time, dose, dlt, mtd_estimate, rho_estimate, alpha)
+              list(event_time, dose, dlt, mtd_estimate, rho_estimate, alpha, current_time)
             }
   stopImplicitCluster()
 
-  time_sim <- as.numeric(result[[1]])
+  time_sim <- matrix(as.numeric(result[[1]]), nrow = n_sim, ncol = sample_size)
   dose_sim <- matrix(as.numeric(result[[2]]), nrow = n_sim, ncol = sample_size)
   dlt_sim <-  matrix(as.numeric(result[[3]]), nrow = n_sim, ncol = sample_size)
   mtd_sim <- as.numeric(result[[4]])
   rho_sim <- as.numeric(result[[5]])
   alpha_sim <- matrix(as.numeric(result[[6]]), nrow = n_sim, ncol = sample_size)
+  total_time <- as.numeric(result[[7]])
 
 
   out <- list(time_sim = time_sim, dose_sim = dose_sim, dlt_sim = dlt_sim,
-              mtd_sim = mtd_sim, rho_sim = rho_sim, alpha_sim = alpha_sim)
+              mtd_sim = mtd_sim, rho_sim = rho_sim, alpha_sim = alpha_sim,
+              total_time = total_time)
 }
 
 
