@@ -41,6 +41,9 @@ cores available.}
 
 \item{...}{For an object \code{step_zero} with class 'ewoc_d1ph', the argument \code{rate}
 which controls the rate of accrue of patients following a Poisson process. The default is 1.}
+
+\item{rate_sim}{a numerical value for the Poison Process modelling the
+arrival of patients in EWOC PH.}
 }
 \value{
 \code{alpha_sim} a matrix \code{n_sim} x \code{sample_size} containing

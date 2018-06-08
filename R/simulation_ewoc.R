@@ -18,6 +18,8 @@
 #'as a generator function of the response variables in the simulation.
 #'Its only input is 'dose' and output is the indicator of DLT for classical and
 #'extended EWOC and the time until DLT for PH EWOC.
+#'@param rate_sim a numerical value for the Poison Process modelling the
+#'arrival of patients in EWOC PH.
 #'@param stop_rule_sim a function having as an input an object containing all
 #'the information related to the trial as the returned object trial from either
 #'\code{ewoc_d1classic}, \code{ewoc_d1extended}, \code{ewoc_d1ph} and as
@@ -362,7 +364,7 @@ ewoc_simulation.ewoc_d1ph <- function(step_zero, n_sim, sample_size,
                                  ncores = 1, ...){
 
   ndots <- list(...)
-  rate <- ifelse(!is.null(ndots$rate), ndots$rate, 1)
+  rate <- ifelse(!is.null(ndots$rate_sim), ndots$rate_sim, 1)
 
   if (is.null(response_sim))
     stop("'response_sim' function should be defined.")
