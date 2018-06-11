@@ -18,8 +18,6 @@
 #'as a generator function of the response variables in the simulation.
 #'Its only input is 'dose' and output is the indicator of DLT for classical and
 #'extended EWOC and the time until DLT for PH EWOC.
-#'@param rate_sim a numerical value for the Poison Process modelling the
-#'arrival of patients in EWOC PH.
 #'@param stop_rule_sim a function having as an input an object containing all
 #'the information related to the trial as the returned object trial from either
 #'\code{ewoc_d1classic}, \code{ewoc_d1extended}, \code{ewoc_d1ph} and as
@@ -27,8 +25,8 @@
 #'@param ncores a numeric value indicating the number of cores to be used in the
 #'simulation performed in parallel. Use parallel::detectCores() to check the number of
 #'cores available.
-#'@param ... For an object \code{step_zero} with class 'ewoc_d1ph', the argument \code{rate}
-#'which controls the rate of accrue of patients following a Poisson process. The default is 1.
+#'@param ... For an object \code{step_zero} with class 'ewoc_d1ph',
+#'the argument \code{rate_sim} which controls the rate of accrue of patients following a Poisson process. The default is 1.
 #'
 #'@return \code{alpha_sim} a matrix \code{n_sim} x \code{sample_size} containing
 #'the values of feasibility used for each step in the trial and each trial in

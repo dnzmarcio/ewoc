@@ -39,11 +39,8 @@ output a logical value indicating the trial should be stopped.}
 simulation performed in parallel. Use parallel::detectCores() to check the number of
 cores available.}
 
-\item{...}{For an object \code{step_zero} with class 'ewoc_d1ph', the argument \code{rate}
-which controls the rate of accrue of patients following a Poisson process. The default is 1.}
-
-\item{rate_sim}{a numerical value for the Poison Process modelling the
-arrival of patients in EWOC PH.}
+\item{...}{For an object \code{step_zero} with class 'ewoc_d1ph',
+the argument \code{rate_sim} which controls the rate of accrue of patients following a Poisson process. The default is 1.}
 }
 \value{
 \code{alpha_sim} a matrix \code{n_sim} x \code{sample_size} containing
