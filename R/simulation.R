@@ -46,8 +46,7 @@
 #'                            theta = 0.33, alpha = 0.25,
 #'                            min_dose = 0, max_dose = 100,
 #'                            dose_set = seq(0, 100, 20),
-#'                            rho_prior = matrix(1, ncol = 2, nrow = 1),
-#'                            mtd_prior = matrix(1, ncol = 2, nrow = 1),
+#'                            rho_prior = matrix(1, ncol = 2, nrow = 2),
 #'                            rounding = "nearest")
 #'response_sim <- response_d1extended(rho = c(0.05, 0.5), theta = 0.33,
 #'                                    min_dose = 10, max_dose = 50)
