@@ -5,8 +5,8 @@
 \title{Generating a binary response function based on the EWOC model with a
 continuous covariable}
 \usage{
-response_d1continuous(rho, mtd, theta, direction, min_dose, max_dose, min_cov,
-  max_cov)
+response_d1continuous(rho, mtd, theta, direction, min_dose, max_dose,
+  min_cov, max_cov)
 }
 \arguments{
 \item{rho}{a numerical value indicating the true value of the parameter rho.}

@@ -5,10 +5,10 @@
 \title{Escalation Over with Dose Control}
 \usage{
 ewoc_d1multinomial(formula, theta, alpha, mtd_prior, rho_prior, levels_cov,
-  next_patient_cov, min_dose, max_dose, type = c("continuous", "discrete"),
-  order = FALSE, first_dose = NULL, last_dose = NULL, dose_set = NULL,
-  rounding = c("down", "nearest"), n_adapt = 5000, burn_in = 1000,
-  n_mcmc = 1000, n_thin = 1, n_chains = 1)
+  next_patient_cov, min_dose, max_dose, type = c("continuous",
+  "discrete"), order = FALSE, first_dose = NULL, last_dose = NULL,
+  dose_set = NULL, rounding = c("down", "nearest"), n_adapt = 5000,
+  burn_in = 1000, n_mcmc = 1000, n_thin = 1, n_chains = 1)
 }
 \arguments{
 \item{formula}{an object of class \code{\link[Formula]{Formula}}: a symbolic

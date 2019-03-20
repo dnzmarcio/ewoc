@@ -4,10 +4,11 @@
 \alias{ewoc_d1basic}
 \title{Escalation Over with Dose Control}
 \usage{
-ewoc_d1basic(formula, theta, alpha, mtd_prior, rho_prior, min_dose, max_dose,
-  type = c("continuous", "discrete"), first_dose = NULL, last_dose = NULL,
-  dose_set = NULL, rounding = c("down", "nearest"), n_adapt = 5000,
-  burn_in = 1000, n_mcmc = 1000, n_thin = 1, n_chains = 1)
+ewoc_d1basic(formula, theta, alpha, mtd_prior, rho_prior, min_dose,
+  max_dose, type = c("continuous", "discrete"), first_dose = NULL,
+  last_dose = NULL, dose_set = NULL, rounding = c("down", "nearest"),
+  n_adapt = 5000, burn_in = 1000, n_mcmc = 1000, n_thin = 1,
+  n_chains = 1)
 }
 \arguments{
 \item{formula}{an object of class \code{\link[Formula]{Formula}}: a symbolic
