@@ -4,8 +4,9 @@
 \alias{accuracy_index}
 \title{Accuracy Index}
 \usage{
-accuracy_index(mtd_estimate, dose_set, true_prob, theta, loss = c("squared",
-  "absolute", "classification", "overdose"), alpha = NULL)
+accuracy_index(mtd_estimate, dose_set, true_prob, theta,
+  loss = c("squared", "absolute", "classification", "overdose"),
+  alpha = NULL)
 }
 \arguments{
 \item{mtd_estimate}{a numerical vector of the MTD estimates.}

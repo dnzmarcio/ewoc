@@ -4,8 +4,8 @@
 \alias{dlt_rate}
 \title{Evaluation of the DLT rate}
 \usage{
-dlt_rate(dlt_matrix, trial = FALSE, target_rate = NULL, margin = NULL,
-  digits = 2)
+dlt_rate(dlt_matrix, trial = FALSE, target_rate = NULL,
+  margin = NULL, digits = 2)
 }
 \arguments{
 \item{dlt_matrix}{a matrix of the number of DLT for each step of the trial (column)
