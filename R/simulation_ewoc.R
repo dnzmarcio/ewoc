@@ -340,6 +340,8 @@ ewoc_simulation.ewoc_d1extended <- function(step_zero, n_sim, sample_size, n_coh
                                             first_dose = step_zero$trial$first_dose,
                                             last_dose = step_zero$trial$last_dose,
                                             dose_set = step_zero$trial$dose_set,
+                                            max_increment = step_zero$trial$max_increment,
+                                            no_skip_dose = step_zero$trial$no_skip_dose,
                                             rho_prior = step_zero$trial$rho_prior,
                                             rounding = step_zero$trial$rounding)
 
@@ -478,6 +480,8 @@ ewoc_simulation.ewoc_d1ph <- function(step_zero, n_sim, sample_size,
                                       first_dose = step_zero$trial$first_dose,
                                       last_dose = step_zero$trial$last_dose,
                                       dose_set = step_zero$trial$dose_set,
+                                      max_increment = step_zero$trial$max_increment,
+                                      no_skip_dose = step_zero$trial$no_skip_dose,
                                       rho_prior = step_zero$trial$rho_prior,
                                       mtd_prior = step_zero$trial$mtd_prior,
                                       shape_prior = step_zero$trial$shape_prior,

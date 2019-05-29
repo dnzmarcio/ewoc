@@ -4,9 +4,10 @@
 \alias{ewoc_d1classic}
 \title{Escalation With Overdose Control}
 \usage{
-ewoc_d1classic(formula, theta, alpha, mtd_prior, rho_prior, min_dose, max_dose,
-  type = c("continuous", "discrete"), first_dose = NULL, last_dose = NULL,
-  dose_set = NULL, max_increment = NULL, rounding = c("down", "nearest"),
+ewoc_d1classic(formula, theta, alpha, mtd_prior, rho_prior, min_dose,
+  max_dose, type = c("continuous", "discrete"), first_dose = NULL,
+  last_dose = NULL, dose_set = NULL, max_increment = NULL,
+  no_skip_dose = TRUE, rounding = c("down", "nearest"),
   n_adapt = 5000, burn_in = 1000, n_mcmc = 1000, n_thin = 1,
   n_chains = 1)
 }
