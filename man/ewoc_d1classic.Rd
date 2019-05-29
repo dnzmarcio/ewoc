@@ -47,7 +47,11 @@ It is only necessary if type = 'continuous'.}
 \item{dose_set}{a numerical vector of allowable doses in the trial.
 It is only necessary if type = 'discrete'.}
 
-\item{max_increment}{a numerical value indicating the maximum increment from the current dose to the next dose.}
+\item{max_increment}{a numerical value indicating the maximum increment from the current dose to the next dose.
+It is only applied if type = 'continuous'.}
+
+\item{no_skip_dose}{a logical value indicating if it is allowed to skip doses.
+It is only necessary if type = 'discrete'. The default is TRUE.}
 
 \item{rounding}{a character indicating how to round a continuous dose to the
 one of elements of the dose set. It is only necessary if type = 'discrete'.}

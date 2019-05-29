@@ -26,6 +26,9 @@
 #'@param dose_set a numerical vector of allowable doses in the trial. It is only
 #'necessary if type = "discrete".
 #'@param max_increment a numerical value indicating the maximum increment from the current dose to the next dose.
+#'It is only applied if type = 'continuous'.
+#'@param no_skip_dose a logical value indicating if it is allowed to skip doses.
+#'It is only necessary if type = 'discrete'. The default is TRUE.
 #'@param rounding a character indicating how to round a continuous dose to the
 #'one of elements of the dose set.
 #'It is only necessary if type = "discrete".
@@ -63,7 +66,8 @@ ewoc_d1extended <- function(formula, theta, alpha,
                             min_dose, max_dose,
                             type = c('continuous', 'discrete'),
                             first_dose = NULL, last_dose = NULL,
-                            dose_set = NULL, max_increment = NULL,
+                            dose_set = NULL,
+                            max_increment = NULL, no_skip_dose = TRUE,
                             rounding = c("down", "nearest"),
                             n_adapt = 5000, burn_in = 1000,
                             n_mcmc = 1000, n_thin = 1, n_chains = 1) {
@@ -96,9 +100,6 @@ ewoc_d1extended <- function(formula, theta, alpha,
 
     if (length(rounding) > 1 | !(rounding == "down" | rounding == "nearest"))
       stop("'rounding' should be either 'down' or 'nearest'.")
-
-    if (is.null(max_increment))
-      max_increment <- max(diff(dose_set))
   }
 
   if (!(alpha > 0 & alpha < 1))
@@ -129,7 +130,9 @@ ewoc_d1extended <- function(formula, theta, alpha,
                   theta = theta, alpha = alpha,
                   limits = limits,
                   dose_set = dose_set,
-                  max_increment = max_increment, current_dose = current_dose,
+                  max_increment = max_increment,
+                  no_skip_dose = no_skip_dose,
+                  current_dose = current_dose,
                   rho_prior = rho_prior,
                   type = type, rounding = rounding)
   class(my_data) <- c("ewoc_d1extended", "d1extended")
@@ -142,6 +145,8 @@ ewoc_d1extended <- function(formula, theta, alpha,
                 first_dose = limits$first_dose, last_dose = limits$last_dose,
                 min_dose = limits$min_dose, max_dose = limits$max_dose,
                 dose_set = dose_set,
+                max_increment = max_increment,
+                no_skip_dose = no_skip_dose,
                 rho_prior = rho_prior,
                 type = type, rounding = rounding,
                 n_adapt = n_adapt, burn_in = burn_in, n_mcmc = n_mcmc,

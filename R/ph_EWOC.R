@@ -36,6 +36,9 @@
 #'@param dose_set a numerical vector of allowable doses in the trial. It is only
 #'necessary if type = 'discrete'.
 #'@param max_increment a numerical value indicating the maximum increment from the current dose to the next dose.
+#'It is only applied if type = 'continuous'.
+#'@param no_skip_dose a logical value indicating if it is allowed to skip doses.
+#'It is only necessary if type = 'discrete'. The default is TRUE.
 #'@param distribution a character establishing the distribution for the time of
 #'events. It can be 'exponential' or 'weibull'.
 #'@param rounding a character indicating how to round a continuous dose to the
@@ -80,7 +83,8 @@ ewoc_d1ph <- function(formula, theta, alpha, tau,
                       rho_prior, mtd_prior, shape_prior = NULL,
                       min_dose, max_dose,
                       first_dose = NULL, last_dose = NULL,
-                      dose_set = NULL, max_increment = NULL,
+                      dose_set = NULL,
+                      max_increment = NULL, no_skip_dose = TRUE,
                       distribution = c('exponential', 'weibull'),
                       rounding = c('down', 'nearest'),
                       n_adapt = 5000, burn_in = 1000,
@@ -117,9 +121,6 @@ ewoc_d1ph <- function(formula, theta, alpha, tau,
 
     if (length(rounding) > 1 | !(rounding == "down" | rounding == "nearest"))
       stop("'rounding' should be either 'down' or 'nearest'.")
-
-    if (is.null(max_increment))
-      max_increment <- max(diff(dose_set))
   }
 
   if (!(alpha > 0 & alpha < 1))
@@ -152,6 +153,16 @@ ewoc_d1ph <- function(formula, theta, alpha, tau,
 
   current_dose <- design_matrix[nrow(design_matrix), 2]
 
+  if (type == "continuous"){
+    if (current_dose < min_dose | current_dose > max_dose)
+      stop("The first patient is receiving a dose outside of the dose boundaries given by
+           'min_dose' and 'max_dose'.")
+  } else {
+    if (!(current_dose %in% dose_set))
+      stop("The first patient is receiving a dose outside of the dose set")
+  }
+
+
   design_matrix[, 2] <-
     standard_dose(dose = design_matrix[, 2],
                   min_dose = limits$min_dose,
@@ -161,7 +172,9 @@ ewoc_d1ph <- function(formula, theta, alpha, tau,
                   theta = theta, alpha = alpha,
                   limits = limits,
                   dose_set = dose_set,
-                  max_increment = max_increment, current_dose = current_dose,
+                  max_increment = max_increment,
+                  no_skip_dose = no_skip_dose,
+                  current_dose = current_dose,
                   rho_prior = rho_prior, mtd_prior= mtd_prior,
                   shape_prior = shape_prior,
                   distribution = distribution, tau = tau,
@@ -171,11 +184,18 @@ ewoc_d1ph <- function(formula, theta, alpha, tau,
   my_data$mcmc <- jags(my_data, n_adapt, burn_in, n_mcmc, n_thin, n_chains)
   out <- next_dose(my_data)
 
+  design_matrix[, 2] <-
+    inv_standard_dose(dose = design_matrix[, 2],
+                      min_dose = limits$min_dose,
+                      max_dose = limits$max_dose)
+
   trial <- list(response = response, design_matrix = design_matrix,
                 theta = theta, alpha = alpha,
                 first_dose = limits$first_dose, last_dose = limits$last_dose,
                 min_dose = limits$min_dose, max_dose = limits$max_dose,
                 dose_set = dose_set,
+                max_increment = max_increment,
+                no_skip_dose = no_skip_dose,
                 rho_prior = rho_prior, mtd_prior = mtd_prior,
                 shape_prior = shape_prior,
                 distribution = distribution, tau = tau,

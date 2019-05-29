@@ -15,13 +15,20 @@ next_dose.ewoc_d1classic <- function(data){
                       ifelse(next_dose < data$limits$first_dose,
                              data$limits$first_dose, next_dose))
 
-  if ((next_dose - data$current_dose) > data$max_increment)
-    next_dose <- data$current_dose + data$max_increment
+  if (data$type == "continuous")
+    if ((next_dose - data$current_dose) > data$max_increment)
+      next_dose <- data$current_dose + data$max_increment
 
-  if (data$type == "discrete")
+  if (data$type == "discrete"){
     next_dose <- rounding_system(dose = next_dose,
                                  grid = data$dose_set,
                                  rounding = data$rounding)
+
+    if (data$no_skip_dose)
+      if (which(data$dose_set == next_dose) -
+          which(data$dose_set == data$current_dose) > 1)
+        next_dose <- data$dose_set[(which(data$dose_set == data$current_dose) + 1)]
+  }
 
   next_gamma <- standard_dose(dose = next_dose,
                               min_dose = data$limits$min_dose,
@@ -53,13 +60,20 @@ next_dose.ewoc_d1extended <- function(data){
                       ifelse(next_dose < data$limits$first_dose,
                              data$limits$first_dose, next_dose))
 
-  if ((next_dose - data$current_dose) > data$max_increment)
-    next_dose <- data$current_dose + data$max_increment
+  if (data$type == "continuous")
+    if ((next_dose - data$current_dose) > data$max_increment)
+      next_dose <- data$current_dose + data$max_increment
 
-  if (data$type == "discrete")
+  if (data$type == "discrete"){
     next_dose <- rounding_system(dose = next_dose,
                                  grid = data$dose_set,
                                  rounding = data$rounding)
+
+    if (data$no_skip_dose)
+      if (which(data$dose_set == next_dose) -
+          which(data$dose_set == data$current_dose) > 1)
+        next_dose <- data$dose_set[(which(data$dose_set == data$current_dose) + 1)]
+  }
 
   next_gamma <- standard_dose(dose = next_dose,
                               min_dose = data$limits$min_dose,
@@ -90,13 +104,20 @@ next_dose.ewoc_d1ph <- function(data){
                       ifelse(next_dose < data$limits$first_dose,
                              data$limits$first_dose, next_dose))
 
-  if ((next_dose - data$current_dose) > data$max_increment)
-    next_dose <- data$current_dose + data$max_increment
+  if (data$type == "continuous")
+    if ((next_dose - data$current_dose) > data$max_increment)
+      next_dose <- data$current_dose + data$max_increment
 
-  if (data$type == "discrete")
+  if (data$type == "discrete"){
     next_dose <- rounding_system(dose = next_dose,
                                  grid = data$dose_set,
                                  rounding = data$rounding)
+
+    if (data$no_skip_dose)
+      if (which(data$dose_set == next_dose) -
+          which(data$dose_set == data$current_dose) > 1)
+        next_dose <- data$dose_set[(which(data$dose_set == data$current_dose) + 1)]
+  }
 
   next_gamma <- standard_dose(dose = next_dose,
                               min_dose = data$limits$min_dose,

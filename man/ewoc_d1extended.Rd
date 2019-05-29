@@ -5,8 +5,9 @@
 \title{Escalation With Overdose Control}
 \usage{
 ewoc_d1extended(formula, theta, alpha, rho_prior, min_dose, max_dose,
-  type = c("continuous", "discrete"), first_dose = NULL, last_dose = NULL,
-  dose_set = NULL, max_increment = NULL, rounding = c("down", "nearest"),
+  type = c("continuous", "discrete"), first_dose = NULL,
+  last_dose = NULL, dose_set = NULL, max_increment = NULL,
+  no_skip_dose = TRUE, rounding = c("down", "nearest"),
   n_adapt = 5000, burn_in = 1000, n_mcmc = 1000, n_thin = 1,
   n_chains = 1)
 }
@@ -42,7 +43,11 @@ the MTD.}
 \item{dose_set}{a numerical vector of allowable doses in the trial. It is only
 necessary if type = "discrete".}
 
-\item{max_increment}{a numerical value indicating the maximum increment from the current dose to the next dose.}
+\item{max_increment}{a numerical value indicating the maximum increment from the current dose to the next dose.
+It is only applied if type = 'continuous'.}
+
+\item{no_skip_dose}{a logical value indicating if it is allowed to skip doses.
+It is only necessary if type = 'discrete'. The default is TRUE.}
 
 \item{rounding}{a character indicating how to round a continuous dose to the
 one of elements of the dose set.
