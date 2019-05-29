@@ -4,18 +4,22 @@
 \alias{ewoc_simulation}
 \title{Generic EWOC simulation}
 \usage{
-ewoc_simulation(step_zero, n_sim, sample_size, alpha_strategy = "fixed",
-  alpha_rate = NULL, response_sim, stop_rule_sim = NULL, ncores = 1, ...)
+ewoc_simulation(step_zero, n_sim, sample_size, n_cohort = 1,
+  alpha_strategy = "fixed", alpha_rate = NULL, response_sim,
+  stop_rule_sim = NULL, ncores = 1, ...)
 }
 \arguments{
 \item{step_zero}{an object from the classes 'ewoc_d1classic', 'ewoc_d1extended',
-'ewoc_d1ph' created using dummy data.}
+'ewoc_d1ph' created using the first cohort data.}
 
 \item{n_sim}{a number indicating the number of phase I clinical trials
 to be simulated.}
 
 \item{sample_size}{a number indicating the number of patients enrolled for
 each clinical trial.}
+
+\item{n_cohort}{a number indicating the number of patients enrolled at each cohort.
+It is only used for 'ewoc_d1classic' and 'ewoc_d1extended'.}
 
 \item{alpha_strategy}{a character indicating the strategy to apply for the
 feasibility value. Default is "constant". Options are "increasing" and
@@ -79,7 +83,7 @@ step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
 response_sim <- response_d1classic(rho = 0.05, mtd = 20, theta = 0.33,
                                   min_dose = 10, max_dose = 50)
 sim <- ewoc_simulation(step_zero = step_zero,
-                      n_sim = 1, sample_size = 2,
+                      n_sim = 1, sample_size = 30, n_cohort = 2,
                       alpha_strategy = "increasing",
                       response_sim = response_sim,
                       ncores = 2)
@@ -138,7 +142,7 @@ step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
 response_sim <- response_d1classic(rho = 0.05, mtd = 20, theta = 0.33,
                                   min_dose = 10, max_dose = 50)
 sim <- ewoc_simulation(step_zero = step_zero,
-                       n_sim = 2, sample_size = 30,
+                       n_sim = 2, sample_size = 30, n_cohort = 1,
                        alpha_strategy = "increasing",
                        response_sim = response_sim,
                        ncores = 2)

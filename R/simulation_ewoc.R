@@ -3,11 +3,13 @@
 #'Generic function for simulating EWOC trials.
 #'
 #'@param step_zero an object from the classes 'ewoc_d1classic', 'ewoc_d1extended',
-#''ewoc_d1ph' created using dummy data.
+#''ewoc_d1ph' created using the first cohort data.
 #'@param n_sim a number indicating the number of phase I clinical trials
 #'to be simulated.
 #'@param sample_size a number indicating the number of patients enrolled for
 #'each clinical trial.
+#'@param n_cohort a number indicating the number of patients enrolled at each cohort.
+#'It is only used for 'ewoc_d1classic' and 'ewoc_d1extended'.
 #'@param alpha_strategy a character indicating the strategy to apply for the
 #'feasibility value. Default is "constant". Options are "increasing" and
 #'"conditional".
@@ -57,7 +59,7 @@
 #'response_sim <- response_d1classic(rho = 0.05, mtd = 20, theta = 0.33,
 #'                                   min_dose = 10, max_dose = 50)
 #'sim <- ewoc_simulation(step_zero = step_zero,
-#'                       n_sim = 1, sample_size = 2,
+#'                       n_sim = 1, sample_size = 30, n_cohort = 2,
 #'                       alpha_strategy = "increasing",
 #'                       response_sim = response_sim,
 #'                       ncores = 2)
@@ -116,7 +118,7 @@
 #'response_sim <- response_d1classic(rho = 0.05, mtd = 20, theta = 0.33,
 #'                                   min_dose = 10, max_dose = 50)
 #'sim <- ewoc_simulation(step_zero = step_zero,
-#'                        n_sim = 2, sample_size = 30,
+#'                        n_sim = 2, sample_size = 30, n_cohort = 1,
 #'                        alpha_strategy = "increasing",
 #'                        response_sim = response_sim,
 #'                        ncores = 2)
@@ -165,7 +167,7 @@
 #'@importFrom doParallel registerDoParallel
 #'
 #'@export
-ewoc_simulation <- function(step_zero, n_sim, sample_size,
+ewoc_simulation <- function(step_zero, n_sim, sample_size, n_cohort = 1,
                             alpha_strategy = "fixed",
                             alpha_rate = NULL, response_sim,
                             stop_rule_sim = NULL,
@@ -176,7 +178,7 @@ ewoc_simulation <- function(step_zero, n_sim, sample_size,
 
 
 #'@export
-ewoc_simulation.ewoc_d1classic <- function(step_zero, n_sim, sample_size,
+ewoc_simulation.ewoc_d1classic <- function(step_zero, n_sim, sample_size, n_cohort = 1,
                                       alpha_strategy =
                                         c("fixed", "increasing", "conditional"),
                                       alpha_rate = 0.05,
@@ -186,8 +188,9 @@ ewoc_simulation.ewoc_d1classic <- function(step_zero, n_sim, sample_size,
 
   if (is.null(response_sim))
     stop("'response_sim' function should be defined.")
+  if (((sample_size - nrow(step_zero$trial$design_matrix)) %% n_cohort) != 0)
+    stop("Sample size minus cohort size for first cohort is not a multiple of `n_cohort`.")
 
-  n_dose <- sample_size + 1
   dose_sim <- matrix(NA, ncol = sample_size, nrow = n_sim)
   dlt_sim <- matrix(NA, ncol = sample_size, nrow = n_sim)
   mtd_sim <- matrix(NA, ncol = 1, nrow = n_sim)
@@ -203,48 +206,68 @@ ewoc_simulation.ewoc_d1classic <- function(step_zero, n_sim, sample_size,
 
               dlt <- as.numeric(step_zero$trial$response)
               dose <- as.numeric(step_zero$trial$design_matrix[, 2])
-              alpha <- as.numeric(step_zero$trial$alpha)
+              alpha <- rep(as.numeric(step_zero$trial$alpha), length(dose))
 
-              for (j in (length(dose)+1):n_dose) {
+              j <- (length(dose)+1)
+
+              while (j <= sample_size) {
 
                 formula <- dlt[1:(j-1)] ~ dose[1:(j-1)]
                 resolution <- ifelse(!is.na(dlt), 1, 0)
 
-                if (j <= sample_size){
-                  alpha[j] <- feasibility(alpha = alpha[1:(j-1)],
-                                          strategy = alpha_strategy,
-                                          dlt = dlt[1:(j-1)],
-                                          resolution = resolution[1:(j-1)],
-                                          rate = alpha_rate)
+                alpha[j:(j + n_cohort - 1)] <- feasibility(alpha = alpha[1:(j-1)],
+                                                           strategy = alpha_strategy,
+                                                           dlt = dlt[1:(j-1)],
+                                                           resolution = resolution[1:(j-1)],
+                                                           rate = alpha_rate)
 
-                  update <- ewoc_d1classic(formula,
-                                           type = step_zero$trial$type,
-                                           theta = step_zero$trial$theta,
-                                           alpha = alpha[j],
-                                           min_dose = step_zero$trial$min_dose,
-                                           max_dose = step_zero$trial$max_dose,
-                                           first_dose = step_zero$trial$first_dose,
-                                           last_dose = step_zero$trial$last_dose,
-                                           dose_set = step_zero$trial$dose_set,
-                                           rho_prior = step_zero$trial$rho_prior,
-                                           mtd_prior = step_zero$trial$mtd_prior,
-                                           rounding = step_zero$trial$rounding)
+                update <- ewoc_d1classic(formula,
+                                         type = step_zero$trial$type,
+                                         theta = step_zero$trial$theta,
+                                         alpha = alpha[j],
+                                         min_dose = step_zero$trial$min_dose,
+                                         max_dose = step_zero$trial$max_dose,
+                                         first_dose = step_zero$trial$first_dose,
+                                         last_dose = step_zero$trial$last_dose,
+                                         dose_set = step_zero$trial$dose_set,
+                                         max_increment = step_zero$trial$max_increment,
+                                         no_skip_dose = step_zero$trial$no_skip_dose,
+                                         rho_prior = step_zero$trial$rho_prior,
+                                         mtd_prior = step_zero$trial$mtd_prior,
+                                         rounding = step_zero$trial$rounding)
 
-                  if (!is.null(stop_rule_sim))
-                    if (stop_rule_sim(update)){
-                      dose[j:sample_size] <- NA
-                      dlt[j:sample_size] <- NA
-                      mtd_estimate <- NA
-                      rho_estimate <- NA
-                      break
-                    }
+                if (!is.null(stop_rule_sim))
+                  if (stop_rule_sim(update)){
+                    dose[j:sample_size] <- NA
+                    dlt[j:sample_size] <- NA
+                    mtd_estimate <- NA
+                    rho_estimate <- NA
+                    break
+                  }
 
-                  dose[j] <- update$next_dose
-                  dlt[j] <- response_sim(dose = dose[j])
-                  mtd_estimate <- update$next_dose
-                  rho_estimate <- median(update$rho)
-                }
+                dose[j:(j + n_cohort - 1)] <- update$next_dose
+                dlt[j:(j + n_cohort - 1)] <- response_sim(dose = dose[j:(j + n_cohort - 1)])
+
+                j <- j + n_cohort
               }
+
+              update <- ewoc_d1classic(formula,
+                                       type = step_zero$trial$type,
+                                       theta = step_zero$trial$theta,
+                                       alpha = alpha[length(alpha)],
+                                       min_dose = step_zero$trial$min_dose,
+                                       max_dose = step_zero$trial$max_dose,
+                                       first_dose = step_zero$trial$first_dose,
+                                       last_dose = step_zero$trial$last_dose,
+                                       dose_set = step_zero$trial$dose_set,
+                                       max_increment = step_zero$trial$max_increment,
+                                       no_skip_dose = step_zero$trial$no_skip_dose,
+                                       rho_prior = step_zero$trial$rho_prior,
+                                       mtd_prior = step_zero$trial$mtd_prior,
+                                       rounding = step_zero$trial$rounding)
+
+              mtd_estimate <- update$next_dose
+              rho_estimate <- median(update$rho)
 
               list(dose, dlt, mtd_estimate, rho_estimate, alpha)
             }
@@ -265,7 +288,7 @@ ewoc_simulation.ewoc_d1classic <- function(step_zero, n_sim, sample_size,
 #'@importFrom doParallel registerDoParallel
 #'@importFrom parallel detectCores
 #'@export
-ewoc_simulation.ewoc_d1extended <- function(step_zero, n_sim, sample_size,
+ewoc_simulation.ewoc_d1extended <- function(step_zero, n_sim, sample_size, n_cohort = 1,
                                        alpha_strategy =
                                          c("fixed", "increasing", "conditional"),
                                        alpha_rate = 0.05,
@@ -275,14 +298,14 @@ ewoc_simulation.ewoc_d1extended <- function(step_zero, n_sim, sample_size,
 
   if (is.null(response_sim))
     stop("'response_sim' function should be defined.")
+  if (((sample_size - nrow(step_zero$trial$design_matrix)) %% n_cohort) != 0)
+    stop("Sample size minus cohort size for first cohort is not a multiple of `n_cohort`.")
 
-  n_dose <- sample_size + 1
   dose_sim <- matrix(NA, ncol = sample_size, nrow = n_sim)
   dlt_sim <- matrix(NA, ncol = sample_size, nrow = n_sim)
   mtd_sim <- matrix(NA, ncol = 1, nrow = n_sim)
   rho_sim <- matrix(NA, ncol = 1, nrow = n_sim)
   alpha_sim <- matrix(NA, ncol = sample_size, nrow = n_sim)
-
 
   registerDoParallel(ncores)
   result <-
@@ -295,13 +318,14 @@ ewoc_simulation.ewoc_d1extended <- function(step_zero, n_sim, sample_size,
               dose <- as.numeric(step_zero$trial$design_matrix[, 2])
               alpha <- as.numeric(step_zero$trial$alpha)
 
-              for (j in (length(dose)+1):n_dose) {
+              j <- (length(dose)+1)
+
+              while (j <= sample_size) {
 
                 formula <- dlt[1:(j-1)] ~ dose[1:(j-1)]
                 resolution <- ifelse(!is.na(dlt), 1, 0)
 
-                if (j <= sample_size){
-                  alpha[j] <- feasibility(alpha = alpha[(j-1)],
+                  alpha[j:(j + n_cohort - 1)] <- feasibility(alpha = alpha[(j-1)],
                                               strategy = alpha_strategy,
                                               dlt = dlt[1:(j-1)],
                                               resolution = resolution[1:(j-1)],
@@ -328,12 +352,30 @@ ewoc_simulation.ewoc_d1extended <- function(step_zero, n_sim, sample_size,
                       break
                     }
 
-                  dose[j] <- update$next_dose
-                  dlt[j] <- response_sim(dose = dose[j])
+                  dose[j:(j + n_cohort - 1)] <- update$next_dose
+                  dlt[j:(j + n_cohort - 1)] <- response_sim(dose = dose[j:(j + n_cohort - 1)])
                   mtd_estimate <- update$next_dose
                   rho_estimate <- median(update$rho)
-                }
+
+                  j <- j + ncohort
               }
+
+              update <- ewoc_d1extended(formula,
+                                        type = step_zero$trial$type,
+                                        theta = step_zero$trial$theta,
+                                        alpha = alpha[j],
+                                        min_dose = step_zero$trial$min_dose,
+                                        max_dose = step_zero$trial$max_dose,
+                                        first_dose = step_zero$trial$first_dose,
+                                        last_dose = step_zero$trial$last_dose,
+                                        dose_set = step_zero$trial$dose_set,
+                                        max_increment = step_zero$trial$max_increment,
+                                        no_skip_dose = step_zero$trial$no_skip_dose,
+                                        rho_prior = step_zero$trial$rho_prior,
+                                        rounding = step_zero$trial$rounding)
+
+              mtd_estimate <- update$next_dose
+              rho_estimate <- median(update$rho)
 
               list(dose, dlt, mtd_estimate, rho_estimate, alpha)
             }
@@ -369,7 +411,6 @@ ewoc_simulation.ewoc_d1ph <- function(step_zero, n_sim, sample_size,
   if (length(alpha_strategy) != 1)
     stop("'alpha_strategy' should be defined.")
 
-  n_dose <- sample_size + 1
   dose_sim <- matrix(NA, ncol = sample_size, nrow = n_sim)
   dlt_sim <- matrix(NA, ncol = sample_size, nrow = n_sim)
   time_sim <- matrix(NA, ncol = sample_size, nrow = n_sim)
@@ -394,7 +435,7 @@ ewoc_simulation.ewoc_d1ph <- function(step_zero, n_sim, sample_size,
               event_time <- c(event_time, rep(NA, (sample_size - length(event_time))))
               current_time <- max(step_zero$trial$response[, 1])
               initial_time <- rep(0, sample_size)
-              j <- length(dose)
+              j <- 1
 
               while ((current_time - initial_time[sample_size]) <= step_zero$trial$tau) {
 
@@ -455,9 +496,29 @@ ewoc_simulation.ewoc_d1ph <- function(step_zero, n_sim, sample_size,
 
                   dose[j] <- update$next_dose
                   event_time[j] <- response_sim(dose = dose[j])
-                  mtd_estimate <- update$next_dose
-                  rho_estimate <- median(update$rho)
                 }
+
+                update <- ewoc_d1ph(formula,
+                                    type = step_zero$trial$type,
+                                    theta = step_zero$trial$theta,
+                                    alpha = alpha[length(alpha)],
+                                    tau = step_zero$trial$tau,
+                                    min_dose = step_zero$trial$min_dose,
+                                    max_dose = step_zero$trial$max_dose,
+                                    first_dose = step_zero$trial$first_dose,
+                                    last_dose = step_zero$trial$last_dose,
+                                    dose_set = step_zero$trial$dose_set,
+                                    max_increment = step_zero$trial$max_increment,
+                                    no_skip_dose = step_zero$trial$no_skip_dose,
+                                    rho_prior = step_zero$trial$rho_prior,
+                                    mtd_prior = step_zero$trial$mtd_prior,
+                                    shape_prior = step_zero$trial$shape_prior,
+                                    distribution = step_zero$trial$distribution,
+                                    rounding = step_zero$trial$rounding)
+
+
+                mtd_estimate <- update$next_dose
+                rho_estimate <- median(update$rho)
               }
 
               list(event_time, dose, dlt, mtd_estimate, rho_estimate, alpha, current_time)
