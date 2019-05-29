@@ -121,6 +121,15 @@ ewoc_d1extended <- function(formula, theta, alpha,
 
   current_dose <- design_matrix[nrow(design_matrix), 2]
 
+  if (type == "continuous"){
+    if (current_dose < min_dose | current_dose > max_dose)
+      stop("The first patient is receiving a dose outside of the dose boundaries given by
+           'min_dose' and 'max_dose'.")
+  } else {
+    if (!(current_dose %in% dose_set))
+      stop("The first patient is receiving a dose outside of the dose set")
+  }
+
   design_matrix[, 2] <-
     standard_dose(dose = design_matrix[, 2],
                   min_dose = limits$min_dose,
