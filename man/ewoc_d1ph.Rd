@@ -100,12 +100,12 @@ to event response and single agent.
 \examples{
 time <- 9
 status <- 0
-dose <- 30
+dose <- 20
 
 test <- ewoc_d1ph(cbind(time, status) ~ dose, type = 'discrete',
                  theta = 0.33, alpha = 0.25, tau = 10,
-                 min_dose = 30, max_dose = 50,
-                 dose_set = seq(30, 50, 5),
+                 min_dose = 20, max_dose = 100,
+                 dose_set = seq(20, 100, 20),
                  rho_prior = matrix(1, ncol = 2, nrow = 1),
                  mtd_prior = matrix(1, ncol = 2, nrow = 1),
                  distribution = 'exponential',
