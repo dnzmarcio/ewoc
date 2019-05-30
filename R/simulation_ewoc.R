@@ -206,7 +206,7 @@ ewoc_simulation.ewoc_d1classic <- function(step_zero, n_sim, sample_size, n_coho
 
               dlt <- as.numeric(step_zero$trial$response)
               dose <- as.numeric(step_zero$trial$design_matrix[, 2])
-              alpha <- rep(as.numeric(step_zero$trial$alpha), length(dose))
+              alpha <- rep(as.numeric(step_zero$trial$alpha), n_cohort)
 
               j <- (length(dose)+1)
 
@@ -316,7 +316,7 @@ ewoc_simulation.ewoc_d1extended <- function(step_zero, n_sim, sample_size, n_coh
 
               dlt <- as.numeric(step_zero$trial$response)
               dose <- as.numeric(step_zero$trial$design_matrix[, 2])
-              alpha <- as.numeric(step_zero$trial$alpha)
+              alpha <- rep(step_zero$trial$alpha, n_cohort)
 
               j <- (length(dose)+1)
 
@@ -359,13 +359,13 @@ ewoc_simulation.ewoc_d1extended <- function(step_zero, n_sim, sample_size, n_coh
                   mtd_estimate <- update$next_dose
                   rho_estimate <- median(update$rho)
 
-                  j <- j + ncohort
+                  j <- j + n_cohort
               }
 
               update <- ewoc_d1extended(formula,
                                         type = step_zero$trial$type,
                                         theta = step_zero$trial$theta,
-                                        alpha = alpha[j],
+                                        alpha = alpha[length(alpha)],
                                         min_dose = step_zero$trial$min_dose,
                                         max_dose = step_zero$trial$max_dose,
                                         first_dose = step_zero$trial$first_dose,

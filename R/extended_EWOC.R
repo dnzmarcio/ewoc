@@ -149,6 +149,11 @@ ewoc_d1extended <- function(formula, theta, alpha,
   my_data$mcmc <- jags(my_data, n_adapt, burn_in, n_mcmc, n_thin, n_chains)
   out <- next_dose(my_data)
 
+  design_matrix[, 2] <-
+    inv_standard_dose(dose = design_matrix[, 2],
+                      min_dose = limits$min_dose,
+                      max_dose = limits$max_dose)
+
   trial <- list(response = response, design_matrix = design_matrix,
                 theta = theta, alpha = alpha,
                 first_dose = limits$first_dose, last_dose = limits$last_dose,
