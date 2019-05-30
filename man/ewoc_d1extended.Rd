@@ -82,7 +82,7 @@ extended parametrization for binary response and single agent.
 }
 \examples{
 DLT <- 0
-dose <- 30
+dose <- 20
 
 test <- ewoc_d1extended(DLT ~ dose, type = 'discrete',
                        theta = 0.33, alpha = 0.25,
