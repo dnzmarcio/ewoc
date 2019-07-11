@@ -193,7 +193,7 @@ jags.d1classic <- function(data, n_adapt, burn_in,
       lp[i] <- inprod(design_matrix[i, ], beta)
     }
 
-    beta[1] <-logit(rho)
+    beta[1] <- logit(rho)
     beta[2] <- (logit(theta) - logit(rho))/gamma
 
     rho <- theta*v[1]
@@ -236,5 +236,4 @@ jags.d1classic <- function(data, n_adapt, burn_in,
 
   return(out)
 }
-
 

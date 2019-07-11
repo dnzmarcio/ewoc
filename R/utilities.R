@@ -107,49 +107,6 @@ feasibility <- function(alpha, strategy, rate, dlt, resolution){
 }
 
 
-#'Convert mtd to rho_1 and vice-versa
-#'
-#'Converting mtd to rho_1 given rho_0 for EWOC design using extended parametrization
-#'and vice-versa.
-#'
-#'@param mtd a numerical value defining the mtd value to be converted into rho_1 value.
-#'@param rho_1 a numerical value defining the  probability of DLT at the max_dose.
-#'@param rho_0 a numerical value defining the  probability of DLT at the min_dose.
-#'@param theta a numerical value defining the proportion of expected patients
-#'to experience a medically unacceptable, dose-limiting toxicity (DLT) if
-#'administered the MTD.
-#'@param min_dose a numerical value defining the lower bound of the support of
-#'the MTD.
-#'@param max_dose a numerical value defining the upper bound of the support of
-#'the MTD.
-#'
-#'@return \code{mtd} a numerical value for the maximum tolerable dose.
-#'@return \code{rho_1} a numerical value for the probability of DLT at the max_dose.
-#'
-#'@export
-mtd_rho_d1extended <- function(mtd = NULL, rho_1 = NULL, rho_0,
-                                  theta, min_dose, max_dose){
 
-  if (is.null(mtd) & is.null(rho_1)) {
-    stop("At least one between 'mtd' or 'rho_1' should be defined.")
 
-  } else {
 
-    if (is.null(mtd)){
-      gamma <- (logit(theta) - logit(rho_0))/(logit(rho_1) - logit(rho_0))
-      mtd <- inv_standard_dose(gamma, min_dose = min_dose, max_dose = max_dose)
-
-      out <- list(mtd = mtd, rho_1 = rho_1)
-    }
-
-    if (is.null(rho_1)){
-      gamma <- standard_dose(mtd, min_dose = min_dose, max_dose = max_dose)
-
-      rho_1 <- plogis((logit(theta) - (1+ gamma)*logit(rho_0))/gamma)
-
-      out <- list(mtd = mtd, rho_1 = rho_1)
-    }
-  }
-
-  return(out)
-}
