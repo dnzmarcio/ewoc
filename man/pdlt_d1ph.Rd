@@ -29,7 +29,7 @@ the MTD.}
 toxicity be observed.}
 
 \item{distribution}{a character establishing the distribution for the time of
-events.}
+events. It can be defined as 'exponential' or 'weibull'.}
 }
 \value{
 A function with dose as an input and a probability based on the

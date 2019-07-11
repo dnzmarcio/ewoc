@@ -99,7 +99,7 @@ pdlt_d1extended <- function(rho, min_dose, max_dose){
 #'@param tau a numerical value defining the period of time for a possible
 #'toxicity be observed.
 #'@param distribution a character establishing the distribution for the time of
-#'events.
+#'events. It can be defined as 'exponential' or 'weibull'.
 #'@param shape a numerical value indicating the true value of the parameter shape.
 #'It is only necessary if 'distribution' = "weibull".
 #'

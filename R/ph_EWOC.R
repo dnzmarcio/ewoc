@@ -40,7 +40,7 @@
 #'@param no_skip_dose a logical value indicating if it is allowed to skip doses.
 #'It is only necessary if type = 'discrete'. The default is TRUE.
 #'@param distribution a character establishing the distribution for the time of
-#'events. It can be 'exponential' or 'weibull'.
+#'events. It can be defined as 'exponential' or 'weibull'.
 #'@param rounding a character indicating how to round a continuous dose to the
 #'one of elements of the dose set. It can be 'nearest' or 'down'.
 #'It is only necessary if type = 'discrete'.

@@ -64,7 +64,7 @@ It is only applied if type = 'continuous'.}
 It is only necessary if type = 'discrete'. The default is TRUE.}
 
 \item{distribution}{a character establishing the distribution for the time of
-events. It can be 'exponential' or 'weibull'.}
+events. It can be defined as 'exponential' or 'weibull'.}
 
 \item{rounding}{a character indicating how to round a continuous dose to the
 one of elements of the dose set. It can be 'nearest' or 'down'.
