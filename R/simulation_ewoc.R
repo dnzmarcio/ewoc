@@ -20,6 +20,8 @@
 #'as a generator function of the response variables in the simulation.
 #'Its only input is 'dose' and output is the indicator of DLT for classical and
 #'extended EWOC and the time until DLT for proportional hazards EWOC.
+#'@param fixed_first_cohort a logical value indicating if the first cohort
+#'should be randomly generated or be fixed as the input data.
 #'@param stop_rule_sim a function having as an input an object containing all
 #'the information related to the trial as the returned object trial from either
 #'\code{ewoc_d1classic}, \code{ewoc_d1extended}, \code{ewoc_d1ph} and as
@@ -62,6 +64,7 @@
 #'                       n_sim = 1, sample_size = 30, n_cohort = 2,
 #'                       alpha_strategy = "increasing",
 #'                       response_sim = response_sim,
+#'                       fixed_first_cohort =  TRUE,
 #'                       ncores = 2)
 #'
 #'### Extended EWOC
@@ -79,6 +82,7 @@
 #'                       n_sim = 1, sample_size = 2,
 #'                       alpha_strategy = "increasing",
 #'                       response_sim = response_sim,
+#'                       fixed_first_cohort = TRUE,
 #'                       ncores = 2)
 #'
 #'### PH EWOC
@@ -101,6 +105,7 @@
 #'                       n_sim = 1, sample_size = 2,
 #'                       alpha_strategy = "increasing",
 #'                       response_sim = response_sim,
+#'                       fixed_first_cohort = TRUE,
 #'                       ncores = 2)
 #'}
 #'
@@ -183,6 +188,7 @@ ewoc_simulation.ewoc_d1classic <- function(step_zero, n_sim, sample_size, n_coho
                                         c("fixed", "increasing", "conditional"),
                                       alpha_rate = 0.05,
                                       response_sim = NULL,
+                                      fixed_first_cohort = TRUE,
                                       stop_rule_sim = NULL,
                                       ncores = 1, ...){
 
@@ -204,9 +210,15 @@ ewoc_simulation.ewoc_d1classic <- function(step_zero, n_sim, sample_size, n_coho
             .multicombine=TRUE,
             .init=list(list(), list(), list(), list(), list())) %dopar% {
 
-              dlt <- as.numeric(step_zero$trial$response)
               dose <- as.numeric(step_zero$trial$design_matrix[, 2])
-              alpha <- rep(as.numeric(step_zero$trial$alpha), n_cohort)
+
+              if (fixed_first_cohort) {
+                dlt <- as.numeric(step_zero$trial$response)
+              } else {
+                dlt <- response_sim(dose = dose)
+              }
+
+              alpha <- rep(step_zero$trial$alpha, n_cohort)
 
               j <- (length(dose)+1)
 
@@ -293,6 +305,7 @@ ewoc_simulation.ewoc_d1extended <- function(step_zero, n_sim, sample_size, n_coh
                                          c("fixed", "increasing", "conditional"),
                                        alpha_rate = 0.05,
                                        response_sim = NULL,
+                                       fixed_first_cohort = TRUE,
                                        stop_rule_sim = NULL,
                                        ncores = 1, ...){
 
@@ -314,8 +327,14 @@ ewoc_simulation.ewoc_d1extended <- function(step_zero, n_sim, sample_size, n_coh
             .multicombine=TRUE,
             .init=list(list(), list(), list(), list(), list())) %dopar% {
 
-              dlt <- as.numeric(step_zero$trial$response)
               dose <- as.numeric(step_zero$trial$design_matrix[, 2])
+
+              if (fixed_first_cohort) {
+                dlt <- as.numeric(step_zero$trial$response)
+              } else {
+                dlt <- response_sim(dose = dose)
+              }
+
               alpha <- rep(step_zero$trial$alpha, n_cohort)
 
               j <- (length(dose)+1)

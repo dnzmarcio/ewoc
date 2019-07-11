@@ -45,6 +45,9 @@ cores available.}
 
 \item{...}{For an object \code{step_zero} with class 'ewoc_d1ph',
 the argument \code{rate_sim} which controls the rate of accrue of patients following a Poisson process. The default is 1.}
+
+\item{fixed_first_cohort}{a logical value indicating if the first cohort
+should be randomly generated or be fixed as the input data.}
 }
 \value{
 \code{alpha_sim} a matrix \code{n_sim} x \code{sample_size} containing
@@ -86,6 +89,7 @@ sim <- ewoc_simulation(step_zero = step_zero,
                       n_sim = 1, sample_size = 30, n_cohort = 2,
                       alpha_strategy = "increasing",
                       response_sim = response_sim,
+                      fixed_first_cohort =  TRUE,
                       ncores = 2)
 
 ### Extended EWOC
@@ -103,6 +107,7 @@ sim <- ewoc_simulation(step_zero = step_zero,
                       n_sim = 1, sample_size = 2,
                       alpha_strategy = "increasing",
                       response_sim = response_sim,
+                      fixed_first_cohort = TRUE,
                       ncores = 2)
 
 ### PH EWOC
@@ -125,6 +130,7 @@ sim <- ewoc_simulation(step_zero = step_zero,
                       n_sim = 1, sample_size = 2,
                       alpha_strategy = "increasing",
                       response_sim = response_sim,
+                      fixed_first_cohort = TRUE,
                       ncores = 2)
 }
 
