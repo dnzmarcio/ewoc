@@ -22,6 +22,8 @@
 #'extended EWOC and the time until DLT for proportional hazards EWOC.
 #'@param fixed_first_cohort a logical value indicating if the first cohort
 #'should be randomly generated or be fixed as the input data.
+#'@param n_cohort a numerical value indicating the number of patients that
+#'will be accrued at each dose calculation.
 #'@param stop_rule_sim a function having as an input an object containing all
 #'the information related to the trial as the returned object trial from either
 #'\code{ewoc_d1classic}, \code{ewoc_d1extended}, \code{ewoc_d1ph} and as
@@ -52,38 +54,37 @@
 #'DLT <- 0
 #'dose <- 20
 #'step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
-#'                            theta = 0.33, alpha = 0.25,
-#'                            min_dose = 20, max_dose = 100,
-#'                            dose_set = seq(20, 100, 20),
-#'                            rho_prior = matrix(1, ncol = 2, nrow = 1),
-#'                            mtd_prior = matrix(1, ncol = 2, nrow = 1),
-#'                            rounding = "nearest")
+#'                           theta = 0.33, alpha = 0.25,
+#'                           min_dose = 20, max_dose = 100,
+#'                           dose_set = seq(20, 100, 20),
+#'                           rho_prior = matrix(1, ncol = 2, nrow = 1),
+#'                           mtd_prior = matrix(1, ncol = 2, nrow = 1),
+#'                           rounding = "nearest")
 #'response_sim <- response_d1classic(rho = 0.05, mtd = 60, theta = 0.33,
-#'                                   min_dose = 20, max_dose = 100)
+#'                                  min_dose = 20, max_dose = 100)
 #'sim <- ewoc_simulation(step_zero = step_zero,
-#'                       n_sim = 1, sample_size = 30, n_cohort = 1,
-#'                       alpha_strategy = "conditional",
-#'                       response_sim = response_sim,
-#'                       fixed_first_cohort =  TRUE,
-#'                       ncores = 2)
+#'                      n_sim = 1, sample_size = 30, n_cohort = 1,
+#'                      alpha_strategy = "conditional",
+#'                      response_sim = response_sim,
+#'                      fixed_first_cohort =  TRUE,
+#'                      ncores = 2)
 #'
 #'### Extended EWOC
 #'DLT <- 0
 #'dose <- 20
 #'step_zero <- ewoc_d1extended(DLT ~ dose, type = 'discrete',
-#'                            theta = 0.33, alpha = 0.25,
-#'                            min_dose = 20, max_dose = 100,
-#'                            dose_set = seq(20, 100, 20),
-#'                            rho_prior = matrix(1, ncol = 2, nrow = 2),
-#'                            rounding = "nearest")
+#'                          theta = 0.33, alpha = 0.25,
+#'                          min_dose = 20, max_dose = 100,
+#'                          dose_set = seq(20, 100, 20),
+#'                          rho_prior = matrix(1, ncol = 2, nrow = 2),
+#'                          rounding = "nearest")
 #'response_sim <- response_d1extended(rho = c(0.05, 0.5),
-#'                                    min_dose = 20, max_dose = 100)
+#'                                  min_dose = 20, max_dose = 100)
 #'sim <- ewoc_simulation(step_zero = step_zero,
-#'                       n_sim = 1, sample_size = 30, n_cohort = 1,
-#'                       alpha_strategy = "conditional",
-#'                       response_sim = response_sim,
-#'                       fixed_first_cohort = TRUE,
-#'                       ncores = 2)
+#'                      n_sim = 2, sample_size = 30, n_cohort = 1,
+#'                      alpha_strategy = "conditional",
+#'                      response_sim = response_sim,
+#'                      ncores = 2)
 #'
 #'### PH EWOC
 #'time <- 0
@@ -91,22 +92,22 @@
 #'dose <- 20
 #'
 #'step_zero <- ewoc_d1ph(cbind(time, status) ~ dose, type = 'discrete',
-#'                       theta = 0.33, alpha = 0.25, tau = 10,
-#'                       min_dose = 20, max_dose = 100,
-#'                       dose_set = seq(20, 100, 20),
-#'                       rho_prior = matrix(1, ncol = 2, nrow = 1),
-#'                       mtd_prior = matrix(1, ncol = 2, nrow = 1),
-#'                       distribution = 'exponential',
-#'                       rounding = 'nearest')
+#'                      theta = 0.33, alpha = 0.25, tau = 10,
+#'                      min_dose = 20, max_dose = 100,
+#'                      dose_set = seq(20, 100, 20),
+#'                      rho_prior = matrix(1, ncol = 2, nrow = 1),
+#'                      mtd_prior = matrix(1, ncol = 2, nrow = 1),
+#'                      distribution = 'exponential',
+#'                      rounding = 'nearest')
 #'response_sim <- response_d1ph(rho = 0.05, mtd = 40, theta = 0.33,
-#'                              min_dose = 20, max_dose = 100,
-#'                              tau = 10, distribution = "exponential")
+#'                             min_dose = 20, max_dose = 100,
+#'                             tau = 10, distribution = "exponential")
 #'sim <- ewoc_simulation(step_zero = step_zero,
-#'                       n_sim = 1, sample_size = 30, n_cohort = 1,
-#'                       alpha_strategy = "conditional",
-#'                       response_sim = response_sim,
-#'                       fixed_first_cohort = TRUE,
-#'                       ncores = 2)
+#'                      n_sim = 1, sample_size = 30, n_cohort = 1,
+#'                      alpha_strategy = "conditional",
+#'                      response_sim = response_sim,
+#'                      fixed_first_cohort = TRUE,
+#'                      ncores = 2)
 #'}
 #'
 #'\dontrun{
@@ -114,36 +115,36 @@
 #'DLT <- 0
 #'dose <- 20
 #'step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
-#'                            theta = 0.33, alpha = 0.25,
-#'                            min_dose = 20, max_dose = 100,
-#'                            dose_set = seq(20, 100, 20),
-#'                            rho_prior = matrix(1, ncol = 2, nrow = 1),
-#'                            mtd_prior = matrix(1, ncol = 2, nrow = 1),
-#'                            rounding = "nearest")
+#'                           theta = 0.33, alpha = 0.25,
+#'                           min_dose = 20, max_dose = 100,
+#'                           dose_set = seq(20, 100, 20),
+#'                           rho_prior = matrix(1, ncol = 2, nrow = 1),
+#'                           mtd_prior = matrix(1, ncol = 2, nrow = 1),
+#'                           rounding = "nearest")
 #'response_sim <- response_d1classic(rho = 0.05, mtd = 60, theta = 0.33,
-#'                                   min_dose = 20, max_dose = 100)
+#'                                  min_dose = 20, max_dose = 100)
 #'sim <- ewoc_simulation(step_zero = step_zero,
-#'                        n_sim = 2, sample_size = 30, n_cohort = 1,
-#'                        alpha_strategy = "conditional",
-#'                        response_sim = response_sim,
-#'                        ncores = 2)
+#'                       n_sim = 2, sample_size = 30, n_cohort = 1,
+#'                       alpha_strategy = "conditional",
+#'                       response_sim = response_sim,
+#'                       ncores = 2)
 #'
 #'### Extended EWOC
 #'DLT <- 0
 #'dose <- 20
 #'step_zero <- ewoc_d1extended(DLT ~ dose, type = 'discrete',
-#'                            theta = 0.33, alpha = 0.25,
-#'                            min_dose = 20, max_dose = 100,
-#'                            dose_set = seq(20, 100, 20),
-#'                            rho_prior = matrix(1, ncol = 2, nrow = 2),
-#'                            rounding = "nearest")
+#'                           theta = 0.33, alpha = 0.25,
+#'                           min_dose = 20, max_dose = 100,
+#'                           dose_set = seq(20, 100, 20),
+#'                           rho_prior = matrix(1, ncol = 2, nrow = 2),
+#'                           rounding = "nearest")
 #'response_sim <- response_d1extended(rho = c(0.05, 0.5),
-#'                                    min_dose = 20, max_dose = 100)
+#'                                   min_dose = 20, max_dose = 100)
 #'sim <- ewoc_simulation(step_zero = step_zero,
-#'                        n_sim = 2, sample_size = 30, n_cohort = 1,
-#'                        alpha_strategy = "conditional",
-#'                        response_sim = response_sim,
-#'                        ncores = 2)
+#'                       n_sim = 2, sample_size = 30, n_cohort = 1,
+#'                       alpha_strategy = "conditional",
+#'                       response_sim = response_sim,
+#'                       ncores = 2)
 #'
 #'### PH EWOC
 #'time <- 0
@@ -151,16 +152,16 @@
 #'dose <- 20
 #'
 #'step_zero <- ewoc_d1ph(cbind(time, status) ~ dose, type = 'discrete',
-#'                       theta = 0.33, alpha = 0.25, tau = 10,
-#'                       min_dose = 20, max_dose = 100,
-#'                       dose_set = seq(20, 100, 20),
-#'                       rho_prior = matrix(1, ncol = 2, nrow = 1),
-#'                       mtd_prior = matrix(1, ncol = 2, nrow = 1),
-#'                       distribution = 'exponential',
-#'                       rounding = 'nearest')
+#'                      theta = 0.33, alpha = 0.25, tau = 10,
+#'                      min_dose = 20, max_dose = 100,
+#'                      dose_set = seq(20, 100, 20),
+#'                      rho_prior = matrix(1, ncol = 2, nrow = 1),
+#'                      mtd_prior = matrix(1, ncol = 2, nrow = 1),
+#'                      distribution = 'exponential',
+#'                      rounding = 'nearest')
 #'response_sim <- response_d1ph(rho = 0.05, mtd = 60, theta = 0.33,
-#'                              min_dose = 20, max_dose = 100,
-#'                              tau = 10, distribution = "exponential")
+#'                             min_dose = 20, max_dose = 100,
+#'                             tau = 10, distribution = "exponential")
 #'sim <- ewoc_simulation(step_zero = step_zero,
 #'                       n_sim = 2, sample_size = 30, n_cohort = 1,
 #'                       alpha_strategy = "conditional",
@@ -173,10 +174,10 @@
 #'@importFrom doParallel registerDoParallel stopImplicitCluster
 #'
 #'@export
-ewoc_simulation <- function(step_zero, n_sim, sample_size, n_cohort = 1,
-                            alpha_strategy = "fixed",
-                            alpha_rate = NULL, response_sim,
-                            stop_rule_sim = NULL,
+ewoc_simulation <- function(step_zero, n_sim, sample_size,
+                            n_cohort = 1, fixed_first_cohort = TRUE,
+                            alpha_strategy = "fixed", alpha_rate = NULL,
+                            response_sim, stop_rule_sim = NULL,
                             ncores = 1,
                             ...){
   UseMethod("ewoc_simulation")
@@ -184,12 +185,12 @@ ewoc_simulation <- function(step_zero, n_sim, sample_size, n_cohort = 1,
 
 
 #'@export
-ewoc_simulation.ewoc_d1classic <- function(step_zero, n_sim, sample_size, n_cohort = 1,
+ewoc_simulation.ewoc_d1classic <- function(step_zero, n_sim, sample_size,
                                       alpha_strategy =
                                         c("fixed", "increasing", "conditional"),
                                       alpha_rate = 0.05,
                                       response_sim = NULL,
-                                      fixed_first_cohort = TRUE,
+                                      fixed_first_cohort = TRUE, n_cohort = 1,
                                       stop_rule_sim = NULL,
                                       ncores = 1, ...){
 
