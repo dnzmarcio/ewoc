@@ -10,6 +10,7 @@ dlt_curve_d1ph(
   theta,
   min_dose,
   max_dose,
+  shape,
   tau,
   distribution = "exponential",
   dose_set = NULL
@@ -30,6 +31,9 @@ the MTD.}
 \item{max_dose}{a numerical value defining the upper bound of the support of
 the MTD.}
 
+\item{shape}{a numerical value indicating the true value of the parameter shape.
+It is only necessary if 'distribution' = "weibull".}
+
 \item{tau}{a numerical value defining the period of time for a possible
 toxicity be observed.}
 
@@ -38,9 +42,6 @@ events. It can be defined as 'exponential' or 'weibull'.}
 
 \item{dose_set}{a numerical vector of doses that probability of DLT will
 be calculated.}
-
-\item{shape}{a numerical value indicating the true value of the parameter shape.
-It is only necessary if 'distribution' = "weibull".}
 }
 \description{
 Plot the DLT curve based on the EWOC proportional hazards model
