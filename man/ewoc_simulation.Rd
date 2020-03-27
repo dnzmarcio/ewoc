@@ -96,7 +96,7 @@ response_sim <- response_d1classic(rho = 0.05, mtd = 60, theta = 0.33,
                                   min_dose = 20, max_dose = 100)
 sim <- ewoc_simulation(step_zero = step_zero,
                       n_sim = 1, sample_size = 30, n_cohort = 2,
-                      alpha_strategy = "increasing",
+                      alpha_strategy = "conditional",
                       response_sim = response_sim,
                       fixed_first_cohort =  TRUE,
                       ncores = 2)
@@ -113,8 +113,8 @@ step_zero <- ewoc_d1extended(DLT ~ dose, type = 'discrete',
 response_sim <- response_d1extended(rho = c(0.05, 0.5),
                                    min_dose = 20, max_dose = 100)
 sim <- ewoc_simulation(step_zero = step_zero,
-                      n_sim = 1, sample_size = 2,
-                      alpha_strategy = "increasing",
+                      n_sim = 1, sample_size = 30, n_cohort = 2,
+                      alpha_strategy = "conditional",
                       response_sim = response_sim,
                       fixed_first_cohort = TRUE,
                       ncores = 2)
@@ -136,8 +136,8 @@ response_sim <- response_d1ph(rho = 0.05, mtd = 40, theta = 0.33,
                              min_dose = 20, max_dose = 100,
                              tau = 10, distribution = "exponential")
 sim <- ewoc_simulation(step_zero = step_zero,
-                      n_sim = 1, sample_size = 2,
-                      alpha_strategy = "increasing",
+                      n_sim = 1, sample_size = 30, n_cohort = 2,
+                      alpha_strategy = "conditional",
                       response_sim = response_sim,
                       fixed_first_cohort = TRUE,
                       ncores = 2)
@@ -157,8 +157,8 @@ step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
 response_sim <- response_d1classic(rho = 0.05, mtd = 60, theta = 0.33,
                                   min_dose = 20, max_dose = 100)
 sim <- ewoc_simulation(step_zero = step_zero,
-                       n_sim = 2, sample_size = 30, n_cohort = 1,
-                       alpha_strategy = "increasing",
+                       n_sim = 2, sample_size = 30, n_cohort = 2,
+                       alpha_strategy = "conditional",
                        response_sim = response_sim,
                        ncores = 2)
 
@@ -174,8 +174,8 @@ step_zero <- ewoc_d1extended(DLT ~ dose, type = 'discrete',
 response_sim <- response_d1extended(rho = c(0.05, 0.5),
                                    min_dose = 20, max_dose = 100)
 sim <- ewoc_simulation(step_zero = step_zero,
-                       n_sim = 2, sample_size = 30,
-                       alpha_strategy = "increasing",
+                       n_sim = 2, sample_size = 30, n_cohort = 2,
+                       alpha_strategy = "conditional",
                        response_sim = response_sim,
                        ncores = 2)
 
@@ -196,10 +196,10 @@ response_sim <- response_d1ph(rho = 0.05, mtd = 60, theta = 0.33,
                              min_dose = 20, max_dose = 100,
                              tau = 10, distribution = "exponential")
 sim <- ewoc_simulation(step_zero = step_zero,
-                       n_sim = 2, sample_size = 30,
-                       alpha_strategy = "increasing",
-                       response_sim = response_sim,
-                       ncores = 2)
+                      n_sim = 2, sample_size = 30, n_cohort = 2,
+                      alpha_strategy = "conditional",
+                      response_sim = response_sim,
+                      ncores = 2)
 }
 
 }
