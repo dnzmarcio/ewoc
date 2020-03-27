@@ -312,8 +312,10 @@ ewoc_simulation.ewoc_d1extended <- function(step_zero, n_sim, sample_size, n_coh
 
   if (is.null(response_sim))
     stop("'response_sim' function should be defined.")
-  if (((sample_size - nrow(step_zero$trial$design_matrix)) %% n_cohort) != 0)
-    stop("Sample size minus cohort size for first cohort is not a multiple of `n_cohort`.")
+  if (nrow(step_zero$trial$design_matrix) != n_cohort)
+    stop("The number of patients in the first cohort is not the same number of patients in `n_cohort`.")
+  if ((sample_size %% n_cohort) != 0)
+    stop("`sample_size` is not a multiple of `n_cohort`.")
 
   dose_sim <- matrix(NA, ncol = sample_size, nrow = n_sim)
   dlt_sim <- matrix(NA, ncol = sample_size, nrow = n_sim)
@@ -396,7 +398,7 @@ ewoc_simulation.ewoc_d1extended <- function(step_zero, n_sim, sample_size, n_coh
                                         rounding = step_zero$trial$rounding)
 
               mtd_estimate <- update$next_dose
-              rho_estimate <- median(update$rho)
+              rho_estimate <- apply(update$rho, 2, median)
 
               list(dose, dlt, mtd_estimate, rho_estimate, alpha)
             }
