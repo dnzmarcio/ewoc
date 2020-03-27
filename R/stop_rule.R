@@ -121,7 +121,7 @@ stop_rule_d1classic <- function(step){
 #'                        ncores = 2)
 #'}
 #'@export
-stop_rule_d1classic <- function(step){
+stop_rule_d1extended <- function(step){
 
   n_sim <- length(step$trial$rho)
   p1 <- rep(NA, n_sim)
