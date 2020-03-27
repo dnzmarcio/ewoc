@@ -168,7 +168,7 @@
 #'                       ncores = 2)
 #'}
 #'
-#'@importFrom foreach foreach
+#'@importFrom foreach foreach %dopar%
 #'@importFrom doRNG %dorng%
 #'@importFrom doParallel registerDoParallel stopImplicitCluster
 #'
@@ -297,7 +297,7 @@ ewoc_simulation.ewoc_d1classic <- function(step_zero, n_sim, sample_size, n_coho
   return(out)
 }
 
-#'@importFrom foreach foreach
+#'@importFrom foreach foreach %dopar%
 #'@importFrom doRNG %dorng%
 #'@importFrom doParallel registerDoParallel stopImplicitCluster
 #'@export
@@ -327,7 +327,6 @@ ewoc_simulation.ewoc_d1extended <- function(step_zero, n_sim, sample_size, n_coh
             .combine='comb',
             .multicombine=TRUE,
             .init=list(list(), list(), list(), list(), list())) %dorng% {
-
               dose <- as.numeric(step_zero$trial$design_matrix[, 2])
 
               if (fixed_first_cohort) {
@@ -414,7 +413,7 @@ ewoc_simulation.ewoc_d1extended <- function(step_zero, n_sim, sample_size, n_coh
   return(out)
 }
 
-#'@importFrom foreach foreach
+#'@importFrom foreach foreach %dopar%
 #'@importFrom doRNG %dorng%
 #'@importFrom doParallel registerDoParallel stopImplicitCluster
 #'@export
