@@ -4,8 +4,7 @@
 \alias{mtd_rho_d1extended}
 \title{Convert mtd to rho_1 and vice-versa}
 \usage{
-mtd_rho_d1extended(mtd = NULL, rho_1 = NULL, rho_0, theta, min_dose,
-  max_dose)
+mtd_rho_d1extended(mtd = NULL, rho_1 = NULL, rho_0, theta, min_dose, max_dose)
 }
 \arguments{
 \item{mtd}{a numerical value defining the mtd value to be converted into rho_1 value.}

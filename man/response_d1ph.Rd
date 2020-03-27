@@ -4,8 +4,16 @@
 \alias{response_d1ph}
 \title{Generating a response function based on the EWOC Proportional Hazards model}
 \usage{
-response_d1ph(rho, mtd, theta, min_dose, max_dose, tau, distribution,
-  shape = NULL)
+response_d1ph(
+  rho,
+  mtd,
+  theta,
+  min_dose,
+  max_dose,
+  tau,
+  distribution,
+  shape = NULL
+)
 }
 \arguments{
 \item{rho}{a numerical value indicating the true value of the parameter rho.}

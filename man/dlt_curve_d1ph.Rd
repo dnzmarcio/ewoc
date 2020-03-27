@@ -4,8 +4,16 @@
 \alias{dlt_curve_d1ph}
 \title{Plot the DLT curve based on the EWOC proportional hazards model}
 \usage{
-dlt_curve_d1ph(mtd, rho, theta, min_dose, max_dose, tau,
-  distribution = "exponential", dose_set = NULL)
+dlt_curve_d1ph(
+  mtd,
+  rho,
+  theta,
+  min_dose,
+  max_dose,
+  tau,
+  distribution = "exponential",
+  dose_set = NULL
+)
 }
 \arguments{
 \item{mtd}{a numerical value indicating the true value of the parameter mtd.}

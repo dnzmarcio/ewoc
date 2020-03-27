@@ -4,8 +4,7 @@
 \alias{pdlt_d1ph}
 \title{Generating a probability of DLT function based on the EWOC Proportional Hazards model}
 \usage{
-pdlt_d1ph(rho, mtd, shape = NULL, theta, min_dose, max_dose, tau,
-  distribution)
+pdlt_d1ph(rho, mtd, shape = NULL, theta, min_dose, max_dose, tau, distribution)
 }
 \arguments{
 \item{rho}{a numerical value indicating the true value of the parameter rho.}

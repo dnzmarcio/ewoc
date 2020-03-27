@@ -4,9 +4,18 @@
 \alias{ewoc_simulation}
 \title{Generic EWOC simulation}
 \usage{
-ewoc_simulation(step_zero, n_sim, sample_size, n_cohort = 1,
-  alpha_strategy = "fixed", alpha_rate = NULL, response_sim,
-  stop_rule_sim = NULL, ncores = 1, ...)
+ewoc_simulation(
+  step_zero,
+  n_sim,
+  sample_size,
+  n_cohort = 1,
+  alpha_strategy = "fixed",
+  alpha_rate = NULL,
+  response_sim,
+  stop_rule_sim = NULL,
+  ncores = 1,
+  ...
+)
 }
 \arguments{
 \item{step_zero}{an object from the classes 'ewoc_d1classic', 'ewoc_d1extended',
