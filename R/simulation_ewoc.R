@@ -168,8 +168,9 @@
 #'                        ncores = 2)
 #'}
 #'
-#'@importFrom foreach foreach %dopar%
-#'@importFrom doParallel registerDoParallel
+#'@importFrom foreach foreach
+#'@importFrom doRNG %dorng%
+#'@importFrom doParallel registerDoParallel stopImplicitCluster
 #'
 #'@export
 ewoc_simulation <- function(step_zero, n_sim, sample_size, n_cohort = 1,
@@ -208,7 +209,7 @@ ewoc_simulation.ewoc_d1classic <- function(step_zero, n_sim, sample_size, n_coho
     foreach(i = 1:n_sim,
             .combine='comb',
             .multicombine=TRUE,
-            .init=list(list(), list(), list(), list(), list())) %dopar% {
+            .init=list(list(), list(), list(), list(), list())) %dorng% {
 
               dose <- as.numeric(step_zero$trial$design_matrix[, 2])
 
@@ -296,9 +297,9 @@ ewoc_simulation.ewoc_d1classic <- function(step_zero, n_sim, sample_size, n_coho
   return(out)
 }
 
-#'@importFrom foreach foreach %dopar%
-#'@importFrom doParallel registerDoParallel
-#'@importFrom parallel detectCores
+#'@importFrom foreach foreach
+#'@importFrom doRNG %dorng%
+#'@importFrom doParallel registerDoParallel stopImplicitCluster
 #'@export
 ewoc_simulation.ewoc_d1extended <- function(step_zero, n_sim, sample_size, n_cohort = 1,
                                        alpha_strategy =
@@ -325,7 +326,7 @@ ewoc_simulation.ewoc_d1extended <- function(step_zero, n_sim, sample_size, n_coh
     foreach(i = 1:n_sim,
             .combine='comb',
             .multicombine=TRUE,
-            .init=list(list(), list(), list(), list(), list())) %dopar% {
+            .init=list(list(), list(), list(), list(), list())) %dorng% {
 
               dose <- as.numeric(step_zero$trial$design_matrix[, 2])
 
@@ -413,7 +414,8 @@ ewoc_simulation.ewoc_d1extended <- function(step_zero, n_sim, sample_size, n_coh
   return(out)
 }
 
-#'@importFrom foreach foreach %dopar%
+#'@importFrom foreach foreach
+#'@importFrom doRNG %dorng%
 #'@importFrom doParallel registerDoParallel stopImplicitCluster
 #'@export
 ewoc_simulation.ewoc_d1ph <- function(step_zero, n_sim, sample_size,
@@ -444,7 +446,7 @@ ewoc_simulation.ewoc_d1ph <- function(step_zero, n_sim, sample_size,
     foreach(i = 1:n_sim,
             .combine='comb',
             .multicombine=TRUE,
-            .init=list(list(), list(), list(), list(), list(), list(), list())) %dopar% {
+            .init=list(list(), list(), list(), list(), list(), list(), list())) %dorng% {
 
               dlt <- as.numeric(step_zero$trial$response[, 2])
               dose <- as.numeric(step_zero$trial$design_matrix[, 2])
