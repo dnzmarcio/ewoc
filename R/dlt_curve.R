@@ -30,7 +30,7 @@ dlt_curve_d1classic <- function(mtd, rho, theta, min_dose, max_dose,
 
   dp <- data.frame(x = c(min_dose, max_dose))
 
-  gp <- ggplot(dp, aes(x = x)) +
+  gp <- ggplot(dp, aes_string(x = "x")) +
     stat_function(fun = aux_pdlt) +
     labs(y = "P(DLT|dose)", x = "dose") +
     geom_hline(yintercept = theta, linetype = 2) +
@@ -89,7 +89,7 @@ dlt_curve_d1extended <- function(rho, theta, min_dose, max_dose,
 
   dp <- data.frame(x = c(min_dose, max_dose))
 
-  gp <- ggplot(dp, aes(x = x)) +
+  gp <- ggplot(dp, aes_string(x = "x")) +
     stat_function(fun = aux_pdlt) +
     labs(y = "P(DLT|dose)", x = "dose") +
     geom_hline(yintercept = theta, linetype = 2) +
@@ -132,7 +132,7 @@ dlt_curve_d1extended <- function(rho, theta, min_dose, max_dose,
 #'be calculated.
 #'@export
 dlt_curve_d1ph <- function(mtd, rho, theta, min_dose, max_dose,
-                           tau, distribution = "exponential",
+                           shape, tau, distribution = "exponential",
                            dose_set = NULL){
 
   gamma <- (mtd - min_dose)/(max_dose - min_dose)
@@ -153,7 +153,7 @@ dlt_curve_d1ph <- function(mtd, rho, theta, min_dose, max_dose,
 
   dp <- data.frame(x = c(min_dose, max_dose))
 
-  gp <- ggplot(dp, aes(x = x)) +
+  gp <- ggplot(dp, aes_string(x = "x")) +
     stat_function(fun = aux_pdlt) +
     labs(y = "P(DLT|dose)", x = "dose") +
     geom_hline(yintercept = theta, linetype = 2) +
