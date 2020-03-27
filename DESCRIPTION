@@ -18,5 +18,6 @@ Imports:
     stats(>= 3.3.1),
     foreach(>= 1.4.3),
     doParallel(>= 1.0.11),
-    parallel (>= 3.4.0)
+    parallel (>= 3.4.0),
+    doRNG (>= 1.7.1)
 RoxygenNote: 7.0.2
