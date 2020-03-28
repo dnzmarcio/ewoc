@@ -123,11 +123,11 @@ stop_rule_d1classic <- function(step){
 #'@export
 stop_rule_d1extended <- function(step){
 
-  n_sim <- length(step$trial$rho)
+  n_sim <- nrow(step$trial$rho)
   p1 <- rep(NA, n_sim)
 
   for (i in 1:n_sim){
-    pdlt_sim <- pdlt_d1extended(rho = step$rho[i],
+    pdlt_sim <- pdlt_d1extended(rho = step$rho[i, ],
                                 min_dose = step$trial$min_dose,
                                 max_dose = step$trial$max_dose)
     p1[i] <- pdlt_sim(step$trial$first_dose)
@@ -199,7 +199,7 @@ stop_rule_d1extended <- function(step){
 #'@export
 stop_rule_d1ph <- function(step){
 
-  n_sim <- length(step$trial$rho)
+  n_sim <- nrow(step$trial$rho)
   p1 <- rep(NA, n_sim)
 
   for (i in 1:n_sim){
