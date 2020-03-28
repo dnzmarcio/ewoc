@@ -8,8 +8,8 @@ ewoc_simulation(
   step_zero,
   n_sim,
   sample_size,
-  n_cohort = 1,
   fixed_first_cohort = TRUE,
+  n_cohort = 1,
   alpha_strategy = "fixed",
   alpha_rate = NULL,
   response_sim,
@@ -28,11 +28,11 @@ to be simulated.}
 \item{sample_size}{a number indicating the number of patients enrolled for
 each clinical trial.}
 
-\item{n_cohort}{a numerical value indicating the number of patients that
-will be accrued at each dose calculation.}
-
 \item{fixed_first_cohort}{a logical value indicating if the first cohort
-should be randomly generated or be fixed as the input data.}
+should be randomly generated or be fixed as the input in 'step_zero'.}
+
+\item{n_cohort}{a number indicating the number of patients enrolled at each cohort.
+It is only used for 'ewoc_d1classic' and 'ewoc_d1extended'.}
 
 \item{alpha_strategy}{a character indicating the strategy to apply for the
 feasibility value. Default is "constant". Options are "increasing" and

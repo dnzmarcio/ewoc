@@ -10,6 +10,8 @@
 #'each clinical trial.
 #'@param n_cohort a number indicating the number of patients enrolled at each cohort.
 #'It is only used for 'ewoc_d1classic' and 'ewoc_d1extended'.
+#'@param fixed_first_cohort a logical value indicating if the first cohort
+#'should be randomly generated or be fixed as the input in 'step_zero'.
 #'@param alpha_strategy a character indicating the strategy to apply for the
 #'feasibility value. Default is "constant". Options are "increasing" and
 #'"conditional".
@@ -20,10 +22,6 @@
 #'as a generator function of the response variables in the simulation.
 #'Its only input is 'dose' and output is the indicator of DLT for classical and
 #'extended EWOC and the time until DLT for proportional hazards EWOC.
-#'@param fixed_first_cohort a logical value indicating if the first cohort
-#'should be randomly generated or be fixed as the input data.
-#'@param n_cohort a numerical value indicating the number of patients that
-#'will be accrued at each dose calculation.
 #'@param stop_rule_sim a function having as an input an object containing all
 #'the information related to the trial as the returned object trial from either
 #'\code{ewoc_d1classic}, \code{ewoc_d1extended}, \code{ewoc_d1ph} and as
@@ -175,24 +173,31 @@
 #'
 #'@export
 ewoc_simulation <- function(step_zero, n_sim, sample_size,
-                            n_cohort = 1, fixed_first_cohort = TRUE,
+                            fixed_first_cohort = TRUE, n_cohort = 1,
                             alpha_strategy = "fixed", alpha_rate = NULL,
                             response_sim, stop_rule_sim = NULL,
                             ncores = 1,
                             ...){
+
+  if (n_cohort != 1 & class(step_zero)[1] == "ewoc_d1ph")
+    stop("Proportional Hazards EWOC does not support cohort with more than one patient.")
+
   UseMethod("ewoc_simulation")
 }
 
 
 #'@export
-ewoc_simulation.ewoc_d1classic <- function(step_zero, n_sim, sample_size,
-                                      alpha_strategy =
-                                        c("fixed", "increasing", "conditional"),
-                                      alpha_rate = 0.05,
-                                      response_sim = NULL,
-                                      fixed_first_cohort = TRUE, n_cohort = 1,
-                                      stop_rule_sim = NULL,
-                                      ncores = 1, ...){
+ewoc_simulation.ewoc_d1classic <- function(step_zero,
+                                           n_sim,
+                                           sample_size,
+                                           fixed_first_cohort = TRUE,
+                                           n_cohort = 1,
+                                           alpha_strategy =
+                                             c("fixed", "increasing", "conditional"),
+                                           alpha_rate = 0.05,
+                                           response_sim = NULL,
+                                           stop_rule_sim = NULL,
+                                           ncores = 1, ...){
 
   if (is.null(response_sim))
     stop("'response_sim' function should be defined.")
@@ -302,14 +307,17 @@ ewoc_simulation.ewoc_d1classic <- function(step_zero, n_sim, sample_size,
 #'@importFrom doRNG %dorng%
 #'@importFrom doParallel registerDoParallel stopImplicitCluster
 #'@export
-ewoc_simulation.ewoc_d1extended <- function(step_zero, n_sim, sample_size, n_cohort = 1,
-                                       alpha_strategy =
-                                         c("fixed", "increasing", "conditional"),
-                                       alpha_rate = 0.05,
-                                       response_sim = NULL,
-                                       fixed_first_cohort = TRUE,
-                                       stop_rule_sim = NULL,
-                                       ncores = 1, ...){
+ewoc_simulation.ewoc_d1extended <- function(step_zero,
+                                            n_sim,
+                                            sample_size,
+                                            fixed_first_cohort = TRUE,
+                                            n_cohort = 1,
+                                            alpha_strategy =
+                                              c("fixed", "increasing", "conditional"),
+                                            alpha_rate = 0.05,
+                                            response_sim = NULL,
+                                            stop_rule_sim = NULL,
+                                            ncores = 1, ...){
 
   if (is.null(response_sim))
     stop("'response_sim' function should be defined.")
@@ -420,13 +428,17 @@ ewoc_simulation.ewoc_d1extended <- function(step_zero, n_sim, sample_size, n_coh
 #'@importFrom doRNG %dorng%
 #'@importFrom doParallel registerDoParallel stopImplicitCluster
 #'@export
-ewoc_simulation.ewoc_d1ph <- function(step_zero, n_sim, sample_size,
-                                 alpha_strategy =
-                                   c("fixed", "increasing", "conditional"),
-                                 alpha_rate = 0.05,
-                                 response_sim = NULL,
-                                 stop_rule_sim = NULL,
-                                 ncores = 1, ...){
+ewoc_simulation.ewoc_d1ph <- function(step_zero,
+                                      n_sim,
+                                      sample_size,
+                                      fixed_first_cohort = TRUE,
+                                      n_cohort = 1,
+                                      alpha_strategy =
+                                        c("fixed", "increasing", "conditional"),
+                                      alpha_rate = 0.05,
+                                      response_sim = NULL,
+                                      stop_rule_sim = NULL,
+                                      ncores = 1, ...){
 
   ndots <- list(...)
   rate <- ifelse(!is.null(ndots$rate_sim), ndots$rate_sim, 1)
