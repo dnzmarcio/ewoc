@@ -31,7 +31,7 @@ margin ; true_MTD + margin]}.
 \examples{
 \dontshow{
 DLT <- 0
-dose <- 30
+dose <- 20
 step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
                            theta = 0.33, alpha = 0.25,
                            min_dose = 0, max_dose = 100,
@@ -52,7 +52,7 @@ optimal_mtd(sim$dose_sim, true_mtd = 20, margin = 0.1*20)
 
 \dontrun{
 DLT <- 0
-dose <- 30
+dose <- 20
 step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
                            theta = 0.33, alpha = 0.25,
                            min_dose = 0, max_dose = 100,

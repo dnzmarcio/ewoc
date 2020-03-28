@@ -24,7 +24,7 @@ is the output from one of the functions 'ewoc_d1ph'.
 \dontshow{
 time <- 9
 status <- 0
-dose <- 30
+dose <- 20
 step_zero <- ewoc_d1ph(cbind(time, status) ~ dose, type = 'discrete',
                       theta = 0.33, alpha = 0.25, tau = 10,
                       min_dose = 20, max_dose = 100,
@@ -35,7 +35,8 @@ step_zero <- ewoc_d1ph(cbind(time, status) ~ dose, type = 'discrete',
                       rounding = 'nearest')
 stop_rule_d1ph(step_zero)
 response_sim <- response_d1ph(rho = 0.05, mtd = 20, theta = 0.33,
-                             min_dose = 10, max_dose = 50, tau = 10)
+                             min_dose = 10, max_dose = 50,
+                             tau = 10, distribution = "exponential")
 sim <- ewoc_simulation(step_zero = step_zero,
                       n_sim = 1, sample_size = 30,
                       alpha_strategy = "conditional",
@@ -47,7 +48,7 @@ sim <- ewoc_simulation(step_zero = step_zero,
 \dontrun{
 time <- 9
 status <- 0
-dose <- 30
+dose <- 20
 step_zero <- ewoc_d1ph(cbind(time, status) ~ dose, type = 'discrete',
                       theta = 0.33, alpha = 0.25, tau = 10,
                       min_dose = 20, max_dose = 100,
@@ -58,7 +59,8 @@ step_zero <- ewoc_d1ph(cbind(time, status) ~ dose, type = 'discrete',
                       rounding = 'nearest')
 stop_rule_d1ph(step_zero)
 response_sim <- response_d1ph(rho = 0.05, mtd = 20, theta = 0.33,
-                             min_dose = 10, max_dose = 50, tau = 10)
+                             min_dose = 10, max_dose = 50,
+                             tau = 10, distribution = "exponential")
 sim <- ewoc_simulation(step_zero = step_zero,
                       n_sim = 1, sample_size = 30,
                       alpha_strategy = "conditional",

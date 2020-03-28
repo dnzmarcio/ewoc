@@ -11,7 +11,7 @@
 #'@examples
 #'\dontshow{
 #'DLT <- 0
-#'dose <- 30
+#'dose <- 20
 #'step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
 #'                            theta = 0.33, alpha = 0.25,
 #'                            min_dose = 0, max_dose = 100,
@@ -32,7 +32,7 @@
 #'
 #'\dontrun{
 #'DLT <- 0
-#'dose <- 30
+#'dose <- 20
 #'step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
 #'                            theta = 0.33, alpha = 0.25,
 #'                            min_dose = 0, max_dose = 100,
@@ -83,7 +83,7 @@ stop_rule_d1classic <- function(step){
 #'@examples
 #'\dontshow{
 #'DLT <- 0
-#'dose <- 30
+#'dose <- 20
 #'step_zero <- ewoc_d1extended(DLT ~ dose, type = 'discrete',
 #'                            theta = 0.33, alpha = 0.25,
 #'                            min_dose = 0, max_dose = 100,
@@ -91,7 +91,7 @@ stop_rule_d1classic <- function(step){
 #'                            rho_prior = matrix(1, ncol = 2, nrow = 2),
 #'                            rounding = "nearest")
 #'stop_rule_d1extended(step_zero)
-#'response_sim <- response_d1extended(rho = c(0.05, 0.95)
+#'response_sim <- response_d1extended(rho = c(0.05, 0.95),
 #'                                    min_dose = 10, max_dose = 50)
 #'sim <- ewoc_simulation(step_zero = step_zero,
 #'                        n_sim = 1, sample_size = 30,
@@ -103,7 +103,7 @@ stop_rule_d1classic <- function(step){
 #'
 #'\dontrun{
 #'DLT <- 0
-#'dose <- 30
+#'dose <- 20
 #'step_zero <- ewoc_d1extended(DLT ~ dose, type = 'discrete',
 #'                            theta = 0.33, alpha = 0.25,
 #'                            min_dose = 0, max_dose = 100,
@@ -111,7 +111,7 @@ stop_rule_d1classic <- function(step){
 #'                            rho_prior = matrix(1, ncol = 2, nrow = 2),
 #'                            rounding = "nearest")
 #'stop_rule_d1extended(step_zero)
-#'response_sim <- response_d1extended(rho = c(0.05, 0.95)
+#'response_sim <- response_d1extended(rho = c(0.05, 0.95),
 #'                                    min_dose = 10, max_dose = 50)
 #'sim <- ewoc_simulation(step_zero = step_zero,
 #'                        n_sim = 1, sample_size = 30,
@@ -152,7 +152,7 @@ stop_rule_d1extended <- function(step){
 #'\dontshow{
 #'time <- 9
 #'status <- 0
-#'dose <- 30
+#'dose <- 20
 #'step_zero <- ewoc_d1ph(cbind(time, status) ~ dose, type = 'discrete',
 #'                       theta = 0.33, alpha = 0.25, tau = 10,
 #'                       min_dose = 20, max_dose = 100,
@@ -163,7 +163,8 @@ stop_rule_d1extended <- function(step){
 #'                       rounding = 'nearest')
 #'stop_rule_d1ph(step_zero)
 #'response_sim <- response_d1ph(rho = 0.05, mtd = 20, theta = 0.33,
-#'                              min_dose = 10, max_dose = 50, tau = 10)
+#'                              min_dose = 10, max_dose = 50,
+#'                              tau = 10, distribution = "exponential")
 #'sim <- ewoc_simulation(step_zero = step_zero,
 #'                       n_sim = 1, sample_size = 30,
 #'                       alpha_strategy = "conditional",
@@ -175,7 +176,7 @@ stop_rule_d1extended <- function(step){
 #'\dontrun{
 #'time <- 9
 #'status <- 0
-#'dose <- 30
+#'dose <- 20
 #'step_zero <- ewoc_d1ph(cbind(time, status) ~ dose, type = 'discrete',
 #'                       theta = 0.33, alpha = 0.25, tau = 10,
 #'                       min_dose = 20, max_dose = 100,
@@ -186,7 +187,8 @@ stop_rule_d1extended <- function(step){
 #'                       rounding = 'nearest')
 #'stop_rule_d1ph(step_zero)
 #'response_sim <- response_d1ph(rho = 0.05, mtd = 20, theta = 0.33,
-#'                              min_dose = 10, max_dose = 50, tau = 10)
+#'                              min_dose = 10, max_dose = 50,
+#'                              tau = 10, distribution = "exponential")
 #'sim <- ewoc_simulation(step_zero = step_zero,
 #'                       n_sim = 1, sample_size = 30,
 #'                       alpha_strategy = "conditional",

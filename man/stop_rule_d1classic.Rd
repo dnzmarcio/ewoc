@@ -23,7 +23,7 @@ is the output from one of the functions 'ewoc_d1classic'.
 \examples{
 \dontshow{
 DLT <- 0
-dose <- 30
+dose <- 20
 step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
                            theta = 0.33, alpha = 0.25,
                            min_dose = 0, max_dose = 100,
@@ -44,7 +44,7 @@ sim <- ewoc_simulation(step_zero = step_zero,
 
 \dontrun{
 DLT <- 0
-dose <- 30
+dose <- 20
 step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
                            theta = 0.33, alpha = 0.25,
                            min_dose = 0, max_dose = 100,

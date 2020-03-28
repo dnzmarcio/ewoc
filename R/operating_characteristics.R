@@ -34,7 +34,7 @@ overdose_loss <- function (mtd_estimate, true_mtd, alpha) {
 #'@examples
 #'\dontrun{
 #'DLT <- 0
-#'dose <- 30
+#'dose <- 20
 #'step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
 #'                            theta = 0.33, alpha = 0.25,
 #'                            min_dose = 0, max_dose = 100,
@@ -56,7 +56,7 @@ overdose_loss <- function (mtd_estimate, true_mtd, alpha) {
 #'
 #'\dontrun{
 #'DLT <- 0
-#'dose <- 30
+#'dose <- 20
 #'step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
 #'                            theta = 0.33, alpha = 0.25,
 #'                            min_dose = 0, max_dose = 100,
@@ -146,7 +146,7 @@ dlt_rate <- function(dlt_matrix, trial = FALSE,
 #'@examples
 #'\dontrun{
 #'DLT <- 0
-#'dose <- 30
+#'dose <- 20
 #'step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
 #'                            theta = 0.33, alpha = 0.25,
 #'                            min_dose = 0, max_dose = 100,
@@ -168,7 +168,7 @@ dlt_rate <- function(dlt_matrix, trial = FALSE,
 #'
 #'\dontrun{
 #'DLT <- 0
-#'dose <- 30
+#'dose <- 20
 #'step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
 #'                            theta = 0.33, alpha = 0.25,
 #'                            min_dose = 0, max_dose = 100,
@@ -234,7 +234,7 @@ stop_rule <- function(dlt_matrix, sample_size, digits = 2) {
 #'@examples
 #'\dontshow{
 #'DLT <- 0
-#'dose <- 30
+#'dose <- 20
 #'step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
 #'                            theta = 0.33, alpha = 0.25,
 #'                            min_dose = 0, max_dose = 100,
@@ -255,7 +255,7 @@ stop_rule <- function(dlt_matrix, sample_size, digits = 2) {
 #'
 #'\dontrun{
 #'DLT <- 0
-#'dose <- 30
+#'dose <- 20
 #'step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
 #'                            theta = 0.33, alpha = 0.25,
 #'                            min_dose = 0, max_dose = 100,
@@ -335,7 +335,7 @@ optimal_mtd <- function(dose_matrix, true_mtd, margin, digits = 2) {
 #'@examples
 #'\dontshow{
 #'DLT <- 0
-#'dose <- 30
+#'dose <- 20
 #'step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
 #'                            theta = 0.33, alpha = 0.25,
 #'                            min_dose = 0, max_dose = 100,
@@ -358,7 +358,7 @@ optimal_mtd <- function(dose_matrix, true_mtd, margin, digits = 2) {
 #'
 #'\dontrun{
 #'DLT <- 0
-#'dose <- 30
+#'dose <- 20
 #'step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
 #'                            theta = 0.33, alpha = 0.25,
 #'                            min_dose = 0, max_dose = 100,
@@ -436,7 +436,7 @@ optimal_toxicity <- function(dose_matrix, theta, margin, pdlt, digits = 2) {
 #'@examples
 #'\dontshow{
 #'DLT <- 0
-#'dose <- 30
+#'dose <- 20
 #'step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
 #'                            theta = 0.33, alpha = 0.25,
 #'                            min_dose = 0, max_dose = 100,
@@ -456,7 +456,7 @@ optimal_toxicity <- function(dose_matrix, theta, margin, pdlt, digits = 2) {
 #'
 #'\dontrun{
 #'DLT <- 0
-#'dose <- 30
+#'dose <- 20
 #'step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
 #'                            theta = 0.33, alpha = 0.25,
 #'                            min_dose = 0, max_dose = 100,
@@ -492,7 +492,7 @@ mtd_bias <- function(mtd_estimate, true_mtd) {
 #'@examples
 #'\dontshow{
 #'DLT <- 0
-#'dose <- 30
+#'dose <- 20
 #'step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
 #'                            theta = 0.33, alpha = 0.25,
 #'                            min_dose = 0, max_dose = 100,
@@ -512,7 +512,7 @@ mtd_bias <- function(mtd_estimate, true_mtd) {
 #'
 #'\dontrun{
 #'DLT <- 0
-#'dose <- 30
+#'dose <- 20
 #'step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
 #'                            theta = 0.33, alpha = 0.25,
 #'                            min_dose = 0, max_dose = 100,

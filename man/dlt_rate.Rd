@@ -50,7 +50,7 @@ of trials which have \eqn{target_rate - margin < DLT rate < target_rate + margin
 \examples{
 \dontrun{
 DLT <- 0
-dose <- 30
+dose <- 20
 step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
                            theta = 0.33, alpha = 0.25,
                            min_dose = 0, max_dose = 100,
@@ -72,7 +72,7 @@ dlt_rate(sim$dlt_sim)
 
 \dontrun{
 DLT <- 0
-dose <- 30
+dose <- 20
 step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
                            theta = 0.33, alpha = 0.25,
                            min_dose = 0, max_dose = 100,

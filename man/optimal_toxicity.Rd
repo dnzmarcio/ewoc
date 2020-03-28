@@ -33,7 +33,7 @@ margin ; target rate + margin]}.
 \examples{
 \dontshow{
 DLT <- 0
-dose <- 30
+dose <- 20
 step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
                            theta = 0.33, alpha = 0.25,
                            min_dose = 0, max_dose = 100,
@@ -56,7 +56,7 @@ optimal_toxicity(sim$dose_sim, theta = 0.33, margin = 0.05, pdlt = pdlt_sim)
 
 \dontrun{
 DLT <- 0
-dose <- 30
+dose <- 20
 step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
                            theta = 0.33, alpha = 0.25,
                            min_dose = 0, max_dose = 100,
