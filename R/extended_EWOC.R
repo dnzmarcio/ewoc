@@ -45,6 +45,8 @@
 #'@return \code{sample} a list of the MCMC chains distribution.
 #'@return \code{trial} a list of the trial conditions.
 #'
+#'@references Tighiouart, M., Cook-Wiens, G., & Rogatko, A. (2018). A Bayesian adaptive design for cancer phase I trials using a flexible range of doses. Journal of biopharmaceutical statistics, 28(3), 562-574.
+#'
 #'@examples
 #'DLT <- 0
 #'dose <- 20

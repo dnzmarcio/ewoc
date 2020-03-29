@@ -108,3 +108,6 @@ summary(test)
 plot(test)
 
 }
+\references{
+Tighiouart, M., Cook-Wiens, G., & Rogatko, A. (2018). A Bayesian adaptive design for cancer phase I trials using a flexible range of doses. Journal of biopharmaceutical statistics, 28(3), 562-574.
+}

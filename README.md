@@ -87,4 +87,6 @@ Babb, J., Rogatko, A., & Zacks, S. (1998). Cancer phase I clinical trials: effic
 
 Tighiouart, M., Liu, Y., & Rogatko, A. (2014). Escalation with overdose control using time to toxicity for cancer phase I clinical trials. PloS one, 9(3), e93070.
 
-Tighiouart, M., Cook-Wiens, G., & Rogatko, A. (2017). A Bayesian Adaptive Design for Cancer Phase I Trials Using a Flexible Range of Doses. Journal of Biopharmaceutical Statistics, (just-accepted).
+Tighiouart, M., Cook-Wiens, G., & Rogatko, A. (2018). A Bayesian adaptive design for cancer phase I trials using a flexible range of doses. Journal of biopharmaceutical statistics, 28(3), 562-574.
+
+Diniz, M. A., Tighiouart, M., & Rogatko, A. (2019). Comparison between continuous and discrete doses for model based designs in cancer dose finding. PloS one, 14(1).
