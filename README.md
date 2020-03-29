@@ -62,13 +62,13 @@ DLT <- 0
 dose <- 30
 step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
                             theta = 0.33, alpha = 0.25,
-                            min_dose = 0, max_dose = 100,
+                            min_dose = 20, max_dose = 100,
                             dose_set = seq(0, 100, 20),
                             rho_prior = matrix(1, ncol = 2, nrow = 1),
                             mtd_prior = matrix(1, ncol = 2, nrow = 1),
                             rounding = "nearest")
-response_sim <- response_d1classic(rho = 0.05, mtd = 20, theta = 0.33,
-                                   min_dose = 10, max_dose = 50)
+response_sim <- response_d1classic(rho = 0.05, mtd = 60, theta = 0.33,
+                                   min_dose = 20, max_dose = 100)
 sim <- ewoc_simulation(step_zero = step_zero,
                         n_sim = 1, sample_size = 30,
                         alpha_strategy = "conditional",

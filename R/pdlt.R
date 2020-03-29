@@ -14,8 +14,8 @@
 #'logistic regression and parameters as an output.
 #'
 #'@examples
-#'pdlt <- pdlt_d1classic(rho = 0.05, mtd = 20, theta = 0.33,
-#'                       min_dose = 10, max_dose = 50)
+#'pdlt <- pdlt_d1classic(rho = 0.05, mtd = 60, theta = 0.33,
+#'                       min_dose = 20, max_dose = 100)
 #'
 #'pdlt(20)
 #'
