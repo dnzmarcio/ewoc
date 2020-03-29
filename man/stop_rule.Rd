@@ -2,7 +2,7 @@
 % Please edit documentation in R/operating_characteristics.R
 \name{stop_rule}
 \alias{stop_rule}
-\title{Evaluation of the stop rule}
+\title{Evaluation of the stopping rule}
 \usage{
 stop_rule(dlt_matrix, sample_size, digits = 2)
 }

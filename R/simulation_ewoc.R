@@ -1,13 +1,17 @@
-#'Generic EWOC simulation
+#'EWOC simulation
 #'
 #'Generic function for simulating EWOC trials.
 #'
-#'@param step_zero an object from the classes 'ewoc_d1classic', 'ewoc_d1extended',
+#'@param step_zero an object from the classes either 'ewoc_d1classic' or 'ewoc_d1extended' or
 #''ewoc_d1ph' created using the first cohort data.
 #'@param n_sim a number indicating the number of phase I clinical trials
 #'to be simulated.
 #'@param sample_size a number indicating the number of patients enrolled for
 #'each clinical trial.
+#'@param response_sim a function which is self-contained and will be used
+#'as a generator function of the response variables in the simulation.
+#'Its only input is 'dose' and output is the indicator of DLT for classical and
+#'extended EWOC and the time until DLT for proportional hazards EWOC.
 #'@param n_cohort a number indicating the number of patients enrolled at each cohort.
 #'It is only used for 'ewoc_d1classic' and 'ewoc_d1extended'.
 #'@param fixed_first_cohort a logical value indicating if the first cohort
@@ -18,10 +22,6 @@
 #'@param alpha_rate a numerical value indicating the rate of the
 #'feasibility strategy. Only necessary if alpha_strategy is either
 #''increasing' or 'conditional'.
-#'@param response_sim a function which is self-contained and will be used
-#'as a generator function of the response variables in the simulation.
-#'Its only input is 'dose' and output is the indicator of DLT for classical and
-#'extended EWOC and the time until DLT for proportional hazards EWOC.
 #'@param stop_rule_sim a function having as an input an object containing all
 #'the information related to the trial as the returned object trial from either
 #'\code{ewoc_d1classic}, \code{ewoc_d1extended}, \code{ewoc_d1ph} and as

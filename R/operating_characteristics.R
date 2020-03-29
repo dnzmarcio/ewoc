@@ -457,7 +457,7 @@ dlt_rate <- function(dlt_matrix, trial = FALSE,
   return(out)
 }
 
-#'Evaluation of the stop rule
+#'Evaluation of the stopping rule
 #'
 #'Calculate the average, minimum, maximum number of patients to stop a trial and
 #'the percent of stopped trials. Stopped trials contain NA after the last
@@ -550,14 +550,14 @@ stop_rule <- function(dlt_matrix, sample_size, digits = 2) {
 
 #'Percent of doses in relation the optimal MTD interval
 #'
-#'Calculate the percent of dose which are inside the optimal MTD interval \code{[true_MTD -
+#'Calculate the percent of doses which are inside the optimal MTD interval \code{[true_MTD -
 #'margin ; true_MTD + margin]}.
 #'
-#'@param dose_matrix a numerical matrix of assigned doses for each step of the trial (column)
+#'@param dose_matrix a numerical matrix or vector of assigned doses for each step of the trial (column)
 #'and for each trial (row).
 #'@param true_mtd a numerical value of the true Maximum Tolerable Dose.
 #'@param margin a numerical value of the acceptable margin of distance from the
-#'\code{true_MTD}.
+#'\code{true_mtd}.
 #'@param digits a numerical value indicating the number of digits.
 #'
 #'@return \code{interval} the average percent of doses which are inside the optimal MTD interval.
@@ -650,12 +650,12 @@ optimal_mtd <- function(dose_matrix, true_mtd, margin, digits = 2) {
 
 #'Percent of doses in relation the optimal toxicity interval
 #'
-#'Calculate the percent of dose which are inside the optimal toxicity interval \code{[target rate -
+#'Calculate the percent of doses which are inside the optimal toxicity interval \code{[target rate -
 #'margin ; target rate + margin]}.
 #'
 #'@param dose_matrix a numerical matrix of assigned doses for each step of the trial (column)
 #'and for each trial (row).
-#'@param theta a numerical value of the target DLT rate.
+#'@param target_rate a numerical value of the target DLT rate.
 #'@param margin a numerical value of the acceptable margin of distance from the
 #'\code{target_rate}.
 #'@param pdlt a function to calculate the probability of toxicity with a numeric vector of doses as input and a numeric vector of probabilities as output.

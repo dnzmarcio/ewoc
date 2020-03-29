@@ -4,13 +4,13 @@
 \alias{optimal_toxicity}
 \title{Percent of doses in relation the optimal toxicity interval}
 \usage{
-optimal_toxicity(dose_matrix, theta, margin, pdlt, digits = 2)
+optimal_toxicity(dose_matrix, target_rate, margin, pdlt, digits = 2)
 }
 \arguments{
 \item{dose_matrix}{a numerical matrix of assigned doses for each step of the trial (column)
 and for each trial (row).}
 
-\item{theta}{a numerical value of the target DLT rate.}
+\item{target_rate}{a numerical value of the target DLT rate.}
 
 \item{margin}{a numerical value of the acceptable margin of distance from the
 \code{target_rate}.}
@@ -27,7 +27,7 @@ and for each trial (row).}
 \code{overdose} the average percent of doses which are greater than the upper limit of the optimal toxicity interval.
 }
 \description{
-Calculate the percent of dose which are inside the optimal toxicity interval \code{[target rate -
+Calculate the percent of doses which are inside the optimal toxicity interval \code{[target rate -
 margin ; target rate + margin]}.
 }
 \examples{
