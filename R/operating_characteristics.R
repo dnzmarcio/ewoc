@@ -1,3 +1,336 @@
+#'Operating characteristics for EWOC simulations
+#'
+#'Generic operating characteristics for one or more scenarios in EWOC simulations.
+#'
+#'@param sim_list a list of 'ewoc_simulation' objects for different scenarios
+#'created using the \code{\link[ewoc]{ewoc_simulation}} function.
+#'@param pdlt_list a list of functions to calculate the probability of toxicity with a numeric vector
+#'of doses as input and a numeric vector of probabilities as output.
+#'@param mtd_list a list of numerical values indicating the true MTD for each scenario.
+#'@param toxicity_margin a numerical value of the acceptable margin of distance from the
+#'\code{target_rate}.
+#'@param mtd_margin  a numerical value of the acceptable margin of distance from the
+#'\code{mtd_list}.
+#'
+#'@return \code{dlt_rate} See \code{\link[ewoc]{dlt_rate}}.
+#'@return \code{dose_toxicity} See \code{\link[ewoc]{optimal_toxicity}}.
+#'@return \code{mtd_toxicity} See \code{\link[ewoc]{optimal_toxicity}}.
+#'@return \code{statistics} See \code{\link[ewoc]{mtd_bias}} and \code{\link[ewoc]{mtd_mse}}.
+#'@return \code{dose_efficiency} See \code{\link[ewoc]{optimal_mtd}}.
+#'@return \code{mtd_efficiency} See \code{\link[ewoc]{optimal_mtd}}.
+#'@return \code{stop} See \code{\link[ewoc]{stop_rule}}.
+#'
+#'@references Diniz, M. A., Tighiouart, M., & Rogatko, A. (2019). Comparison between continuous and discrete doses for model based designs in cancer dose finding. PloS one, 14(1).
+#'
+#'@examples
+#'\dontshow{
+#'### Only one simulation
+#'DLT <- 0
+#'dose <- 20
+#'step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
+#'                           theta = 0.33, alpha = 0.25,
+#'                           min_dose = 20, max_dose = 100,
+#'                           dose_set = seq(20, 100, 20),
+#'                           rho_prior = matrix(1, ncol = 2, nrow = 1),
+#'                           mtd_prior = matrix(1, ncol = 2, nrow = 1),
+#'                           rounding = "nearest")
+#'response_sim <- response_d1classic(rho = 0.05, mtd = 60, theta = 0.33,
+#'                                  min_dose = 20, max_dose = 100)
+#'sim <- ewoc_simulation(step_zero = step_zero,
+#'                      n_sim = 1, sample_size = 30, n_cohort = 1,
+#'                      alpha_strategy = "conditional",
+#'                      response_sim = response_sim,
+#'                      fixed_first_cohort =  TRUE,
+#'                      ncores = 2)
+#'
+#'pdlt <- pdlt_d1classic(rho = 0.05, mtd = 60, theta = 0.33,
+#'                       min_dose = 20, max_dose = 100)
+#'
+#'opc(sim_list = list(sim), pdlt_list = list(pdlt),
+#'    mtd_list = list(60), toxicity_margin = 0.05, mtd_margin = 6)
+#'
+#'### Two or more simulations
+#'
+#'sim_list <- list()
+#'mtd_list <- list()
+#'pdlt_list <- list()
+#'
+#'DLT <- 0
+#'dose <- 20
+#'step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
+#'                           theta = 0.33, alpha = 0.25,
+#'                           min_dose = 20, max_dose = 100,
+#'                           dose_set = seq(20, 100, 20),
+#'                           rho_prior = matrix(1, ncol = 2, nrow = 1),
+#'                           mtd_prior = matrix(1, ncol = 2, nrow = 1),
+#'                           rounding = "nearest")
+#'mtd_list[[1]] <- 60
+#'response_sim <- response_d1classic(rho = 0.05, mtd = mtd_list[[1]],
+#'                                  theta = 0.33,
+#'                                  min_dose = 20, max_dose = 100)
+#'sim_list[[1]] <- ewoc_simulation(step_zero = step_zero,
+#'                      n_sim = 1, sample_size = 30, n_cohort = 1,
+#'                      alpha_strategy = "conditional",
+#'                      response_sim = response_sim,
+#'                      fixed_first_cohort =  TRUE,
+#'                      ncores = 2)
+#'pdlt_list[[1]] <- pdlt_d1classic(rho = 0.05, mtd = mtd_list[[1]],
+#'                                theta = 0.33,
+#'                                min_dose = 20, max_dose = 100)
+#'
+#'mtd_list[[2]] <- 40
+#'response_sim <- response_d1classic(rho = 0.05, mtd = mtd_list[[2]],
+#'                                  theta = 0.33,
+#'                                  min_dose = 20, max_dose = 100)
+#'sim_list[[2]] <- ewoc_simulation(step_zero = step_zero,
+#'                      n_sim = 1, sample_size = 30, n_cohort = 1,
+#'                      alpha_strategy = "conditional",
+#'                      response_sim = response_sim,
+#'                      fixed_first_cohort =  TRUE,
+#'                      ncores = 2)
+#'
+#'pdlt_list[[2]] <- pdlt_d1classic(rho = 0.05, mtd = mtd_list[[2]],
+#'                                theta = 0.33,
+#'                                min_dose = 20, max_dose = 100)
+#'
+#'opc(sim_list = sim_list, pdlt_list = pdlt_list,
+#'    mtd_list = mtd_list, toxicity_margin = 0.05, mtd_margin = 6)
+#'
+#'
+#'
+#'}
+#'
+#'
+#'\dontrun{
+#'### Only one simulation
+#'DLT <- 0
+#'dose <- 20
+#'step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
+#'                           theta = 0.33, alpha = 0.25,
+#'                           min_dose = 20, max_dose = 100,
+#'                           dose_set = seq(20, 100, 20),
+#'                           rho_prior = matrix(1, ncol = 2, nrow = 1),
+#'                           mtd_prior = matrix(1, ncol = 2, nrow = 1),
+#'                           rounding = "nearest")
+#'response_sim <- response_d1classic(rho = 0.05, mtd = 60, theta = 0.33,
+#'                                  min_dose = 20, max_dose = 100)
+#'sim <- ewoc_simulation(step_zero = step_zero,
+#'                      n_sim = 1, sample_size = 30, n_cohort = 1,
+#'                      alpha_strategy = "conditional",
+#'                      response_sim = response_sim,
+#'                      fixed_first_cohort =  TRUE,
+#'                      ncores = 2)
+#'
+#'pdlt <- pdlt_d1classic(rho = 0.05, mtd = 60, theta = 0.33,
+#'                       min_dose = 20, max_dose = 100)
+#'
+#'opc(sim_list = list(sim), pdlt_list = list(pdlt),
+#'    mtd_list = list(60), toxicity_margin = 0.05, mtd_margin = 6)
+#'
+#'### Two or more simulations
+#'
+#'sim_list <- list()
+#'mtd_list <- list()
+#'pdlt_list <- list()
+#'
+#'DLT <- 0
+#'dose <- 20
+#'step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
+#'                           theta = 0.33, alpha = 0.25,
+#'                           min_dose = 20, max_dose = 100,
+#'                           dose_set = seq(20, 100, 20),
+#'                           rho_prior = matrix(1, ncol = 2, nrow = 1),
+#'                           mtd_prior = matrix(1, ncol = 2, nrow = 1),
+#'                           rounding = "nearest")
+#'mtd_list[[1]] <- 60
+#'response_sim <- response_d1classic(rho = 0.05, mtd = mtd_list[[1]],
+#'                                  theta = 0.33,
+#'                                  min_dose = 20, max_dose = 100)
+#'sim_list[[1]] <- ewoc_simulation(step_zero = step_zero,
+#'                      n_sim = 1, sample_size = 30, n_cohort = 1,
+#'                      alpha_strategy = "conditional",
+#'                      response_sim = response_sim,
+#'                      fixed_first_cohort =  TRUE,
+#'                      ncores = 2)
+#'pdlt_list[[1]] <- pdlt_d1classic(rho = 0.05, mtd = mtd_list[[1]],
+#'                                theta = 0.33,
+#'                                min_dose = 20, max_dose = 100)
+#'
+#'mtd_list[[2]] <- 40
+#'response_sim <- response_d1classic(rho = 0.05, mtd = mtd_list[[2]],
+#'                                  theta = 0.33,
+#'                                  min_dose = 20, max_dose = 100)
+#'sim_list[[2]] <- ewoc_simulation(step_zero = step_zero,
+#'                      n_sim = 1, sample_size = 30, n_cohort = 1,
+#'                      alpha_strategy = "conditional",
+#'                      response_sim = response_sim,
+#'                      fixed_first_cohort =  TRUE,
+#'                      ncores = 2)
+#'
+#'pdlt_list[[2]] <- pdlt_d1classic(rho = 0.05, mtd = mtd_list[[2]],
+#'                                theta = 0.33,
+#'                                min_dose = 20, max_dose = 100)
+#'
+#'opc(sim_list = sim_list, pdlt_list = pdlt_list,
+#'    mtd_list = mtd_list, toxicity_margin = 0.05, mtd_margin = 6)
+#'}
+#'
+#'@export
+opc <- function(sim_list, pdlt_list, mtd_list,
+                toxicity_margin = NULL, mtd_margin = NULL){
+
+  aux_opc <- function(sim, pdlt, mtd, toxicity_margin, mtd_margin){
+    UseMethod("opc", sim)
+  }
+
+  if (length(sim_list) > 1){
+     temp <- mapply(aux_opc, sim_list, pdlt_list, mtd_list,
+                    MoreArgs =
+                    list(toxicity_margin = toxicity_margin,
+                        mtd_margin = mtd_margin),
+                    SIMPLIFY = FALSE)
+     dlt_rate <-
+       Reduce(rbind, lapply(temp, function(x) x$dlt_rate))
+     dose_toxicity <-
+       Reduce(rbind, lapply(temp, function(x) x$dose_toxicity))
+     mtd_toxicity <-
+       Reduce(rbind, lapply(temp, function(x) x$mtd_toxicity))
+     dose_efficiency <-
+       Reduce(rbind, lapply(temp, function(x) x$dose_efficiency))
+     mtd_efficiency <-
+       Reduce(rbind, lapply(temp, function(x) x$mtd_efficiency))
+     stop <-
+       Reduce(rbind, lapply(temp, function(x) x$stop))
+
+     out <- list(dlt_rate = dlt_rate,
+                 dose_toxicity = dose_toxicity,
+                 mtd_toxicity = mtd_toxicity,
+                 dose_efficiency = dose_efficiency,
+                 mtd_efficiency = mtd_efficiency,
+                 stop = stop)
+
+  } else {
+    out <- aux_opc(sim_list[[1]], pdlt_list[[1]], mtd_list[[1]],
+                   toxicity_margin, mtd_margin)
+  }
+
+  return(out)
+}
+
+#'@export
+opc.nocov <- function(sim, pdlt, mtd,
+                      toxicity_margin, mtd_margin){
+
+  ### DLT rate
+  aux_dlt <- function(sim, pdlt = NULL, toxicity_margin = NULL){
+    if (!is.null(toxicity_margin) & !is.null(pdlt)){
+      out <- as.data.frame(dlt_rate(sim$dlt_sim,
+                      target_rate = sim$trial$theta,
+                      margin = toxicity_margin))
+    } else {
+      s1 <- dlt_rate(sim$dlt_sim)$average
+      out <- data.frame(average = s1)
+    }
+
+    return(out)
+  }
+
+  dlt_rate <- aux_dlt(sim, pdlt, toxicity_margin)
+
+  ### Dose Toxicity
+  aux_dose_toxicity <- function(sim, pdlt = NULL, toxicity_margin = NULL){
+    if (!is.null(toxicity_margin) & !is.null(pdlt)){
+      out <- as.data.frame(
+        optimal_toxicity(sim$dose_sim,
+                         target_rate = sim$trial$theta,
+                         margin = toxicity_margin,
+                         pdlt = pdlt))
+    } else {
+      out <- NULL
+    }
+
+    return(out)
+  }
+
+  dose_toxicity <- aux_dose_toxicity(sim, pdlt, toxicity_margin)
+
+  ### MTD Toxicity
+  aux_mtd_toxicity <- function(sim, pdlt = NULL, toxicity_margin = NULL){
+    if (!is.null(toxicity_margin) & !is.null(pdlt)){
+      out <- as.data.frame(
+        optimal_toxicity(sim$mtd_sim,
+                         target_rate = sim$trial$theta,
+                         margin = toxicity_margin,
+                         pdlt = pdlt))
+    } else {
+      out <- NULL
+    }
+
+    return(out)
+  }
+
+  mtd_toxicity <- aux_mtd_toxicity(sim, pdlt, toxicity_margin)
+
+  ### Statistical Measures
+  aux_statistical <- function(sim, true_mtd){
+    s1 <- mtd_bias(sim$mtd_sim, true_mtd)
+    s2 <- mtd_mse(sim$mtd_sim, true_mtd)
+    out <- data.frame(bias = s1, mse = s2)
+  }
+
+  statistics <- aux_statistical(sim, mtd)
+
+  ### Dose Efficiency
+  aux_dose_efficiency <- function(sim, true_mtd, mtd_margin){
+    if (!is.null(mtd_margin)){
+      out <- as.data.frame(optimal_mtd(sim$dose_sim,
+                                       true_mtd = true_mtd,
+                                       margin = mtd_margin))
+      colnames(out) <- c("dose.interval",
+                         "dose.underdose",
+                         "dose.overdose")
+    } else {
+      out <- NULL
+    }
+    return(out)
+  }
+
+  dose_efficiency <- aux_dose_efficiency(sim, mtd, mtd_margin)
+
+  ### MTD Eficiency
+
+  aux_mtd_efficiency <- function(sim, true_mtd, mtd_margin){
+    if (!is.null(mtd_margin)){
+      out <- as.data.frame(optimal_mtd(sim$mtd_sim,
+                                       true_mtd = true_mtd,
+                                       margin = mtd_margin))
+      colnames(out) <- c("mtd.interval",
+                         "mtd.underdose",
+                         "mtd.overdose")
+    } else {
+      out <- NULL
+    }
+    return(out)
+  }
+
+  mtd_efficiency <- aux_mtd_efficiency(sim, mtd, mtd_margin)
+
+  ### Stopping Rule
+  aux_stop <- function(sim){
+    out <- as.data.frame(stop_rule(sim$dlt_sim, ncol(sim$dlt_sim), digits = 2))
+  }
+
+  stop<- aux_stop(sim)
+
+  out <- list(dlt_rate = dlt_rate,
+              dose_toxicity = dose_toxicity,
+              mtd_toxicity = mtd_toxicity,
+              dose_efficiency = dose_efficiency,
+              mtd_efficiency = mtd_efficiency,
+              stop = stop)
+}
+
+
 overdose_loss <- function (mtd_estimate, true_mtd, alpha) {
 
   out <- ifelse(mtd_estimate < true_mtd, alpha*(true_mtd - mtd_estimate),

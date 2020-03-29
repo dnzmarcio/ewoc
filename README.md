@@ -74,6 +74,10 @@ sim <- ewoc_simulation(step_zero = step_zero,
                         alpha_strategy = "conditional",
                         response_sim = response_sim,
                         ncores = 1)
+pdlt <- pdlt_d1classic(rho = 0.05, mtd = 60, theta = 0.33,
+                      min_dose = 20, max_dose = 100)
+results <- opc(sim_list = list(sim), pdlt_list = list(pdlt),
+    mtd_list = list(60), toxicity_margin = 0.05, mtd_margin = 6)
 ```
 
 References
