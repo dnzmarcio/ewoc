@@ -29,6 +29,7 @@
 #'@param ncores a numeric value indicating the number of cores to be used in the
 #'simulation performed in parallel. Use parallel::detectCores() to check the number of
 #'cores available.
+#'@param seed is an integer value, containing the random number generator (RNG) state for random number generation.
 #'@param ... For an object \code{step_zero} with class 'ewoc_d1ph',
 #'the argument \code{rate_sim} which controls the rate of accrue of patients following a Poisson process. The default is 1.
 #'
@@ -172,32 +173,28 @@
 #'@importFrom doParallel registerDoParallel stopImplicitCluster
 #'
 #'@export
-ewoc_simulation <- function(step_zero, n_sim, sample_size,
+ewoc_simulation <- function(step_zero, n_sim, sample_size, response_sim,
                             fixed_first_cohort = TRUE, n_cohort = 1,
-                            alpha_strategy = "fixed", alpha_rate = NULL,
-                            response_sim, stop_rule_sim = NULL,
-                            ncores = 1,
+                            alpha_strategy = "conditional",
+                            alpha_rate = 0.05,
+                            stop_rule_sim = NULL,
+                            ncores = 1, seed = 1234,
                             ...){
 
   if (n_cohort != 1 & class(step_zero)[1] == "ewoc_d1ph")
     stop("Proportional Hazards EWOC does not support cohort with more than one patient.")
 
-  UseMethod("ewoc_simulation")
+  UseMethod("ewoc_simulation", object = step_zero)
 }
 
 
 #'@export
-ewoc_simulation.ewoc_d1classic <- function(step_zero,
-                                           n_sim,
-                                           sample_size,
-                                           fixed_first_cohort = TRUE,
-                                           n_cohort = 1,
-                                           alpha_strategy =
-                                             c("fixed", "increasing", "conditional"),
+ewoc_simulation.ewoc_d1classic <- function(step_zero, n_sim, sample_size, response_sim,
+                                           fixed_first_cohort = TRUE, n_cohort = 1,
+                                           alpha_strategy = "conditional",
                                            alpha_rate = 0.05,
-                                           response_sim = NULL,
                                            stop_rule_sim = NULL,
-                                           ncores = 1, ...){
+                                           ncores = 1, seed = 1234, ...){
 
   if (is.null(response_sim))
     stop("'response_sim' function should be defined.")
@@ -211,6 +208,7 @@ ewoc_simulation.ewoc_d1classic <- function(step_zero,
   alpha_sim <- matrix(NA, ncol = sample_size, nrow = n_sim)
 
   registerDoParallel(ncores)
+  set.seed(seed)
   result <-
     foreach(i = 1:n_sim,
             .combine='comb',
@@ -309,17 +307,12 @@ ewoc_simulation.ewoc_d1classic <- function(step_zero,
 #'@importFrom doRNG %dorng%
 #'@importFrom doParallel registerDoParallel stopImplicitCluster
 #'@export
-ewoc_simulation.ewoc_d1extended <- function(step_zero,
-                                            n_sim,
-                                            sample_size,
-                                            fixed_first_cohort = TRUE,
-                                            n_cohort = 1,
-                                            alpha_strategy =
-                                              c("fixed", "increasing", "conditional"),
+ewoc_simulation.ewoc_d1extended <- function(step_zero, n_sim, sample_size, response_sim,
+                                            fixed_first_cohort = TRUE, n_cohort = 1,
+                                            alpha_strategy = "conditional",
                                             alpha_rate = 0.05,
-                                            response_sim = NULL,
                                             stop_rule_sim = NULL,
-                                            ncores = 1, ...){
+                                            ncores = 1, seed = 1234, ...){
 
   if (is.null(response_sim))
     stop("'response_sim' function should be defined.")
@@ -335,6 +328,7 @@ ewoc_simulation.ewoc_d1extended <- function(step_zero,
   alpha_sim <- matrix(NA, ncol = sample_size, nrow = n_sim)
 
   registerDoParallel(ncores)
+  set.seed(seed)
   result <-
     foreach(i = 1:n_sim,
             .combine='comb',
@@ -431,17 +425,12 @@ ewoc_simulation.ewoc_d1extended <- function(step_zero,
 #'@importFrom doRNG %dorng%
 #'@importFrom doParallel registerDoParallel stopImplicitCluster
 #'@export
-ewoc_simulation.ewoc_d1ph <- function(step_zero,
-                                      n_sim,
-                                      sample_size,
-                                      fixed_first_cohort = TRUE,
-                                      n_cohort = 1,
-                                      alpha_strategy =
-                                        c("fixed", "increasing", "conditional"),
+ewoc_simulation.ewoc_d1ph <- function(step_zero, n_sim, sample_size, response_sim,
+                                      fixed_first_cohort = TRUE, n_cohort = 1,
+                                      alpha_strategy = "conditional",
                                       alpha_rate = 0.05,
-                                      response_sim = NULL,
                                       stop_rule_sim = NULL,
-                                      ncores = 1, ...){
+                                      ncores = 1, seed = 1234, ...){
 
   ndots <- list(...)
   rate <- ifelse(!is.null(ndots$rate_sim), ndots$rate_sim, 1)
@@ -459,6 +448,7 @@ ewoc_simulation.ewoc_d1ph <- function(step_zero,
   alpha_sim <- matrix(NA, ncol = sample_size, nrow = n_sim)
 
   registerDoParallel(ncores)
+  set.seed(seed)
   result <-
     foreach(i = 1:n_sim,
             .combine='comb',

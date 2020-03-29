@@ -2,19 +2,20 @@
 % Please edit documentation in R/simulation_ewoc.R
 \name{ewoc_simulation}
 \alias{ewoc_simulation}
-\title{Generic EWOC simulation}
+\title{EWOC simulation}
 \usage{
 ewoc_simulation(
   step_zero,
   n_sim,
   sample_size,
+  response_sim,
   fixed_first_cohort = TRUE,
   n_cohort = 1,
-  alpha_strategy = "fixed",
-  alpha_rate = NULL,
-  response_sim,
+  alpha_strategy = "conditional",
+  alpha_rate = 0.05,
   stop_rule_sim = NULL,
   ncores = 1,
+  seed = 1234,
   ...
 )
 }
@@ -55,6 +56,8 @@ output a logical value indicating the trial should be stopped.}
 \item{ncores}{a numeric value indicating the number of cores to be used in the
 simulation performed in parallel. Use parallel::detectCores() to check the number of
 cores available.}
+
+\item{seed}{is an integer value, containing the random number generator (RNG) state for random number generation.}
 
 \item{...}{For an object \code{step_zero} with class 'ewoc_d1ph',
 the argument \code{rate_sim} which controls the rate of accrue of patients following a Poisson process. The default is 1.}
