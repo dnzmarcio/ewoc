@@ -685,8 +685,8 @@ optimal_mtd <- function(dose_matrix, true_mtd, margin, digits = 2) {
 #'                        alpha_strategy = "increasing",
 #'                        response_sim = response_sim,
 #'                        ncores = 2)
-#'optimal_toxicity(sim$mtd_sim, theta = 0.33, margin = 0.05, pdlt = pdlt_sim)
-#'optimal_toxicity(sim$dose_sim, theta = 0.33, margin = 0.05, pdlt = pdlt_sim)
+#'optimal_toxicity(sim$mtd_sim, target_rate = 0.33, margin = 0.05, pdlt = pdlt_sim)
+#'optimal_toxicity(sim$dose_sim, target_rate = 0.33, margin = 0.05, pdlt = pdlt_sim)
 #'}
 #'
 #'\dontrun{
@@ -708,13 +708,13 @@ optimal_mtd <- function(dose_matrix, true_mtd, margin, digits = 2) {
 #'                        alpha_strategy = "increasing",
 #'                        response_sim = response_sim,
 #'                        ncores = 2)
-#'optimal_toxicity(sim$mtd_sim, theta = 0.33, margin = 0.05, pdlt = pdlt_sim)
-#'optimal_toxicity(sim$dose_sim, theta = 0.33, margin = 0.05, pdlt = pdlt_sim)
+#'optimal_toxicity(sim$mtd_sim, target_rate = 0.33, margin = 0.05, pdlt = pdlt_sim)
+#'optimal_toxicity(sim$dose_sim, target_rate = 0.33, margin = 0.05, pdlt = pdlt_sim)
 #'}
 #'
 #'
 #'@export
-optimal_toxicity <- function(dose_matrix, theta, margin, pdlt, digits = 2) {
+optimal_toxicity <- function(dose_matrix, target_rate, margin, pdlt, digits = 2) {
 
   if (!is.matrix(dose_matrix))
     dose_matrix <- matrix(dose_matrix, nrow = 1)
@@ -741,15 +741,15 @@ optimal_toxicity <- function(dose_matrix, theta, margin, pdlt, digits = 2) {
   }
 
   percent <- apply(dose_matrix, 1, aux_interval,
-                   theta = theta,  margin = margin)
+                   theta = target_rate,  margin = margin)
   interval <- round(mean(percent, na.rm = TRUE), digits)
 
   percent <- apply(dose_matrix, 1, aux_underdose,
-                   theta = theta,  margin = margin)
+                   theta = target_rate,  margin = margin)
   underdose <- round(mean(percent, na.rm = TRUE), digits)
 
   percent <- apply(dose_matrix, 1, aux_overdose,
-                   theta = theta,  margin = margin)
+                   theta = target_rate,  margin = margin)
   overdose <- round(mean(percent, na.rm = TRUE), digits)
 
   out <- list(interval = interval, underdose = underdose, overdose = overdose)

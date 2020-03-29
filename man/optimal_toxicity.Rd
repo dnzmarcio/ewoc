@@ -50,8 +50,8 @@ sim <- ewoc_simulation(step_zero = step_zero,
                        alpha_strategy = "increasing",
                        response_sim = response_sim,
                        ncores = 2)
-optimal_toxicity(sim$mtd_sim, theta = 0.33, margin = 0.05, pdlt = pdlt_sim)
-optimal_toxicity(sim$dose_sim, theta = 0.33, margin = 0.05, pdlt = pdlt_sim)
+optimal_toxicity(sim$mtd_sim, target_rate = 0.33, margin = 0.05, pdlt = pdlt_sim)
+optimal_toxicity(sim$dose_sim, target_rate = 0.33, margin = 0.05, pdlt = pdlt_sim)
 }
 
 \dontrun{
@@ -73,8 +73,8 @@ sim <- ewoc_simulation(step_zero = step_zero,
                        alpha_strategy = "increasing",
                        response_sim = response_sim,
                        ncores = 2)
-optimal_toxicity(sim$mtd_sim, theta = 0.33, margin = 0.05, pdlt = pdlt_sim)
-optimal_toxicity(sim$dose_sim, theta = 0.33, margin = 0.05, pdlt = pdlt_sim)
+optimal_toxicity(sim$mtd_sim, target_rate = 0.33, margin = 0.05, pdlt = pdlt_sim)
+optimal_toxicity(sim$dose_sim, target_rate = 0.33, margin = 0.05, pdlt = pdlt_sim)
 }
 
 
