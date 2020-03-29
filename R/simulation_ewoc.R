@@ -296,7 +296,8 @@ ewoc_simulation.ewoc_d1classic <- function(step_zero, n_sim, sample_size, respon
   rho_sim <- as.numeric(result[[4]])
   alpha_sim <- matrix(as.numeric(result[[5]]), nrow = n_sim, ncol = sample_size)
 
-  out <- list(dose_sim = dose_sim, dlt_sim = dlt_sim,
+  out <- list(trial = step_zero$trial,
+              dose_sim = dose_sim, dlt_sim = dlt_sim,
               mtd_sim = mtd_sim, rho_sim = rho_sim, alpha_sim = alpha_sim)
 
   class(out) <- c("ewoc_simulation_d1classic", "nocov")
@@ -415,7 +416,8 @@ ewoc_simulation.ewoc_d1extended <- function(step_zero, n_sim, sample_size, respo
   rho_sim <- matrix(as.numeric(result[[4]]), nrow = n_sim, ncol = 2)
   alpha_sim <- matrix(as.numeric(result[[5]]), nrow = n_sim, ncol = sample_size)
 
-  out <- list(dose_sim = dose_sim, dlt_sim = dlt_sim,
+  out <- list(trial = step_zero$trial,
+              dose_sim = dose_sim, dlt_sim = dlt_sim,
               mtd_sim = mtd_sim, rho_sim = rho_sim, alpha_sim = alpha_sim)
   class(out) <- c("ewoc_simulation_d1extended", "nocov")
   return(out)
@@ -566,7 +568,8 @@ ewoc_simulation.ewoc_d1ph <- function(step_zero, n_sim, sample_size, response_si
   total_time <- as.numeric(result[[7]])
 
 
-  out <- list(time_sim = time_sim, dose_sim = dose_sim, dlt_sim = dlt_sim,
+  out <- list(trial = step_zero$trial,
+              time_sim = time_sim, dose_sim = dose_sim, dlt_sim = dlt_sim,
               mtd_sim = mtd_sim, rho_sim = rho_sim, alpha_sim = alpha_sim,
               total_time = total_time)
   class(out) <- c("ewoc_simulation_d1ph", "nocov")
