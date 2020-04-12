@@ -7,7 +7,7 @@ Maintainer: Marcio A. Diniz <marcio.diniz@cshs.org>
 Description: An implementation of a variety of escalation with overdose control designs introduced by Babb, Rogatko and Zacks (1998) <doi:10.1002/(SICI)1097-0258(19980530)17:10%3C1103::AID-SIM793%3E3.0.CO;2-9>. It calculates the next dose as a clinical trial proceeds and performs simulations to obtain operating characteristics.
 License: GPL(>= 2)
 LazyData: TRUE
-URL: https://CRAN.R-project.org/package=ewoc
+URL: https://github.com/dnzmarcio/ewoc/
 BugReports: https://github.com/dnzmarcio/ewoc/issues
 Imports:
     Formula(>= 1.2-1),

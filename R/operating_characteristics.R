@@ -37,11 +37,11 @@
 #'response_sim <- response_d1classic(rho = 0.05, mtd = 60, theta = 0.33,
 #'                                  min_dose = 20, max_dose = 100)
 #'sim <- ewoc_simulation(step_zero = step_zero,
-#'                      n_sim = 1, sample_size = 30, n_cohort = 1,
+#'                      n_sim = 1, sample_size = 2, n_cohort = 1,
 #'                      alpha_strategy = "conditional",
 #'                      response_sim = response_sim,
 #'                      fixed_first_cohort =  TRUE,
-#'                      ncores = 2)
+#'                      ncores = 1)
 #'
 #'pdlt <- pdlt_d1classic(rho = 0.05, mtd = 60, theta = 0.33,
 #'                       min_dose = 20, max_dose = 100)
@@ -69,11 +69,11 @@
 #'                                  theta = 0.33,
 #'                                  min_dose = 20, max_dose = 100)
 #'sim_list[[1]] <- ewoc_simulation(step_zero = step_zero,
-#'                      n_sim = 1, sample_size = 30, n_cohort = 1,
+#'                      n_sim = 1, sample_size = 2, n_cohort = 1,
 #'                      alpha_strategy = "conditional",
 #'                      response_sim = response_sim,
 #'                      fixed_first_cohort =  TRUE,
-#'                      ncores = 2)
+#'                      ncores = 1)
 #'pdlt_list[[1]] <- pdlt_d1classic(rho = 0.05, mtd = mtd_list[[1]],
 #'                                theta = 0.33,
 #'                                min_dose = 20, max_dose = 100)
@@ -83,11 +83,11 @@
 #'                                  theta = 0.33,
 #'                                  min_dose = 20, max_dose = 100)
 #'sim_list[[2]] <- ewoc_simulation(step_zero = step_zero,
-#'                      n_sim = 1, sample_size = 30, n_cohort = 1,
+#'                      n_sim = 1, sample_size = 2, n_cohort = 1,
 #'                      alpha_strategy = "conditional",
 #'                      response_sim = response_sim,
 #'                      fixed_first_cohort =  TRUE,
-#'                      ncores = 2)
+#'                      ncores = 1)
 #'
 #'pdlt_list[[2]] <- pdlt_d1classic(rho = 0.05, mtd = mtd_list[[2]],
 #'                                theta = 0.33,
@@ -95,9 +95,6 @@
 #'
 #'opc(sim_list = sim_list, pdlt_list = pdlt_list,
 #'    mtd_list = mtd_list, toxicity_margin = 0.05, mtd_margin = 6)
-#'
-#'
-#'
 #'}
 #'
 #'
@@ -119,7 +116,7 @@
 #'                      alpha_strategy = "conditional",
 #'                      response_sim = response_sim,
 #'                      fixed_first_cohort =  TRUE,
-#'                      ncores = 2)
+#'                      ncores = 1)
 #'
 #'pdlt <- pdlt_d1classic(rho = 0.05, mtd = 60, theta = 0.33,
 #'                       min_dose = 20, max_dose = 100)
@@ -151,7 +148,7 @@
 #'                      alpha_strategy = "conditional",
 #'                      response_sim = response_sim,
 #'                      fixed_first_cohort =  TRUE,
-#'                      ncores = 2)
+#'                      ncores = 1)
 #'pdlt_list[[1]] <- pdlt_d1classic(rho = 0.05, mtd = mtd_list[[1]],
 #'                                theta = 0.33,
 #'                                min_dose = 20, max_dose = 100)
@@ -165,7 +162,7 @@
 #'                      alpha_strategy = "conditional",
 #'                      response_sim = response_sim,
 #'                      fixed_first_cohort =  TRUE,
-#'                      ncores = 2)
+#'                      ncores = 1)
 #'
 #'pdlt_list[[2]] <- pdlt_d1classic(rho = 0.05, mtd = mtd_list[[2]],
 #'                                theta = 0.33,
