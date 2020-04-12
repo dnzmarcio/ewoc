@@ -38,11 +38,11 @@ response_sim <- response_d1ph(rho = 0.05, mtd = 20, theta = 0.33,
                              min_dose = 10, max_dose = 50,
                              tau = 10, distribution = "exponential")
 sim <- ewoc_simulation(step_zero = step_zero,
-                      n_sim = 1, sample_size = 30,
+                      n_sim = 1, sample_size = 2,
                       alpha_strategy = "conditional",
                       response_sim = response_sim,
                       stop_rule_sim = stop_rule_d1ph,
-                      ncores = 2)
+                      ncores = 1)
 }
 
 \dontrun{
@@ -62,10 +62,10 @@ response_sim <- response_d1ph(rho = 0.05, mtd = 20, theta = 0.33,
                              min_dose = 10, max_dose = 50,
                              tau = 10, distribution = "exponential")
 sim <- ewoc_simulation(step_zero = step_zero,
-                      n_sim = 1, sample_size = 30,
+                      n_sim = 2, sample_size = 30,
                       alpha_strategy = "conditional",
                       response_sim = response_sim,
                       stop_rule_sim = stop_rule_d1ph,
-                      ncores = 2)
+                      ncores = 1)
 }
 }
