@@ -1,4 +1,4 @@
-#'Generating a binary response function based on the EWOC classic model
+#'Generating a binary response function based on the EWOC classical model
 #'
 #'@import stats
 #'
@@ -16,12 +16,12 @@
 #'parameters as an output.
 #'
 #'@examples
-#'response_sim <- response_d1classic(rho = 0.05, mtd = 20, theta = 0.33,
+#'response_sim <- response_d1classical(rho = 0.05, mtd = 20, theta = 0.33,
 #'                                   min_dose = 10, max_dose = 50)
 #'response_sim(20)
 #'
 #'@export
-response_d1classic <- function(rho, mtd, theta, min_dose, max_dose) {
+response_d1classical <- function(rho, mtd, theta, min_dose, max_dose) {
 
   gamma <- standard_dose(dose = mtd,
                          min_dose = min_dose,

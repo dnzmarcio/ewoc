@@ -1,6 +1,6 @@
 #'@import ggplot2 graphics
 #'@export
-plot.d1classic <- function(x, ...){
+plot.d1classical <- function(x, ...){
 
   object <- x
   sm <- summary(object, print = FALSE)

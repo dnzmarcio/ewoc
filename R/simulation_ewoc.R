@@ -2,7 +2,7 @@
 #'
 #'Generic function for simulating EWOC trials.
 #'
-#'@param step_zero an object from the classes either 'ewoc_d1classic' or 'ewoc_d1extended' or
+#'@param step_zero an object from the classes either 'ewoc_d1classical' or 'ewoc_d1extended' or
 #''ewoc_d1ph' created using the first cohort data.
 #'@param n_sim a number indicating the number of phase I clinical trials
 #'to be simulated.
@@ -13,7 +13,7 @@
 #'Its only input is 'dose' and output is the indicator of DLT for classical and
 #'extended EWOC and the time until DLT for proportional hazards EWOC.
 #'@param n_cohort a number indicating the number of patients enrolled at each cohort.
-#'It is only used for 'ewoc_d1classic' and 'ewoc_d1extended'.
+#'It is only used for 'ewoc_d1classical' and 'ewoc_d1extended'.
 #'@param fixed_first_cohort a logical value indicating if the first cohort
 #'should be randomly generated or be fixed as the input in 'step_zero'.
 #'@param alpha_strategy a character indicating the strategy to apply for the
@@ -24,7 +24,7 @@
 #''increasing' or 'conditional'.
 #'@param stop_rule_sim a function having as an input an object containing all
 #'the information related to the trial as the returned object trial from either
-#'\code{ewoc_d1classic}, \code{ewoc_d1extended}, \code{ewoc_d1ph} and as
+#'\code{ewoc_d1classical}, \code{ewoc_d1extended}, \code{ewoc_d1ph} and as
 #'output a logical value indicating the trial should be stopped.
 #'@param ncores a numeric value indicating the number of cores to be used in the
 #'simulation performed in parallel. Use parallel::detectCores() to check the number of
@@ -45,21 +45,21 @@
 #'the recommended MTD for each trial in the simulation.
 #'@return \code{rho_sim} a numeric vector \code{n_sim} x k containing
 #'the estimated rho parameter(s) for each trial in the simulation, where k = 1
-#'for ewoc_d1classic, ewoc_d1ph, and k = 2 for ewoc_d1extended.
+#'for ewoc_d1classical, ewoc_d1ph, and k = 2 for ewoc_d1extended.
 #'
 #'@examples
 #'\dontshow{
-#'### Classic EWOC
+#'### classical EWOC
 #'DLT <- 0
 #'dose <- 20
-#'step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
+#'step_zero <- ewoc_d1classical(DLT ~ dose, type = 'discrete',
 #'                           theta = 0.33, alpha = 0.25,
 #'                           min_dose = 20, max_dose = 100,
 #'                           dose_set = seq(20, 100, 20),
 #'                           rho_prior = matrix(1, ncol = 2, nrow = 1),
 #'                           mtd_prior = matrix(1, ncol = 2, nrow = 1),
 #'                           rounding = "nearest")
-#'response_sim <- response_d1classic(rho = 0.05, mtd = 60, theta = 0.33,
+#'response_sim <- response_d1classical(rho = 0.05, mtd = 60, theta = 0.33,
 #'                                  min_dose = 20, max_dose = 100)
 #'sim <- ewoc_simulation(step_zero = step_zero,
 #'                      n_sim = 1, sample_size = 2, n_cohort = 1,
@@ -110,17 +110,17 @@
 #'}
 #'
 #'\dontrun{
-#'### Classic EWOC
+#'### Classical EWOC
 #'DLT <- 0
 #'dose <- 20
-#'step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
+#'step_zero <- ewoc_d1classical(DLT ~ dose, type = 'discrete',
 #'                           theta = 0.33, alpha = 0.25,
 #'                           min_dose = 20, max_dose = 100,
 #'                           dose_set = seq(20, 100, 20),
 #'                           rho_prior = matrix(1, ncol = 2, nrow = 1),
 #'                           mtd_prior = matrix(1, ncol = 2, nrow = 1),
 #'                           rounding = "nearest")
-#'response_sim <- response_d1classic(rho = 0.05, mtd = 60, theta = 0.33,
+#'response_sim <- response_d1classical(rho = 0.05, mtd = 60, theta = 0.33,
 #'                                  min_dose = 20, max_dose = 100)
 #'sim <- ewoc_simulation(step_zero = step_zero,
 #'                       n_sim = 2, sample_size = 30, n_cohort = 1,
@@ -189,7 +189,7 @@ ewoc_simulation <- function(step_zero, n_sim, sample_size, response_sim,
 
 
 #'@export
-ewoc_simulation.ewoc_d1classic <- function(step_zero, n_sim, sample_size, response_sim,
+ewoc_simulation.ewoc_d1classical <- function(step_zero, n_sim, sample_size, response_sim,
                                            fixed_first_cohort = TRUE, n_cohort = 1,
                                            alpha_strategy = "conditional",
                                            alpha_rate = 0.05,
@@ -238,7 +238,7 @@ ewoc_simulation.ewoc_d1classic <- function(step_zero, n_sim, sample_size, respon
                                                            resolution = resolution[1:(j-1)],
                                                            rate = alpha_rate)
 
-                update <- ewoc_d1classic(formula,
+                update <- ewoc_d1classical(formula,
                                          type = step_zero$trial$type,
                                          theta = step_zero$trial$theta,
                                          alpha = alpha[j],
@@ -268,7 +268,7 @@ ewoc_simulation.ewoc_d1classic <- function(step_zero, n_sim, sample_size, respon
                 j <- j + n_cohort
               }
 
-              update <- ewoc_d1classic(formula,
+              update <- ewoc_d1classical(formula,
                                        type = step_zero$trial$type,
                                        theta = step_zero$trial$theta,
                                        alpha = alpha[length(alpha)],
@@ -300,7 +300,7 @@ ewoc_simulation.ewoc_d1classic <- function(step_zero, n_sim, sample_size, respon
               dose_sim = dose_sim, dlt_sim = dlt_sim,
               mtd_sim = mtd_sim, rho_sim = rho_sim, alpha_sim = alpha_sim)
 
-  class(out) <- c("ewoc_simulation_d1classic", "nocov")
+  class(out) <- c("ewoc_simulation_d1classical", "nocov")
   return(out)
 }
 

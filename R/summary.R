@@ -1,5 +1,5 @@
 #'@export
-summary.ewoc_d1classic <- function(object, ..., print = TRUE){
+summary.ewoc_d1classical <- function(object, ..., print = TRUE){
 
   p00 <- data.frame(min_dose = object$trial$min_dose,
                     max_dose = object$trial$max_dose,

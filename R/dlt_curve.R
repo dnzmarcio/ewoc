@@ -1,4 +1,4 @@
-#'Plot the DLT curve based on the EWOC classic model
+#'Plot the DLT curve based on the EWOC classical model
 #'
 #'@param rho a numerical value indicating the true value of the parameter rho.
 #'@param mtd a numerical value indicating the true value of the parameter mtd.
@@ -12,7 +12,7 @@
 #'@param dose_set a numerical vector of doses that probability of DLT will
 #'be calculated.
 #'@export
-dlt_curve_d1classic <- function(mtd, rho, theta, min_dose, max_dose,
+dlt_curve_d1classical <- function(mtd, rho, theta, min_dose, max_dose,
                                 dose_set = NULL){
 
   gamma <- (mtd - min_dose)/(max_dose - min_dose)

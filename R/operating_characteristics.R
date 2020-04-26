@@ -27,14 +27,14 @@
 #'### Only one simulation
 #'DLT <- 0
 #'dose <- 20
-#'step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
+#'step_zero <- ewoc_d1classical(DLT ~ dose, type = 'discrete',
 #'                           theta = 0.33, alpha = 0.25,
 #'                           min_dose = 20, max_dose = 100,
 #'                           dose_set = seq(20, 100, 20),
 #'                           rho_prior = matrix(1, ncol = 2, nrow = 1),
 #'                           mtd_prior = matrix(1, ncol = 2, nrow = 1),
 #'                           rounding = "nearest")
-#'response_sim <- response_d1classic(rho = 0.05, mtd = 60, theta = 0.33,
+#'response_sim <- response_d1classical(rho = 0.05, mtd = 60, theta = 0.33,
 #'                                  min_dose = 20, max_dose = 100)
 #'sim <- ewoc_simulation(step_zero = step_zero,
 #'                      n_sim = 1, sample_size = 2, n_cohort = 1,
@@ -43,7 +43,7 @@
 #'                      fixed_first_cohort =  TRUE,
 #'                      ncores = 1)
 #'
-#'pdlt <- pdlt_d1classic(rho = 0.05, mtd = 60, theta = 0.33,
+#'pdlt <- pdlt_d1classical(rho = 0.05, mtd = 60, theta = 0.33,
 #'                       min_dose = 20, max_dose = 100)
 #'
 #'opc(sim_list = list(sim), pdlt_list = list(pdlt),
@@ -57,7 +57,7 @@
 #'
 #'DLT <- 0
 #'dose <- 20
-#'step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
+#'step_zero <- ewoc_d1classical(DLT ~ dose, type = 'discrete',
 #'                           theta = 0.33, alpha = 0.25,
 #'                           min_dose = 20, max_dose = 100,
 #'                           dose_set = seq(20, 100, 20),
@@ -65,7 +65,7 @@
 #'                           mtd_prior = matrix(1, ncol = 2, nrow = 1),
 #'                           rounding = "nearest")
 #'mtd_list[[1]] <- 60
-#'response_sim <- response_d1classic(rho = 0.05, mtd = mtd_list[[1]],
+#'response_sim <- response_d1classical(rho = 0.05, mtd = mtd_list[[1]],
 #'                                  theta = 0.33,
 #'                                  min_dose = 20, max_dose = 100)
 #'sim_list[[1]] <- ewoc_simulation(step_zero = step_zero,
@@ -74,12 +74,12 @@
 #'                      response_sim = response_sim,
 #'                      fixed_first_cohort =  TRUE,
 #'                      ncores = 1)
-#'pdlt_list[[1]] <- pdlt_d1classic(rho = 0.05, mtd = mtd_list[[1]],
+#'pdlt_list[[1]] <- pdlt_d1classical(rho = 0.05, mtd = mtd_list[[1]],
 #'                                theta = 0.33,
 #'                                min_dose = 20, max_dose = 100)
 #'
 #'mtd_list[[2]] <- 40
-#'response_sim <- response_d1classic(rho = 0.05, mtd = mtd_list[[2]],
+#'response_sim <- response_d1classical(rho = 0.05, mtd = mtd_list[[2]],
 #'                                  theta = 0.33,
 #'                                  min_dose = 20, max_dose = 100)
 #'sim_list[[2]] <- ewoc_simulation(step_zero = step_zero,
@@ -89,7 +89,7 @@
 #'                      fixed_first_cohort =  TRUE,
 #'                      ncores = 1)
 #'
-#'pdlt_list[[2]] <- pdlt_d1classic(rho = 0.05, mtd = mtd_list[[2]],
+#'pdlt_list[[2]] <- pdlt_d1classical(rho = 0.05, mtd = mtd_list[[2]],
 #'                                theta = 0.33,
 #'                                min_dose = 20, max_dose = 100)
 #'
@@ -102,14 +102,14 @@
 #'### Only one simulation
 #'DLT <- 0
 #'dose <- 20
-#'step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
+#'step_zero <- ewoc_d1classical(DLT ~ dose, type = 'discrete',
 #'                           theta = 0.33, alpha = 0.25,
 #'                           min_dose = 20, max_dose = 100,
 #'                           dose_set = seq(20, 100, 20),
 #'                           rho_prior = matrix(1, ncol = 2, nrow = 1),
 #'                           mtd_prior = matrix(1, ncol = 2, nrow = 1),
 #'                           rounding = "nearest")
-#'response_sim <- response_d1classic(rho = 0.05, mtd = 60, theta = 0.33,
+#'response_sim <- response_d1classical(rho = 0.05, mtd = 60, theta = 0.33,
 #'                                  min_dose = 20, max_dose = 100)
 #'sim <- ewoc_simulation(step_zero = step_zero,
 #'                      n_sim = 1, sample_size = 30, n_cohort = 1,
@@ -118,7 +118,7 @@
 #'                      fixed_first_cohort =  TRUE,
 #'                      ncores = 1)
 #'
-#'pdlt <- pdlt_d1classic(rho = 0.05, mtd = 60, theta = 0.33,
+#'pdlt <- pdlt_d1classical(rho = 0.05, mtd = 60, theta = 0.33,
 #'                       min_dose = 20, max_dose = 100)
 #'
 #'opc(sim_list = list(sim), pdlt_list = list(pdlt),
@@ -132,7 +132,7 @@
 #'
 #'DLT <- 0
 #'dose <- 20
-#'step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
+#'step_zero <- ewoc_d1classical(DLT ~ dose, type = 'discrete',
 #'                           theta = 0.33, alpha = 0.25,
 #'                           min_dose = 20, max_dose = 100,
 #'                           dose_set = seq(20, 100, 20),
@@ -140,7 +140,7 @@
 #'                           mtd_prior = matrix(1, ncol = 2, nrow = 1),
 #'                           rounding = "nearest")
 #'mtd_list[[1]] <- 60
-#'response_sim <- response_d1classic(rho = 0.05, mtd = mtd_list[[1]],
+#'response_sim <- response_d1classical(rho = 0.05, mtd = mtd_list[[1]],
 #'                                  theta = 0.33,
 #'                                  min_dose = 20, max_dose = 100)
 #'sim_list[[1]] <- ewoc_simulation(step_zero = step_zero,
@@ -149,12 +149,12 @@
 #'                      response_sim = response_sim,
 #'                      fixed_first_cohort =  TRUE,
 #'                      ncores = 1)
-#'pdlt_list[[1]] <- pdlt_d1classic(rho = 0.05, mtd = mtd_list[[1]],
+#'pdlt_list[[1]] <- pdlt_d1classical(rho = 0.05, mtd = mtd_list[[1]],
 #'                                theta = 0.33,
 #'                                min_dose = 20, max_dose = 100)
 #'
 #'mtd_list[[2]] <- 40
-#'response_sim <- response_d1classic(rho = 0.05, mtd = mtd_list[[2]],
+#'response_sim <- response_d1classical(rho = 0.05, mtd = mtd_list[[2]],
 #'                                  theta = 0.33,
 #'                                  min_dose = 20, max_dose = 100)
 #'sim_list[[2]] <- ewoc_simulation(step_zero = step_zero,
@@ -164,7 +164,7 @@
 #'                      fixed_first_cohort =  TRUE,
 #'                      ncores = 1)
 #'
-#'pdlt_list[[2]] <- pdlt_d1classic(rho = 0.05, mtd = mtd_list[[2]],
+#'pdlt_list[[2]] <- pdlt_d1classical(rho = 0.05, mtd = mtd_list[[2]],
 #'                                theta = 0.33,
 #'                                min_dose = 20, max_dose = 100)
 #'
@@ -365,7 +365,7 @@ overdose_loss <- function (mtd_estimate, true_mtd, alpha) {
 #'\dontrun{
 #'DLT <- 0
 #'dose <- 20
-#'step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
+#'step_zero <- ewoc_d1classical(DLT ~ dose, type = 'discrete',
 #'                            theta = 0.33, alpha = 0.25,
 #'                            min_dose = 0, max_dose = 100,
 #'                            dose_set = seq(0, 100, 20),
@@ -373,7 +373,7 @@ overdose_loss <- function (mtd_estimate, true_mtd, alpha) {
 #'                            mtd_prior = matrix(1, ncol = 2, nrow = 1),
 #'                            rounding = "nearest")
 #'stop_rule_sim(step_zero)
-#'response_sim <- response_d1classic(rho = 0.05, mtd = 20, theta = 0.33,
+#'response_sim <- response_d1classical(rho = 0.05, mtd = 20, theta = 0.33,
 #'                                   min_dose = 10, max_dose = 50)
 #'sim <- ewoc_simulation(step_zero = step_zero,
 #'                        n_sim = 1, sample_size = 2,
@@ -387,7 +387,7 @@ overdose_loss <- function (mtd_estimate, true_mtd, alpha) {
 #'\dontrun{
 #'DLT <- 0
 #'dose <- 20
-#'step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
+#'step_zero <- ewoc_d1classical(DLT ~ dose, type = 'discrete',
 #'                            theta = 0.33, alpha = 0.25,
 #'                            min_dose = 0, max_dose = 100,
 #'                            dose_set = seq(0, 100, 20),
@@ -395,7 +395,7 @@ overdose_loss <- function (mtd_estimate, true_mtd, alpha) {
 #'                            mtd_prior = matrix(1, ncol = 2, nrow = 1),
 #'                            rounding = "nearest")
 #'stop_rule_sim(step_zero)
-#'response_sim <- response_d1classic(rho = 0.05, mtd = 20, theta = 0.33,
+#'response_sim <- response_d1classical(rho = 0.05, mtd = 20, theta = 0.33,
 #'                                   min_dose = 10, max_dose = 50)
 #'sim <- ewoc_simulation(step_zero = step_zero,
 #'                        n_sim = 2, sample_size = 30,
@@ -477,7 +477,7 @@ dlt_rate <- function(dlt_matrix, trial = FALSE,
 #'\dontrun{
 #'DLT <- 0
 #'dose <- 20
-#'step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
+#'step_zero <- ewoc_d1classical(DLT ~ dose, type = 'discrete',
 #'                            theta = 0.33, alpha = 0.25,
 #'                            min_dose = 0, max_dose = 100,
 #'                            dose_set = seq(0, 100, 20),
@@ -485,7 +485,7 @@ dlt_rate <- function(dlt_matrix, trial = FALSE,
 #'                            mtd_prior = matrix(1, ncol = 2, nrow = 1),
 #'                            rounding = "nearest")
 #'stop_rule_sim(step_zero)
-#'response_sim <- response_d1classic(rho = 0.05, mtd = 20, theta = 0.33,
+#'response_sim <- response_d1classical(rho = 0.05, mtd = 20, theta = 0.33,
 #'                                   min_dose = 10, max_dose = 50)
 #'sim <- ewoc_simulation(step_zero = step_zero,
 #'                        n_sim = 1, sample_size = 2,
@@ -499,7 +499,7 @@ dlt_rate <- function(dlt_matrix, trial = FALSE,
 #'\dontrun{
 #'DLT <- 0
 #'dose <- 20
-#'step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
+#'step_zero <- ewoc_d1classical(DLT ~ dose, type = 'discrete',
 #'                            theta = 0.33, alpha = 0.25,
 #'                            min_dose = 0, max_dose = 100,
 #'                            dose_set = seq(0, 100, 20),
@@ -507,7 +507,7 @@ dlt_rate <- function(dlt_matrix, trial = FALSE,
 #'                            mtd_prior = matrix(1, ncol = 2, nrow = 1),
 #'                            rounding = "nearest")
 #'stop_rule_sim(step_zero)
-#'response_sim <- response_d1classic(rho = 0.05, mtd = 20, theta = 0.33,
+#'response_sim <- response_d1classical(rho = 0.05, mtd = 20, theta = 0.33,
 #'                                   min_dose = 10, max_dose = 50)
 #'sim <- ewoc_simulation(step_zero = step_zero,
 #'                        n_sim = 2, sample_size = 30,
@@ -565,14 +565,14 @@ stop_rule <- function(dlt_matrix, sample_size, digits = 2) {
 #'\dontshow{
 #'DLT <- 0
 #'dose <- 20
-#'step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
+#'step_zero <- ewoc_d1classical(DLT ~ dose, type = 'discrete',
 #'                            theta = 0.33, alpha = 0.25,
 #'                            min_dose = 0, max_dose = 100,
 #'                            dose_set = seq(0, 100, 20),
 #'                            rho_prior = matrix(1, ncol = 2, nrow = 1),
 #'                            mtd_prior = matrix(1, ncol = 2, nrow = 1),
 #'                            rounding = "nearest")
-#'response_sim <- response_d1classic(rho = 0.05, mtd = 20, theta = 0.33,
+#'response_sim <- response_d1classical(rho = 0.05, mtd = 20, theta = 0.33,
 #'                                   min_dose = 10, max_dose = 50)
 #'sim <- ewoc_simulation(step_zero = step_zero,
 #'                        n_sim = 1, sample_size = 2,
@@ -586,14 +586,14 @@ stop_rule <- function(dlt_matrix, sample_size, digits = 2) {
 #'\dontrun{
 #'DLT <- 0
 #'dose <- 20
-#'step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
+#'step_zero <- ewoc_d1classical(DLT ~ dose, type = 'discrete',
 #'                            theta = 0.33, alpha = 0.25,
 #'                            min_dose = 0, max_dose = 100,
 #'                            dose_set = seq(0, 100, 20),
 #'                            rho_prior = matrix(1, ncol = 2, nrow = 1),
 #'                            mtd_prior = matrix(1, ncol = 2, nrow = 1),
 #'                            rounding = "nearest")
-#'response_sim <- response_d1classic(rho = 0.05, mtd = 20, theta = 0.33,
+#'response_sim <- response_d1classical(rho = 0.05, mtd = 20, theta = 0.33,
 #'                                   min_dose = 10, max_dose = 50)
 #'sim <- ewoc_simulation(step_zero = step_zero,
 #'                        n_sim = 2, sample_size = 30,
@@ -666,16 +666,16 @@ optimal_mtd <- function(dose_matrix, true_mtd, margin, digits = 2) {
 #'\dontshow{
 #'DLT <- 0
 #'dose <- 20
-#'step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
+#'step_zero <- ewoc_d1classical(DLT ~ dose, type = 'discrete',
 #'                            theta = 0.33, alpha = 0.25,
 #'                            min_dose = 0, max_dose = 100,
 #'                            dose_set = seq(0, 100, 20),
 #'                            rho_prior = matrix(1, ncol = 2, nrow = 1),
 #'                            mtd_prior = matrix(1, ncol = 2, nrow = 1),
 #'                            rounding = "nearest")
-#'response_sim <- response_d1classic(rho = 0.05, mtd = 20, theta = 0.33,
+#'response_sim <- response_d1classical(rho = 0.05, mtd = 20, theta = 0.33,
 #'                                   min_dose = 10, max_dose = 50)
-#'pdlt_sim <- pdlt_d1classic(rho = 0.05, mtd = 20, theta = 0.33,
+#'pdlt_sim <- pdlt_d1classical(rho = 0.05, mtd = 20, theta = 0.33,
 #'                           min_dose = 10, max_dose = 50)
 #'sim <- ewoc_simulation(step_zero = step_zero,
 #'                        n_sim = 1, sample_size = 2,
@@ -689,16 +689,16 @@ optimal_mtd <- function(dose_matrix, true_mtd, margin, digits = 2) {
 #'\dontrun{
 #'DLT <- 0
 #'dose <- 20
-#'step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
+#'step_zero <- ewoc_d1classical(DLT ~ dose, type = 'discrete',
 #'                            theta = 0.33, alpha = 0.25,
 #'                            min_dose = 0, max_dose = 100,
 #'                            dose_set = seq(0, 100, 20),
 #'                            rho_prior = matrix(1, ncol = 2, nrow = 1),
 #'                            mtd_prior = matrix(1, ncol = 2, nrow = 1),
 #'                            rounding = "nearest")
-#'response_sim <- response_d1classic(rho = 0.05, mtd = 20, theta = 0.33,
+#'response_sim <- response_d1classical(rho = 0.05, mtd = 20, theta = 0.33,
 #'                                   min_dose = 10, max_dose = 50)
-#'pdlt_sim <- pdlt_d1classic(rho = 0.05, mtd = 20, theta = 0.33,
+#'pdlt_sim <- pdlt_d1classical(rho = 0.05, mtd = 20, theta = 0.33,
 #'                           min_dose = 10, max_dose = 50)
 #'sim <- ewoc_simulation(step_zero = step_zero,
 #'                        n_sim = 2, sample_size = 30,
@@ -767,14 +767,14 @@ optimal_toxicity <- function(dose_matrix, target_rate, margin, pdlt, digits = 2)
 #'\dontshow{
 #'DLT <- 0
 #'dose <- 20
-#'step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
+#'step_zero <- ewoc_d1classical(DLT ~ dose, type = 'discrete',
 #'                            theta = 0.33, alpha = 0.25,
 #'                            min_dose = 0, max_dose = 100,
 #'                            dose_set = seq(0, 100, 20),
 #'                            rho_prior = matrix(1, ncol = 2, nrow = 1),
 #'                            mtd_prior = matrix(1, ncol = 2, nrow = 1),
 #'                            rounding = "nearest")
-#'response_sim <- response_d1classic(rho = 0.05, mtd = 20, theta = 0.33,
+#'response_sim <- response_d1classical(rho = 0.05, mtd = 20, theta = 0.33,
 #'                                   min_dose = 10, max_dose = 50)
 #'sim <- ewoc_simulation(step_zero = step_zero,
 #'                        n_sim = 1, sample_size = 2,
@@ -787,14 +787,14 @@ optimal_toxicity <- function(dose_matrix, target_rate, margin, pdlt, digits = 2)
 #'\dontrun{
 #'DLT <- 0
 #'dose <- 20
-#'step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
+#'step_zero <- ewoc_d1classical(DLT ~ dose, type = 'discrete',
 #'                            theta = 0.33, alpha = 0.25,
 #'                            min_dose = 0, max_dose = 100,
 #'                            dose_set = seq(0, 100, 20),
 #'                            rho_prior = matrix(1, ncol = 2, nrow = 1),
 #'                            mtd_prior = matrix(1, ncol = 2, nrow = 1),
 #'                            rounding = "nearest")
-#'response_sim <- response_d1classic(rho = 0.05, mtd = 20, theta = 0.33,
+#'response_sim <- response_d1classical(rho = 0.05, mtd = 20, theta = 0.33,
 #'                                   min_dose = 10, max_dose = 50)
 #'sim <- ewoc_simulation(step_zero = step_zero,
 #'                        n_sim = 2, sample_size = 30,
@@ -823,14 +823,14 @@ mtd_bias <- function(mtd_estimate, true_mtd) {
 #'\dontshow{
 #'DLT <- 0
 #'dose <- 20
-#'step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
+#'step_zero <- ewoc_d1classical(DLT ~ dose, type = 'discrete',
 #'                            theta = 0.33, alpha = 0.25,
 #'                            min_dose = 0, max_dose = 100,
 #'                            dose_set = seq(0, 100, 20),
 #'                            rho_prior = matrix(1, ncol = 2, nrow = 1),
 #'                            mtd_prior = matrix(1, ncol = 2, nrow = 1),
 #'                            rounding = "nearest")
-#'response_sim <- response_d1classic(rho = 0.05, mtd = 20, theta = 0.33,
+#'response_sim <- response_d1classical(rho = 0.05, mtd = 20, theta = 0.33,
 #'                                   min_dose = 10, max_dose = 50)
 #'sim <- ewoc_simulation(step_zero = step_zero,
 #'                        n_sim = 1, sample_size = 2,
@@ -843,14 +843,14 @@ mtd_bias <- function(mtd_estimate, true_mtd) {
 #'\dontrun{
 #'DLT <- 0
 #'dose <- 20
-#'step_zero <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
+#'step_zero <- ewoc_d1classical(DLT ~ dose, type = 'discrete',
 #'                            theta = 0.33, alpha = 0.25,
 #'                            min_dose = 0, max_dose = 100,
 #'                            dose_set = seq(0, 100, 20),
 #'                            rho_prior = matrix(1, ncol = 2, nrow = 1),
 #'                            mtd_prior = matrix(1, ncol = 2, nrow = 1),
 #'                            rounding = "nearest")
-#'response_sim <- response_d1classic(rho = 0.05, mtd = 20, theta = 0.33,
+#'response_sim <- response_d1classical(rho = 0.05, mtd = 20, theta = 0.33,
 #'                                   min_dose = 10, max_dose = 50)
 #'sim <- ewoc_simulation(step_zero = step_zero,
 #'                        n_sim = 2, sample_size = 30,

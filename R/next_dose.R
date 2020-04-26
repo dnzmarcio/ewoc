@@ -1,4 +1,4 @@
-next_dose.ewoc_d1classic <- function(data){
+next_dose.ewoc_d1classical <- function(data){
 
   rho <- data$mcmc$rho
   gamma <- data$mcmc$gamma

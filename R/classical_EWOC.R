@@ -2,7 +2,7 @@
 #'
 #'Finding the next dose for a phase I clinical trial based on the
 #'Escalation with Overdose Control (EWOC) design considering the
-#'classic parametrization for binary responses and single agent.
+#'classical parametrization for binary responses and single agent.
 #'
 #'@param formula an object of class \code{\link[Formula]{Formula}}: a symbolic
 #'description of the model to be fitted with only one regressor term
@@ -55,7 +55,7 @@
 #'@examples
 #'DLT <- 0
 #'dose <- 20
-#'test <- ewoc_d1classic(DLT ~ dose, type = 'discrete',
+#'test <- ewoc_d1classical(DLT ~ dose, type = 'discrete',
 #'                       theta = 0.33, alpha = 0.25,
 #'                       min_dose = 20, max_dose = 100,
 #'                       dose_set = seq(20, 100, 20),
@@ -68,7 +68,7 @@
 #'@import stats
 #'
 #'@export
-ewoc_d1classic <- function(formula, theta, alpha,
+ewoc_d1classical <- function(formula, theta, alpha,
                            mtd_prior, rho_prior,
                            min_dose, max_dose,
                            type = c('continuous', 'discrete'),
@@ -153,7 +153,7 @@ ewoc_d1classic <- function(formula, theta, alpha,
                   current_dose = current_dose,
                   rho_prior = rho_prior, mtd_prior = mtd_prior,
                   type = type[1], rounding = rounding)
-  class(my_data) <- c("ewoc_d1classic", "d1classic")
+  class(my_data) <- c("ewoc_d1classical", "d1classical")
 
   my_data$mcmc <- jags(my_data, n_adapt, burn_in, n_mcmc, n_thin, n_chains)
   out <- next_dose(my_data)
@@ -176,12 +176,12 @@ ewoc_d1classic <- function(formula, theta, alpha,
                 n_thin = n_thin, n_chains = n_chains)
   out$trial <- trial
 
-  class(out) <- c("ewoc_d1classic", "d1classic")
+  class(out) <- c("ewoc_d1classical", "d1classical")
   return(out)
 }
 
 #'@importFrom rjags jags.model coda.samples
-jags.d1classic <- function(data, n_adapt, burn_in,
+jags.d1classical <- function(data, n_adapt, burn_in,
                               n_mcmc, n_thin, n_chains) {
 
   # JAGS model function
