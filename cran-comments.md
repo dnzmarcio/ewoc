@@ -149,6 +149,10 @@ There is no reverse dependencies.
 
 ---
 
+# Version 0.3.0
+
+## Round 1
+
 ### Test environments
 * local OS X install, R 3.4.1
 * ubuntu 12.04 (on travis-ci), R 3.4.1
@@ -162,3 +166,17 @@ R CMD check results
 ### Reverse dependencies
 
 There is no reverse dependencies.
+
+### Reviewers comments
+
+  Found the following (possibly) invalid URLs:
+     URL: http://cran.rstudio.com/web/packages/ewoc/index.html
+       From: README.md
+       Status: 200
+       Message: OK
+       CRAN URL not in canonical form
+
+-> https://CRAN.R-project.org/package=ewoc
+
+Please fix and resubmit.
+
