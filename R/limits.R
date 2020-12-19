@@ -45,40 +45,40 @@ limits_d1nocov <- function(first_dose, last_dose, min_dose, max_dose, type,
 
 #'@export
 limits_d1cov <- function(first_dose, last_dose, min_dose, max_dose, type,
-                          rounding, dose_set, covariable){
+                          rounding, dose_set, covariate){
 
   if (is.null(min_dose) | is.null(max_dose))
     stop ("'min_dose' and 'max_dose' have to be defined.")
 
   if (!is.function(min_dose)){
     min_dose_value <- min_dose
-    min_dose <- function(covariable = NULL){
+    min_dose <- function(covariate = NULL){
       out <- min_dose_value
       return(out)
     }
+
     min_dose <- Vectorize(min_dose)
   }
 
   if (!is.function(max_dose)) {
     max_dose_value <- max_dose
 
-    if (type == "discrete"){
-      if (rounding == "down")
-        max_dose <- function(covariable = NULL){
-          out <- max_dose_value + 1
-          return(out)
-        }
+    if (type == "discrete" & rounding == "down"){
+      max_dose <- function(covariate = NULL){
+        out <- max_dose_value + 1
+        return(out)
+      }
     } else {
-
-      max_dose <- function(covariable = NULL){
+      max_dose <- function(covariate = NULL){
         out <- max_dose_value
         return(out)
       }
     }
+
     max_dose <- Vectorize(max_dose)
   }
 
-  if (any(min_dose(covariable) > max_dose(covariable)))
+  if (any(min_dose(covariate) > max_dose(covariate)))
     stop("'min_dose' should be smaller than the 'max_dose'.")
 
   if (is.null(first_dose) | is.null(last_dose)) {
@@ -94,25 +94,7 @@ limits_d1cov <- function(first_dose, last_dose, min_dose, max_dose, type,
     }
   }
 
-  if (!is.function(first_dose)) {
-    first_dose_value <- first_dose
-    first_dose <- function(covariable = NULL){
-      out <- first_dose_value
-      return(out)
-    }
-    first_dose <- Vectorize(first_dose)
-  }
-
-  if (!is.function(last_dose)) {
-    last_dose_value <- last_dose
-    last_dose <- function(covariable = NULL){
-      out <- last_dose_value
-      return(out)
-    }
-    last_dose <- Vectorize(last_dose)
-  }
-
-  if (any(first_dose(covariable) > last_dose(covariable)))
+  if (any(first_dose(covariate) > last_dose(covariate)))
     stop("'first_dose' should be smaller than the 'last_dose'.")
 
   out <- list(first_dose = first_dose, last_dose = last_dose,

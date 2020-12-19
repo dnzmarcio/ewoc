@@ -143,17 +143,18 @@ summary.ewoc_d1ph <- function(object, ..., print = TRUE){
 
 }
 
+#'@importFrom coda HPDinterval as.mcmc
 #'@export
 summary.ewoc_d1dicov <- function(object, ..., print = TRUE){
 
-  covariable <- factor(object$trial$covariable,
+  covariate <- factor(object$trial$covariate,
                        levels = object$trial$levels_cov)
 
   p00 <- data.frame(group = object$trial$levels_cov,
                     min_dose = object$trial$min_dose(object$trial$levels_cov),
                     max_dose = object$trial$max_dose(object$trial$levels_cov),
                     theta = object$trial$theta, alpha = object$trial$alpha,
-                    n = as.numeric(table(covariable)))
+                    n = as.numeric(table(covariate)))
   colnames(p00) <- c("Group", "Minimum Dose", "Maximum Dose", "Theta",
                      "Alpha", "Number of patients")
   rownames(p00) <- NULL

@@ -461,17 +461,26 @@ ewoc_simulation.ewoc_d1ph <-
     foreach(i = 1:n_sim,
             .combine='comb',
             .multicombine=TRUE,
-            .init=list(list(), list(), list(), list(), list(), list(), list())) %dorng% {
+            .init=list(list(), list(), list(), list(),
+                       list(), list(), list())) %dorng% {
 
-              dlt <- as.numeric(step_zero$trial$response[, 2])
+
               dose <- as.numeric(step_zero$trial$design_matrix[, 2])
               alpha <- as.numeric(step_zero$trial$alpha)
 
-              event_time <- ifelse(dlt == 1, as.numeric(step_zero$trial$response[, 1]),
+              if (fixed_first_cohort) {
+                aux_event_time <- as.numeric(step_zero$trial$response[, 1])
+                dlt <- as.numeric(step_zero$trial$response[, 2])
+              } else {
+                aux_event_time <- response_sim(dose = dose)
+                dlt <- ifelse(aux_event_time > tep_zero$trial$tau, 1, 0)
+              }
+
+              event_time <- ifelse(dlt == 1, aux_event_time,
                                    (response_sim(dose = dose) +
-                                      max(as.numeric(step_zero$trial$response[, 1]))))
+                                      max(aux_event_time)))
               event_time <- c(event_time, rep(NA, (sample_size - length(event_time))))
-              current_time <- max(step_zero$trial$response[, 1])
+              current_time <- max(aux_event_time)
               initial_time <- rep(0, sample_size)
               j <- 1
 

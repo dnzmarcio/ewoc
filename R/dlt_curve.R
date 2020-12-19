@@ -1,7 +1,7 @@
 #'Plot the DLT curve based on the EWOC classical model
 #'
-#'@param rho a numerical value indicating the true value of the parameter rho.
 #'@param mtd a numerical value indicating the true value of the parameter mtd.
+#'@param rho a numerical value indicating the true value of the parameter rho.
 #'@param theta a numerical value defining the proportion of expected patients
 #'to experience a medically unacceptable, dose-limiting toxicity (DLT) if
 #'administered the MTD.
@@ -113,8 +113,8 @@ dlt_curve_d1extended <- function(rho, theta, min_dose, max_dose,
 
 #'Plot the DLT curve based on the EWOC proportional hazards model
 #'
-#'@param rho a numerical value indicating the true value of the parameter rho.
 #'@param mtd a numerical value indicating the true value of the parameter mtd.
+#'@param rho a numerical value indicating the true value of the parameter rho.
 #'@param theta a numerical value defining the proportion of expected patients
 #'to experience a medically unacceptable, dose-limiting toxicity (DLT) if
 #'administered the MTD.

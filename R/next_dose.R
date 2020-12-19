@@ -125,6 +125,7 @@ next_dose.ewoc_d1ph <- function(data){
 
   if (data$distribution != "weibull")
     shape <- 1
+
   pdlt <- as.numeric(1 - exp(-exp(cbind(1, next_gamma)%*%t(beta))*
                              (data$tau^shape)))
 

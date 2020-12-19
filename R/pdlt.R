@@ -19,7 +19,6 @@
 #'
 #'pdlt(20)
 #'
-#'
 #'@export
 pdlt_d1classical <- function(rho, mtd, theta, min_dose, max_dose){
 
@@ -238,4 +237,5 @@ pdlt_d1excontinuous <- function(rho, direction,
 
   return(pdlt)
 }
+
 

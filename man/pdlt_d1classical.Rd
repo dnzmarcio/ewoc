@@ -34,5 +34,4 @@ pdlt <- pdlt_d1classical(rho = 0.05, mtd = 60, theta = 0.33,
 
 pdlt(20)
 
-
 }
