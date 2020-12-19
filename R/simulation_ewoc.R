@@ -168,18 +168,17 @@
 #'                       ncores = 1)
 #'}
 #'
-#'@importFrom foreach foreach %dopar%
-#'@importFrom doRNG %dorng%
-#'@importFrom doParallel registerDoParallel stopImplicitCluster
 #'
 #'@export
-ewoc_simulation <- function(step_zero, n_sim, sample_size, response_sim,
-                            fixed_first_cohort = TRUE, n_cohort = 1,
-                            alpha_strategy = "conditional",
-                            alpha_rate = 0.05,
-                            stop_rule_sim = NULL,
-                            ncores = 1, seed = 1234,
-                            ...){
+ewoc_simulation <-
+  function(step_zero, n_sim, sample_size, response_sim,
+           fixed_first_cohort = TRUE, n_cohort = 1,
+           alpha_strategy = "conditional",
+           alpha_rate = 0.05,
+           stop_rule_sim = NULL,
+           ncores = 1, seed = 1234,
+           rate_sim = 1, covariate_sim = NULL,
+           ...){
 
   if (n_cohort != 1 & class(step_zero)[1] == "ewoc_d1ph")
     stop("Proportional Hazards EWOC does not support cohort with more than one patient.")
@@ -187,14 +186,17 @@ ewoc_simulation <- function(step_zero, n_sim, sample_size, response_sim,
   UseMethod("ewoc_simulation", object = step_zero)
 }
 
-
+#'@importFrom foreach foreach %dopar%
+#'@importFrom doRNG %dorng%
+#'@importFrom doParallel registerDoParallel stopImplicitCluster
 #'@export
 ewoc_simulation.ewoc_d1classical <- function(step_zero, n_sim, sample_size, response_sim,
                                            fixed_first_cohort = TRUE, n_cohort = 1,
                                            alpha_strategy = "conditional",
                                            alpha_rate = 0.05,
                                            stop_rule_sim = NULL,
-                                           ncores = 1, seed = 1234, ...){
+                                           ncores = 1, seed = 1234,
+                                           rate_sim = NULL, covariate_sim = NULL){
 
   if (is.null(response_sim))
     stop("'response_sim' function should be defined.")
@@ -308,12 +310,14 @@ ewoc_simulation.ewoc_d1classical <- function(step_zero, n_sim, sample_size, resp
 #'@importFrom doRNG %dorng%
 #'@importFrom doParallel registerDoParallel stopImplicitCluster
 #'@export
-ewoc_simulation.ewoc_d1extended <- function(step_zero, n_sim, sample_size, response_sim,
-                                            fixed_first_cohort = TRUE, n_cohort = 1,
-                                            alpha_strategy = "conditional",
-                                            alpha_rate = 0.05,
-                                            stop_rule_sim = NULL,
-                                            ncores = 1, seed = 1234, ...){
+ewoc_simulation.ewoc_d1extended <-
+  function(step_zero, n_sim, sample_size, response_sim,
+           fixed_first_cohort = TRUE, n_cohort = 1,
+           alpha_strategy = "conditional",
+           alpha_rate = 0.05,
+           stop_rule_sim = NULL,
+           ncores = 1, seed = 1234,
+           rate_sim = NULL, covariate_sim = NULL){
 
   if (is.null(response_sim))
     stop("'response_sim' function should be defined.")
@@ -427,12 +431,14 @@ ewoc_simulation.ewoc_d1extended <- function(step_zero, n_sim, sample_size, respo
 #'@importFrom doRNG %dorng%
 #'@importFrom doParallel registerDoParallel stopImplicitCluster
 #'@export
-ewoc_simulation.ewoc_d1ph <- function(step_zero, n_sim, sample_size, response_sim,
-                                      fixed_first_cohort = TRUE, n_cohort = 1,
-                                      alpha_strategy = "conditional",
-                                      alpha_rate = 0.05,
-                                      stop_rule_sim = NULL,
-                                      ncores = 1, seed = 1234, ...){
+ewoc_simulation.ewoc_d1ph <-
+  function(step_zero, n_sim, sample_size, response_sim,
+           fixed_first_cohort = TRUE, n_cohort = 1,
+           alpha_strategy = "conditional",
+           alpha_rate = 0.05,
+           stop_rule_sim = NULL,
+           ncores = 1, seed = 1234,
+           rate_sim = 1, covariate_sim = NULL){
 
   ndots <- list(...)
   rate <- ifelse(!is.null(ndots$rate_sim), ndots$rate_sim, 1)
@@ -576,85 +582,124 @@ ewoc_simulation.ewoc_d1ph <- function(step_zero, n_sim, sample_size, response_si
   return(out)
 }
 
+#'@importFrom foreach foreach %dopar%
+#'@importFrom doRNG %dorng%
+#'@importFrom doParallel registerDoParallel stopImplicitCluster
 #'@export
-ewoc_simulation.d1dcov <-
+ewoc_simulation.d1dicov <-
   function(step_zero, n_sim, sample_size,
-           response_sim, covariable_sim,
+           response_sim,
            fixed_first_cohort = TRUE, n_cohort = 1,
            alpha_strategy = "conditional",
            alpha_rate = 0.05,
            stop_rule_sim = NULL,
-           ncores = 1, seed = 1234, ...){
+           ncores = 1, seed = 1234,
+           rate_sim = NULL, covariate_sim)
+    {
 
     n_dose <- sample_size + 1
     dose_sim <- matrix(NA, ncol = sample_size, nrow = n_sim)
-    covariable_sim <- matrix(NA, ncol = sample_size, nrow = n_sim)
+    cov_sim <- matrix(NA, ncol = sample_size, nrow = n_sim)
     dlt_sim <- matrix(NA, ncol = sample_size, nrow = n_sim)
     mtd_sim <- matrix(NA, ncol = 1, nrow = n_sim)
     rho_sim <- matrix(NA, ncol = 1, nrow = n_sim)
     alpha_sim <- matrix(NA, ncol = sample_size, nrow = n_sim)
 
 
-    for (i in 1:n_sim){
+    registerDoParallel(ncores)
+    set.seed(seed)
+    result <-
+      foreach(i = 1:n_sim,
+              .combine='comb',
+              .multicombine=TRUE,
+              .init=list(list(), list(), list(), list(),
+                         list(), list(), list())) %dorng% {
 
-      dlt <- as.numeric(step_zero$trial$response)
-      dose <- as.numeric(step_zero$trial$design_matrix[, 2])
-      covariable <- step_zero$trial$covariable
-      alpha_sim[, 1:length(dose)] <- as.numeric(step_zero$trial$alpha)
+                           dose <- as.numeric(step_zero$trial$design_matrix[, 2])
+                           cov <- step_zero$trial$covariate
+                           alpha_sim[, 1:length(dose)] <- as.numeric(step_zero$trial$alpha)
 
-      for (j in (length(dose)+1):n_dose) {
 
-        formula <- dlt[1:(j-1)] ~ dose[1:(j-1)] | covariable[1:(j-1)]
-        resolution <- ifelse(!is.na(dlt), 1, 0)
+                           if (fixed_first_cohort) {
+                             dlt <- as.numeric(step_zero$trial$response)
+                           } else {
+                             dlt <- response_sim(dose = dose, cov = cov)
+                           }
 
-        if (j <= sample_size){
-          alpha_sim[i, j] <- feasibility(alpha = alpha_sim[i, 1:(j-1)],
-                                         strategy = alpha_strategy,
-                                         dlt = dlt[1:(j-1)],
-                                         resolution = resolution[1:(j-1)],
-                                         rate = alpha_rate)
-          covariable[j] <- covariable_sim(n = 1)
 
-          update <- ewoc_d1catcov(formula,
-                                       type = step_zero$trial$type,
-                                       theta = step_zero$trial$theta,
-                                       alpha = alpha_sim[i, j],
-                                       min_dose = step_zero$trial$min_dose,
-                                       max_dose = step_zero$trial$max_dose,
-                                       first_dose = step_zero$trial$first_dose,
-                                       last_dose = step_zero$trial$last_dose,
-                                       dose_set = step_zero$trial$dose_set,
-                                       levels_cov = step_zero$trial$levels_cov,
-                                       next_patient_cov = covariable[j],
-                                       rho_prior = step_zero$trial$rho_prior,
-                                       mtd_prior = step_zero$trial$mtd_prior,
-                                       rounding = step_zero$trial$rounding)
+                           j <- (length(dose)+1)
+                           while (j <= sample_size) {
 
-          if (!is.null(stop_rule_sim))
-            if (stop_rule_sim(update)){
-              dose[j:sample_size] <- NA
-              dlt[j:sample_size] <- NA
-              covariable[j:sample_size] <- NA
-              mtd_estimate <- NA
-              rho_estimate <- NA
-              break
-            }
+                             formula <- dlt[1:(j-1)] ~ dose[1:(j-1)] | cov[1:(j-1)]
+                             resolution <- ifelse(!is.na(dlt), 1, 0)
 
-          dose[j] <- update$next_dose
-          dlt[j] <- response_sim(dose = dose[j], cov = covariable[j])
-          mtd_estimate <- update$next_dose
-          rho_estimate <- median(update$rho)
-        }
-      }
+                             if (j <= sample_size){
+                               alpha_sim[i, j] <- feasibility(alpha = alpha_sim[i, 1:(j-1)],
+                                                              strategy = alpha_strategy,
+                                                              dlt = dlt[1:(j-1)],
+                                                              resolution = resolution[1:(j-1)],
+                                                              rate = alpha_rate)
+                               cov[j:(j + n_cohort - 1)] <- covariate_sim(n = n_cohort)
 
-      dose_sim[i, ] <- dose
-      dlt_sim[i, ] <- dlt
-      covariable_sim[i, ] <- covariable
-      mtd_sim[i] <- mtd_estimate
-      rho_sim[i] <- rho_estimate
-    }
+                               update <- ewoc_d1dicov(formula,
+                                                      theta = step_zero$trial$theta,
+                                                      alpha = alpha_sim[i, j],
+                                                      rho_prior = step_zero$trial$rho_prior,
+                                                      mtd_prior = step_zero$trial$mtd_prior,
+                                                      levels_cov = step_zero$trial$levels_cov,
+                                                      next_patient_cov = cov[j],
+                                                      min_dose = step_zero$trial$min_dose,
+                                                      max_dose = step_zero$trial$max_dose,
+                                                      type = step_zero$trial$type,
+                                                      order = step_zero$trial$order,
+                                                      first_dose = step_zero$trial$first_dose,
+                                                      last_dose = step_zero$trial$last_dose,
+                                                      dose_set = step_zero$trial$dose_set,
+                                                      rounding = step_zero$trial$rounding)
 
-    out <- list(dose_sim = dose_sim, covariable_sim = covariable_sim,
+                               if (!is.null(stop_rule_sim))
+                                 if (stop_rule_sim(update)){
+                                   dose[j:sample_size] <- NA
+                                   dlt[j:sample_size] <- NA
+                                   covariate[j:sample_size] <- NA
+                                   mtd_estimate <- NA
+                                   rho_estimate <- NA
+                                   break
+                                 }
+
+                               index <- match(cov[j:(j + n_cohort - 1)], step_zero$trial$levels_cov)
+                               dose[j:(j + n_cohort - 1)] <- update$next_dose[index]
+                               dlt[j:(j + n_cohort - 1)] <- response_sim(dose = dose[j:(j + n_cohort - 1)])
+                               mtd_estimate <- update$next_dose
+                               rho_estimate <- median(update$rho)
+
+                               j <- j + n_cohort
+                             }
+
+                             update <- ewoc_d1dicov(formula,
+                                                    type = step_zero$trial$type,
+                                                    theta = step_zero$trial$theta,
+                                                    alpha = alpha[length(alpha)],
+                                                    min_dose = step_zero$trial$min_dose,
+                                                    max_dose = step_zero$trial$max_dose,
+                                                    first_dose = step_zero$trial$first_dose,
+                                                    last_dose = step_zero$trial$last_dose,
+                                                    dose_set = step_zero$trial$dose_set,
+                                                    max_increment = step_zero$trial$max_increment,
+                                                    no_skip_dose = step_zero$trial$no_skip_dose,
+                                                    rho_prior = step_zero$trial$rho_prior,
+                                                    rounding = step_zero$trial$rounding)
+
+                             mtd_estimate <- update$next_dose
+                             rho_estimate <- apply(update$rho, 2, median)
+
+                           }
+
+                           list(dose, dlt, mtd_estimate, rho_estimate, alpha)
+                         }
+    stopImplicitCluster()
+
+    out <- list(dose_sim = dose_sim, cov_sim = cov_sim,
                 dlt_sim = dlt_sim, mtd_sim = mtd_sim, rho_sim = rho_sim,
                 alpha_sim = alpha_sim)
     return(out)

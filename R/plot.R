@@ -91,7 +91,7 @@ plot.d1ph <- function(x, ...){
 }
 
 #'@export
-plot.ewoc_d1multinomial <- function(object, ...){
+plot.d1dicov <- function(object, ...){
 
   index <- which(object$trial$next_patient_cov == object$trial$levels_cov)
 

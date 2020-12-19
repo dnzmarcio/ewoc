@@ -135,27 +135,36 @@ next_dose.ewoc_d1ph <- function(data){
 }
 
 #'@export
-next_dose.d1multinomial <- function(data){
+next_dose.d1dicov <- function(data){
 
   rho <- data$mcmc$rho
   gamma <- data$mcmc$gamma
   beta <- data$mcmc$beta
 
-  mtd <- matrix(NA, nrow = nrow(gamma), ncol = length(data$next_patient_cov))
-  next_dose <- rep(NA, length(data$next_patient_cov))
-  next_gamma <- rep(NA, length(data$next_patient_cov))
+  mtd <- matrix(NA, nrow = nrow(gamma), ncol = length(data$levels_cov))
+  next_dose <- rep(NA, length(data$levels_cov))
+  aux_gamma <- matrix(NA, nrow = nrow(gamma), ncol = length(data$levels_cov))
+  next_gamma <- rep(NA, length(data$levels_cov))
 
-  for (i in 1:length(data$next_patient_cov)){
-    index <- which(data$next_patient_cov[i] == data$levels_cov)
 
-    mtd[, i] <- inv_standard_dose(dose = gamma[, i],
+  for (i in 1:length(data$levels_cov)){
+    index <- which(data$levels_cov[i] == data$levels_cov)
+
+    next_gamma[i] <- quantile(gamma[, index], probs = data$alpha)
+
+    mtd[, i] <- inv_standard_dose(dose = gamma[, index],
                         min_dose =
-                          data$limits$min_dose(data$next_patient_cov[i]),
+                          data$limits$min_dose(data$levels_cov[i]),
                         max_dose =
-                          data$limits$max_dose(data$next_patient_cov[i]))
+                          data$limits$max_dose(data$levels_cov[i]))
 
-    next_dose[i] <- quantile(mtd[, i], probs = data$alpha)
+    aux_gamma[, i] <- gamma[, index]
 
+    next_dose[i] <- inv_standard_dose(dose = next_gamma[i],
+                                      min_dose =
+                                        data$limits$min_dose(data$levels_cov[i]),
+                                      max_dose =
+                                        data$limits$max_dose(data$levels_cov[i]))
     next_dose[i] <- ifelse(next_dose[i] >
                            data$limits$last_dose(data$levels_cov[index]),
                            data$limits$last_dose(data$levels_cov[index]),

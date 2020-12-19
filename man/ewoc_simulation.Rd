@@ -16,6 +16,8 @@ ewoc_simulation(
   stop_rule_sim = NULL,
   ncores = 1,
   seed = 1234,
+  rate_sim = 1,
+  covariate_sim = NULL,
   ...
 )
 }
@@ -204,5 +206,6 @@ sim <- ewoc_simulation(step_zero = step_zero,
                       response_sim = response_sim,
                       ncores = 1)
 }
+
 
 }

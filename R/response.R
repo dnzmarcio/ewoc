@@ -171,8 +171,8 @@ response_d1ph <- function(rho, mtd, theta, min_dose, max_dose,
 #'the MTD.
 #'@param levels_cov a character vector of the possible values for the ordinal covariable.
 #'@export
-response_d1multinomial <- function(rho, mtd, theta,
-                                   min_dose, max_dose, levels_cov) {
+response_d1dicov <- function(rho, mtd, theta,
+                             min_dose, max_dose, levels_cov) {
 
   if (!is.function(min_dose)){
     min_dose_value <- min_dose
@@ -205,10 +205,8 @@ response_d1multinomial <- function(rho, mtd, theta,
     beta <- rep(NA, length(mtd))
     beta[1] <- logit(rho[1])
     beta[2] <- (logit(theta) - logit(rho[1]))/gamma[1]
-    for (i in 3:(length(mtd)+1)) {
-      beta[i] <- logit(theta) - logit(rho[1]) -
-        gamma[i-1]*(logit(theta) - beta[1])/gamma[i-2]
-    }
+    beta[3] <- logit(theta) - logit(rho[1]) -
+        gamma[2]*(logit(theta) - beta[1])/gamma[1]
 
     cov <- factor(cov, levels = levels_cov)
     cov <- matrix(model.matrix(~ cov)[-1], nrow = 1)
