@@ -1,3 +1,4 @@
+#'@importFrom coda HPDinterval as.mcmc
 #'@export
 summary.ewoc_d1classical <- function(object, ..., print = TRUE){
 
@@ -45,6 +46,7 @@ summary.ewoc_d1classical <- function(object, ..., print = TRUE){
   }
 }
 
+#'@importFrom coda HPDinterval as.mcmc
 #'@export
 summary.ewoc_d1extended <- function(object, ..., print = TRUE){
 
@@ -92,6 +94,7 @@ summary.ewoc_d1extended <- function(object, ..., print = TRUE){
   }
 }
 
+#'@importFrom coda HPDinterval as.mcmc
 #'@export
 summary.ewoc_d1ph <- function(object, ..., print = TRUE){
 
