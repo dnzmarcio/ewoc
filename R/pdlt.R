@@ -202,35 +202,19 @@ pdlt_d1dicov <- function(rho, mtd, theta, min_dose, max_dose, levels_cov) {
                           min_dose = min_dose(cov),
                           max_dose = max_dose(cov))
 
-  }
-  return(pdlt)
-}
+    beta <- rep(NA, (length(gamma) + 1))
+    beta[1] <- logit(rho[1])
+    beta[2] <- (logit(theta) - logit(rho[1]))/gamma[1]
+    beta[3] <- logit(theta) - logit(rho[1]) -
+        gamma[2]*(logit(theta) - beta[1])/gamma[1]
 
-#'@export
-pdlt_d1excontinuous <- function(rho, direction,
-                                min_dose, max_dose, min_cov, max_cov) {
 
-  pdlt <- function(dose, cov){
-
-    dose <- standard_dose(dose = dose,
-                          min_dose = min_dose(cov),
-                          max_dose = max_dose(cov))
-    beta <- rep(NA, 3)
-
-    if (direction == "positive"){
-      beta[1] <- logit(rho[1])
-      beta[2] <- logit(rho[2]) - logit(rho[1])
-      beta[3] <- logit(rho[3]) - logit(rho[1])
-    } else {
-      beta[1] <- logit(rho[1])
-      beta[2] <- logit(rho[2]) - logit(rho[1])
-      beta[3] <- -(logit(rho[3]) - logit(rho[1]))
-    }
-
-    cov <- (cov - min_cov)/(max_cov - min_cov)
+    cov <- factor(cov, levels = levels_cov)
+    cov <- matrix(model.matrix( ~ cov)[-1], nrow = 1)
 
     design_matrix <- cbind(1, dose, cov)
     lp <- design_matrix%*%beta
+
     out <- as.numeric(plogis(lp))
     return(out)
   }
