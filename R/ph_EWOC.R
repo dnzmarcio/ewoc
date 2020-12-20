@@ -227,7 +227,7 @@ jags.d1ph <- function(data, n_adapt, burn_in,
       for(i in 1:nobs) {
         censored[i] ~ dinterval(time_mod[i], time_cens[i])
         time_mod[i] ~ dweib(shape, rate[i])
-        rate[i] <- exp(lambda + design.matrix[i,2]*beta)
+        rate[i] <- exp(lambda + design_matrix[i,2]*beta)
       }
 
       lambda <- log(-log(1 - rho)) - shape*log(tau)
@@ -268,7 +268,7 @@ jags.d1ph <- function(data, n_adapt, burn_in,
       for(i in 1:nobs) {
         censored[i] ~ dinterval(time_mod[i], time_cens[i])
         time_mod[i] ~ dexp(rate[i])
-        rate[i] <- exp(lambda + design.matrix[i, 2]*beta)
+        rate[i] <- exp(lambda + design_matrix[i, 2]*beta)
       }
 
       lambda <- log(-log(1 - rho[1])) - log(tau)
