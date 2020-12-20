@@ -640,21 +640,13 @@ ewoc_simulation.ewoc_d1pos <- function(step_zero, n_sim, sample_size,
   rho_sim <- matrix(NA, ncol = 1, nrow = n_sim)
   alpha_sim <- matrix(NA, ncol = sample_size, nrow = n_sim)
 
-  # registerDoParallel(ncores)
-  # result <-
-  # foreach(i = 1:n_sim,
-  #         .combine='comb',
-  #         .multicombine=TRUE,
-  #         .init=list(list(), list(), list(), list(), list(), list())) %dopar% {
-  result <- list()
-  result$time_sim <- time_sim
-  result$dose_sim <- dose_sim
-  result$dlt_sim <- dlt_sim
-  result$mtd_sim <- mtd_sim
-  result$rho_sim <- rho_sim
-  result$alpha_sim <- alpha_sim
+  registerDoParallel(ncores)
+  result <-
+    foreach(i = 1:n_sim,
+            .combine='comb',
+            .multicombine=TRUE,
+            .init=list(list(), list(), list(), list(), list(), list())) %dopar% {
 
-  for (i in 1:n_sim){
               dlt <- as.numeric(step_zero$trial$response[, 2])
               dose <- as.numeric(step_zero$trial$first_dose)
               alpha <- as.numeric(step_zero$trial$alpha)
@@ -731,14 +723,7 @@ ewoc_simulation.ewoc_d1pos <- function(step_zero, n_sim, sample_size,
                 }
               }
 
-               # list(event_time, dose, dlt, mtd_estimate, rho_estimate, alpha)
-
-              result[[1]][i, ] <- event_time
-              result[[2]][i, ] <- dose
-              result[[3]][i, ] <- dlt
-              result[[4]][i, ] <- mtd_estimate
-              result[[5]][i, ] <- rho_estimate
-              result[[6]][i, ] <- alpha
+               list(event_time, dose, dlt, mtd_estimate, rho_estimate, alpha)
             }
   # stopImplicitCluster()
 
