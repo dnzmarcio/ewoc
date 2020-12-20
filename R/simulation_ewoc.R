@@ -2,8 +2,8 @@
 #'
 #'Generic function for simulating EWOC trials.
 #'
-#'@param step_zero an object from the classes either 'ewoc_d1classical' or 'ewoc_d1extended' or
-#''ewoc_d1ph', 'ewoc_d1pos created using the first cohort data.
+#'@param step_zero an object from the classes 'ewoc_d1classic', 'ewoc_d1extended',
+#''ewoc_d1ph', 'ewoc_d1pos' created using dummy data.
 #'@param n_sim a number indicating the number of phase I clinical trials
 #'to be simulated.
 #'@param sample_size a number indicating the number of patients enrolled for
@@ -52,7 +52,7 @@
 #'### Classical EWOC
 #'DLT <- 0
 #'dose <- 30
-#'step_zero <- ewoc_d1classical(DLT ~ dose, type = 'continuous',
+#'step_zero <- ewoc_d1classic(DLT ~ dose, type = 'continuous',
 #'                            theta = 0.33, alpha = 0.25,
 #'                            min_dose = 0, max_dose = 100,
 #'                            rho_prior = matrix(1, ncol = 2, nrow = 1),
@@ -125,12 +125,33 @@
 #'                       alpha_strategy = "increasing",
 #'                       response_sim = response_sim,
 #'                       ncores = 1)
+#'
+#'### POS EWOC
+#'time <- 0
+#'status <- 0
+#'dose <- 30
+#'
+#'step_zero <- ewoc_d1pos(cbind(time, status) ~ dose, type = 'continuous',
+#'                        theta = 0.33, alpha = 0.25, tau = 10,
+#'                        min_dose = 30, max_dose = 50,
+#'                        rho_prior = matrix(1, ncol = 2, nrow = 1),
+#'                        mtd_prior = matrix(1, ncol = 2, nrow = 1),
+#'                        distribution = 'exponential',
+#'                        rounding = 'nearest')
+#'response_sim <- response_d1pos(rho = 0.05, mtd = 40, theta = 0.33,
+#'                               min_dose = 30, max_dose = 50,
+#'                               tau = 10, distribution = "exponential")
+#'sim <- ewoc_simulation(step_zero = step_zero,
+#'                       n_sim = 1, sample_size = 2,
+#'                       alpha_strategy = "increasing",
+#'                       response_sim = response_sim,
+#'                       ncores = 2)
 #'}
 #'
 #'\dontrun{
 #'### Classical EWOC
 #'DLT <- 0
-#'dose <- 20
+#'dose <- 30
 #'step_zero <- ewoc_d1classical(DLT ~ dose, type = 'continuous',
 #'                           theta = 0.33, alpha = 0.25,
 #'                           min_dose = 20, max_dose = 100,
@@ -140,10 +161,10 @@
 #'response_sim <- response_d1classical(rho = 0.05, mtd = 60, theta = 0.33,
 #'                                  min_dose = 20, max_dose = 100)
 #'sim <- ewoc_simulation(step_zero = step_zero,
-#'                        n_sim = 2, sample_size = 30,
-#'                        alpha_strategy = "increasing",
-#'                        response_sim = response_sim,
-#'                        ncores = 2)
+#'                       n_sim = 2, sample_size = 30,
+#'                       alpha_strategy = "increasing",
+#'                       response_sim = response_sim,
+#'                       ncores = 2)
 #'
 #'### Extended EWOC
 #'DLT <- 0
@@ -162,19 +183,19 @@
 #'                       ncores = 2)
 #'
 #'### PH EWOC
-#'time <- 0
+#'time <- 5
 #'status <- 0
-#'dose <- 20
+#'dose <- 30
 #'
 #'step_zero <- ewoc_d1ph(cbind(time, status) ~ dose, type = 'continuous',
 #'                       theta = 0.33, alpha = 0.25, tau = 10,
-#'                       min_dose = 30, max_dose = 50,
+#'                       min_dose = 20, max_dose = 100,
 #'                       rho_prior = matrix(1, ncol = 2, nrow = 1),
 #'                       mtd_prior = matrix(1, ncol = 2, nrow = 1),
 #'                       distribution = 'exponential',
 #'                       rounding = 'nearest')
-#'response_sim <- response_d1ph(rho = 0.05, mtd = 40, theta = 0.33,
-#'                              min_dose = 30, max_dose = 50,
+#'response_sim <- response_d1ph(rho = 0.05, mtd = 60, theta = 0.33,
+#'                              min_dose = 20, max_dose = 100,
 #'                              tau = 10, distribution = "exponential")
 #'sim <- ewoc_simulation(step_zero = step_zero,
 #'                       n_sim = 2, sample_size = 30,
@@ -182,25 +203,26 @@
 #'                       response_sim = response_sim,
 #'                       ncores = 2)
 #'### POS EWOC
-#'time <- 0
+#'time <- 5
 #'status <- 0
 #'dose <- 30
 #'
 #'step_zero <- ewoc_d1pos(cbind(time, status) ~ dose, type = 'continuous',
 #'                        theta = 0.33, alpha = 0.25, tau = 10,
-#'                        min_dose = 30, max_dose = 50,
+#'                        min_dose = 20, max_dose = 100,
 #'                        rho_prior = matrix(1, ncol = 2, nrow = 1),
 #'                        mtd_prior = matrix(1, ncol = 2, nrow = 1),
 #'                        distribution = 'exponential',
 #'                        rounding = 'nearest')
-#'response_sim <- response_d1pos(rho = 0.05, mtd = 40, theta = 0.33,
-#'                               min_dose = 30, max_dose = 50,
+#'response_sim <- response_d1pos(rho = 0.05, mtd = 60, theta = 0.33,
+#'                               min_dose = 20, max_dose = 100,
 #'                               tau = 10, distribution = "exponential")
 #'sim <- ewoc_simulation(step_zero = step_zero,
 #'                       n_sim = 2, sample_size = 30,
 #'                       alpha_strategy = "increasing",
 #'                       response_sim = response_sim,
-#'                       ncores = 2)
+#'                       ncores = 1)
+#'
 #'}
 #'
 #'@importFrom foreach foreach %dopar%
@@ -251,7 +273,6 @@ ewoc_simulation.ewoc_d1classical <- function(step_zero, n_sim, sample_size, resp
             .init=list(list(), list(), list(), list(), list())) %dorng% {
 
               dose <- as.numeric(step_zero$trial$first_dose)
-              alpha <- as.numeric(step_zero$trial$alpha)
 
               if (fixed_first_cohort) {
                 dlt <- as.numeric(step_zero$trial$response)
@@ -750,10 +771,10 @@ ewoc_simulation.ewoc_d1pos <- function(step_zero, n_sim, sample_size,
   alpha_sim <- matrix(as.numeric(result[[6]]), nrow = n_sim, ncol = sample_size)
 
 
-
-
   out <- list(time_sim = time_sim, dose_sim = dose_sim, dlt_sim = dlt_sim,
               mtd_sim = mtd_sim, rho_sim = rho_sim, alpha_sim = alpha_sim)
 }
+
+
 
 

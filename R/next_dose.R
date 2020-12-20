@@ -134,7 +134,6 @@ next_dose.ewoc_d1ph <- function(data){
   return(out)
 }
 
-
 next_dose.ewoc_d1pos <- function(data){
 
   gamma <- data$mcmc$gamma
@@ -176,5 +175,3 @@ next_dose.ewoc_d1pos <- function(data){
               sample = data$mcmc$sample)
   return(out)
 }
-
-
