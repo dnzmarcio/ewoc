@@ -141,6 +141,7 @@ next_dose.ewoc_d1pos <- function(data){
   shape <- data$mcmc$shape
   rho <- data$mcmc$rho
   beta <- data$mcmc$beta
+  lambda <- data$mcmc$lambda
 
   mtd <- inv_standard_dose(dose = gamma,
                            min_dose = data$limits$min_dose,
@@ -168,8 +169,9 @@ next_dose.ewoc_d1pos <- function(data){
   if (data$distribution != "weibull")
     shape <- 1
 
-  pdlt <- as.numeric(1 - (exp(-(beta[, 1]*data$tau)^shape)*exp(beta[, 2]*next_gamma))/
-                       ( 1 + exp(-(beta[, 1]*data$tau)^shape)*(exp(beta[, 2]*next_gamma) - 1)))
+  s0 <- exp(-(lambda*data$tau)^shape)
+  link <- exp(-beta*next_gamma)
+  pdlt <- link*s0/(1 + s0*(link - 1))
 
   out <- list(mtd = mtd, pdlt = pdlt, next_dose = next_dose,
               rho = rho, shape = shape, gamma = gamma,

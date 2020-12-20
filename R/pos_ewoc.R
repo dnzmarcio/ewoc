@@ -192,85 +192,96 @@ ewoc_d1pos <- function(formula, theta, alpha, tau,
 jags.d1pos <- function(data, n_adapt, burn_in,
                       n_mcmc, n_thin, n_chains) {
 
-  time_cens <- data$response[, 1]
-  status <- data$response[, 2]
-  time_mod <- time_cens
-  time_mod[status == 0] <- NA
-  censored <- as.numeric(!status)
-
   # JAGS model function
 
   if (data$distribution == "weibull") {
     jfun <- "model {
-    for(i in 1:nobs) {
-    censored[i] ~ dinterval(time_mod[i], time_cens[i])
-    time_mod[i] ~ dweib(shape, rate[i])
-    rate[i] <- exp(inprod(design_matrix[i, ], beta))
+
+    C <- 10000
+
+    for (i in 1:nobs){
+      zeros[i] ~ dpois(phi[i])
+
+      phi[i] <- -l[i] + C
+
+      l[i] <- status[i]*(log(h0[i]) - log(1 + s0[i]*(p[i] - 1))) +
+      log(p[i]) + log(s0[i]) - log(1 + s0[i]*(p[i] - 1))
+
+      h0[i] <- exp(log(shape) + shape*log(lambda) + (shape - 1)*log(time_cens[i]))
+      s0[i] <- exp(-(lambda*time_cens[i])^shape)
+      p[i] <- exp(-beta*design_matrix[i, 2])
     }
-    beta[1] <-  log(-(1/tau)*(-log((1 - rho)))^(1/shape))
-    beta[2] <-  log((1-theta)*rho/((1-rho)*theta)) * exp(-log(gamma)))
-    rho <- theta*r
-    gamma <- g
-    shape <- s
-    r ~ dbeta(rho_prior[1, 1], rho_prior[1, 2])
-    g ~ dbeta(mtd_prior[1, 1], mtd_prior[1, 2])
-    s ~ dgamma(shape_prior[1, 1], shape_prior[1, 2])
-  }"
+
+      lambda <- (1/tau)*(-log(1-rho))^(1/shape)
+      beta <- log((1-theta)*rho)-log((1-rho)*theta)*exp(-log(gamma))
+
+      rho <- theta*r
+      r ~ dbeta(rho_prior[1, 1], rho_prior[1, 2])
+      gamma ~ dbeta(mtd_prior[1, 1], mtd_prior[1, 2])
+      shape ~ dgamma(shape_prior[1, 1], shape_prior[1, 2])
+    }"
 
     inits <- function() {
-      time_init <- rep(NA, length(time_mod))
-      time_init[which(!status)] <- time_cens[which(!status)] + 1
-
       out <- list(r = rbeta(nrow(data$rho_prior),
                             data$rho_prior[, 1], data$rho_prior[, 2]),
-                  g = rbeta(nrow(data$mtd_prior),
+                  gamma = rbeta(nrow(data$mtd_prior),
                             data$mtd_prior[, 1], data$mtd_prior[, 2]),
-                  s = rgamma(nrow(data$shape_prior),
-                             data$shape_prior[, 1], data$shape_prior[, 2]),
-                  time_mod = time_init)
+                  shape = rgamma(nrow(data$shape_prior),
+                             data$shape_prior[, 1], data$shape_prior[, 2]))
       return(out)
     }
 
-    data_base <- list('time_mod' = time_mod, 'time_cens' = time_cens,
-                      'censored' = censored, 'tau' = data$tau,
+    data_base <- list('time_cens' = data$response[, 1],
+                      'zeros' = rep(0, nrow(data$design_matrix)),
+                      'status' = status, 'tau' = data$tau,
                       'design_matrix' = data$design_matrix,
                       'theta' = data$theta,
-                      'nobs' = length(time_cens[!is.na(time_cens)]),
+                      'nobs' = nrow(data$design_matrix),
                       'rho_prior' = data$rho_prior,
                       'mtd_prior' = data$mtd_prior,
                       'shape_prior' = data$shape_prior)
     } else {
       jfun <- "model {
-      for(i in 1:nobs) {
-      censored[i] ~ dinterval(time_mod[i], time_cens[i])
-      time_mod[i] ~ dexp(rate[i])
-      rate[i] <- exp(inprod(design_matrix[i, ], beta))
-      }
 
-      beta[1] <- log(- (1/tau)*log((1 - rho)))
-      beta[2] <- log((1-theta)*rho/((1 - rho)*theta))*exp(-log(gamma))
-      rho[1] <- theta*r
+    C <- 10000
+
+    for (i in 1:nobs){
+      zeros[i] ~ dpois(phi[i])
+
+      phi[i] <- -l[i] + C
+
+      l[i] <- status[i]*(log(h0[i]) - log(1 + s0[i]*(p[i] - 1))) +
+      log(p[i]) + log(s0[i]) - log(1 + s0[i]*(p[i] - 1))
+
+      h0[i] <- lambda
+      s0[i] <- exp(-lambda*time_cens[i])
+      p[i] <- exp(-beta*design_matrix[i, 2])
+    }
+
+      lambda <- (1/tau)*(-log(1-rho))
+      beta <- log((1-theta)*rho)-log((1-rho)*theta)*exp(-log(gamma))
+
+      rho <- theta*r
+      gamma <- g
+
       r ~ dbeta(rho_prior[1, 1], rho_prior[1, 2])
-      gamma ~ dbeta(mtd_prior[1, 1], mtd_prior[1, 2])
+      g ~ dbeta(mtd_prior[1, 1], mtd_prior[1, 2])
     }"
 
       inits <- function() {
-        time_init <- rep(NA, length(time_mod))
-        time_init[which(!status)] <- time_cens[which(!status)] + 1
-
         out <- list(r = rbeta(nrow(data$rho_prior),
                               data$rho_prior[, 1], data$rho_prior[, 2]),
                     gamma = rbeta(nrow(data$mtd_prior),
-                                  data$mtd_prior[, 1], data$mtd_prior[, 2]),
-                    time_mod = time_init)
+                                  data$mtd_prior[, 1], data$mtd_prior[, 2]))
         return(out)
       }
 
-      data_base <- list('time_mod' = time_mod, 'time_cens' = time_cens,
-                        'censored' = censored, 'tau' = data$tau,
+      data_base <- list('time_cens' = data$response[, 1],
+                        'zeros' = rep(0, nrow(data$design_matrix)),
+                        'status' = data$response[, 2], 'tau' = data$tau,
                         'design_matrix' = data$design_matrix,
                         'theta' = data$theta,
-                        'nobs' = length(time_cens[!is.na(time_cens)]),
+                        'nobs' = nrow(data$design_matrix),
                         'rho_prior' = data$rho_prior,
                         'mtd_prior' = data$mtd_prior)
       }
@@ -287,27 +298,30 @@ jags.d1pos <- function(data, n_adapt, burn_in,
   if (data$distribution == "weibull"){
     sample <- coda.samples(j,
                            variable.names =
-                             c("beta", "gamma", "rho", "shape"),
+                             c("beta", "gamma", "lambda", "rho", "shape"),
                            n.iter = n_mcmc, thin = n_thin,
                            n.chains = n_chains)
 
-    beta <- sample[[1]][, 1:2]
-    gamma <- sample[[1]][, 3]
+    beta <- sample[[1]][, 1]
+    gamma <- sample[[1]][, 2]
+    lambda <- sample[[1]][, 3]
     rho <- sample[[1]][, 4]
     shape <- sample[[1]][, 5]
 
-    out <- list(beta = beta, gamma = gamma, rho = rho, shape = shape,
+    out <- list(beta = beta, gamma = gamma, lambda = lambda,
+                rho = rho, shape = shape,
                 sample = sample)
   } else {
-    sample <- coda.samples(j, variable.names =  c("beta", "gamma", "rho"),
+    sample <- coda.samples(j, variable.names =  c("beta", "gamma", "lambda", "rho"),
                            n.iter = n_mcmc, thin = n_thin,
                            n.chains = n_chains)
 
-    beta <- sample[[1]][, 1:2]
-    gamma <- sample[[1]][, 3]
+    beta <- sample[[1]][, 1]
+    gamma <- sample[[1]][, 2]
+    lambda <- sample[[1]][, 3]
     rho <- sample[[1]][, 4]
-
-    out <- list(beta = beta, gamma = gamma, rho = rho, sample = sample)
+    out <- list(beta = beta, gamma = gamma, lambda = lambda,
+                rho = rho, sample = sample)
   }
   return(out)
   }
