@@ -125,27 +125,6 @@
 #'                       alpha_strategy = "increasing",
 #'                       response_sim = response_sim,
 #'                       ncores = 1)
-#'
-#'### POS EWOC
-#'time <- 0
-#'status <- 0
-#'dose <- 30
-#'
-#'step_zero <- ewoc_d1pos(cbind(time, status) ~ dose, type = 'continuous',
-#'                        theta = 0.33, alpha = 0.25, tau = 10,
-#'                        min_dose = 30, max_dose = 50,
-#'                        rho_prior = matrix(1, ncol = 2, nrow = 1),
-#'                        mtd_prior = matrix(1, ncol = 2, nrow = 1),
-#'                        distribution = 'exponential',
-#'                        rounding = 'nearest')
-#'response_sim <- response_d1pos(rho = 0.05, mtd = 40, theta = 0.33,
-#'                               min_dose = 30, max_dose = 50,
-#'                               tau = 10, distribution = "exponential")
-#'sim <- ewoc_simulation(step_zero = step_zero,
-#'                       n_sim = 1, sample_size = 2,
-#'                       alpha_strategy = "increasing",
-#'                       response_sim = response_sim,
-#'                       ncores = 2)
 #'}
 #'
 #'\dontrun{
