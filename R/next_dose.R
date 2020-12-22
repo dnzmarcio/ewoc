@@ -171,7 +171,7 @@ next_dose.ewoc_d1pos <- function(data){
 
   s0 <- exp(-(lambda*data$tau)^shape)
   link <- exp(-beta*next_gamma)
-  pdlt <- link*s0/(1 + s0*(link - 1))
+  pdlt <- 1 - link*s0/(1 + s0*(link - 1))
 
   out <- list(mtd = mtd, pdlt = pdlt, next_dose = next_dose,
               rho = rho, shape = shape, gamma = gamma,
