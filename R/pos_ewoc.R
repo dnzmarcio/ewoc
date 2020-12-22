@@ -259,7 +259,7 @@ jags.d1pos <- function(data, n_adapt, burn_in,
     }
 
       lambda <- (1/tau)*(-log(1-rho))
-      beta <- (log((1-theta)*rho)-log((1-rho)*theta))*exp(-log(gamma))
+      beta <- (log((1-rho)*theta)-log((1-theta)*rho))*exp(-log(gamma))
 
       rho <- theta*r
       gamma <- g
