@@ -232,7 +232,7 @@ jags.d1ph <- function(data, n_adapt, burn_in,
 
       lambda <- log(-log(1 - rho)) - shape*log(tau)
       beta <- (log(-log(1 - theta)) -
-        log(-log(1 - rho)))*exp(-log(gamma))
+        log(-log(1 - rho)))*exp(-log(gamma + 10^(-3)))
 
       rho <- theta*r
       r ~ dbeta(rho_prior[1, 1], rho_prior[1, 2])
@@ -273,7 +273,7 @@ jags.d1ph <- function(data, n_adapt, burn_in,
 
       lambda <- log(-log(1 - rho[1])) - log(tau)
       beta <- (log(-log(1 - theta)) - log(-log(1 - rho)))*
-        exp(-log(gamma))
+        exp(-log(gamma + 10^(-3)))
 
       rho <- theta*r
       r ~ dbeta(rho_prior[1, 1], rho_prior[1, 2])
