@@ -230,9 +230,9 @@ jags.d1ph <- function(data, n_adapt, burn_in,
         rate[i] <- exp(lambda + design_matrix[i,2]*beta)
       }
 
-      lambda <- log(-log(1 - rho + 10^(-3))) - shape*log(tau)
+      lambda <- log(-log(1 - rho)) - shape*log(tau)
       beta <- (log(-log(1 - theta)) -
-        log(-log(1 - rho + 10^(-3))))*exp(-log(gamma + 10^(-3)))
+        log(-log(1 - rho)))*exp(-log(gamma + 10^(-2)))
 
       rho <- theta*r
       r ~ dbeta(rho_prior[1, 1], rho_prior[1, 2])
@@ -268,12 +268,12 @@ jags.d1ph <- function(data, n_adapt, burn_in,
       for(i in 1:nobs) {
         censored[i] ~ dinterval(time_mod[i], time_cens[i])
         time_mod[i] ~ dexp(rate[i])
-        rate[i] <- exp(lambda + design_matrix[i, 2]*beta + 10^(-3))
+        rate[i] <- exp(lambda + design_matrix[i, 2]*beta)
       }
 
-      lambda <- log(-log(1 - rho + 10^(-3))) - log(tau)
-      beta <- (log(-log(1 - theta)) - log(-log(1 - rho + 10^(-3))))*
-        exp(-log(gamma + 10^(-3)))
+      lambda <- log(-log(1 - rho)) - log(tau)
+      beta <- (log(-log(1 - theta)) - log(-log(1 - rho)))*
+        exp(-log(gamma + 10^(-2)))
 
       rho <- theta*r
       r ~ dbeta(rho_prior[1, 1], rho_prior[1, 2])
