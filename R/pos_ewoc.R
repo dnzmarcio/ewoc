@@ -263,8 +263,8 @@ jags.d1pos <- function(data, n_adapt, burn_in,
       link[i] <- exp(-beta*design_matrix[i, 2])
     }
 
-      lambda <- (1/tau)*(-log(1-rho + 10^(-3)))
-      beta <- (log((1-rho)*theta + 10^(-3))-log((1-theta)*rho + 10^(-3)))*exp(-log(gamma + 10^(-3)))
+      lambda <- (1/tau)*(-log(1-rho))
+      beta <- (log((1-rho)*theta)-log((1-theta)*rho))*exp(-log(gamma))
 
       rho <- theta*r
       gamma <- g

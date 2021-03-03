@@ -211,7 +211,6 @@ response_d1pos <- function(rho, mtd, theta, min_dose, max_dose,
     u <- runif(length(dose))
     design <- cbind(1, dose)
 
-    beta <- rep(NA, 2)
     lambda <-  (1/ tau)*(-log(1 - rho))^(1/shape)
     beta <-  -log(((1-theta)*rho)/((1-rho)*theta))/gamma
 
