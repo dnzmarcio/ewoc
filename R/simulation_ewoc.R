@@ -304,23 +304,49 @@ ewoc_simulation.ewoc_d1classical <- function(step_zero, n_sim, sample_size, resp
                 j <- j + n_cohort
               }
 
-              update <- ewoc_d1classical(formula,
-                                       type = step_zero$trial$type,
-                                       theta = step_zero$trial$theta,
-                                       alpha = alpha[length(alpha)],
-                                       min_dose = step_zero$trial$min_dose,
-                                       max_dose = step_zero$trial$max_dose,
-                                       first_dose = step_zero$trial$first_dose,
-                                       last_dose = step_zero$trial$last_dose,
-                                       dose_set = step_zero$trial$dose_set,
-                                       max_increment = step_zero$trial$max_increment,
-                                       no_skip_dose = step_zero$trial$no_skip_dose,
-                                       rho_prior = step_zero$trial$rho_prior,
-                                       mtd_prior = step_zero$trial$mtd_prior,
-                                       rounding = step_zero$trial$rounding)
+              if (is.null(stop_rule_sim)){
 
-              mtd_estimate <- update$next_dose
-              rho_estimate <- median(update$rho)
+                formula <- dlt ~ dose
+                update <- ewoc_d1classical(formula,
+                                           type = step_zero$trial$type,
+                                           theta = step_zero$trial$theta,
+                                           alpha = alpha[length(alpha)],
+                                           min_dose = step_zero$trial$min_dose,
+                                           max_dose = step_zero$trial$max_dose,
+                                           first_dose = step_zero$trial$first_dose,
+                                           last_dose = step_zero$trial$last_dose,
+                                           dose_set = step_zero$trial$dose_set,
+                                           max_increment = step_zero$trial$max_increment,
+                                           no_skip_dose = step_zero$trial$no_skip_dose,
+                                           rho_prior = step_zero$trial$rho_prior,
+                                           mtd_prior = step_zero$trial$mtd_prior,
+                                           rounding = step_zero$trial$rounding)
+
+                mtd_estimate <- update$next_dose
+                rho_estimate <- median(update$rho)
+              } else {
+                if (!stop_rule_sim(update)){
+
+                  formula <- dlt ~ dose
+                  update <- ewoc_d1classical(formula,
+                                             type = step_zero$trial$type,
+                                             theta = step_zero$trial$theta,
+                                             alpha = alpha[length(alpha)],
+                                             min_dose = step_zero$trial$min_dose,
+                                             max_dose = step_zero$trial$max_dose,
+                                             first_dose = step_zero$trial$first_dose,
+                                             last_dose = step_zero$trial$last_dose,
+                                             dose_set = step_zero$trial$dose_set,
+                                             max_increment = step_zero$trial$max_increment,
+                                             no_skip_dose = step_zero$trial$no_skip_dose,
+                                             rho_prior = step_zero$trial$rho_prior,
+                                             mtd_prior = step_zero$trial$mtd_prior,
+                                             rounding = step_zero$trial$rounding)
+
+                  mtd_estimate <- update$next_dose
+                  rho_estimate <- median(update$rho)
+                }
+              }
 
               list(dose, dlt, mtd_estimate, rho_estimate, alpha)
             }
@@ -422,28 +448,51 @@ ewoc_simulation.ewoc_d1extended <- function(step_zero, n_sim, sample_size, respo
 
                   dose[j:(j + n_cohort - 1)] <- update$next_dose
                   dlt[j:(j + n_cohort - 1)] <- response_sim(dose = dose[j:(j + n_cohort - 1)])
-                  mtd_estimate <- update$next_dose
-                  rho_estimate <- median(update$rho)
 
                   j <- j + n_cohort
               }
 
-              update <- ewoc_d1extended(formula,
-                                        type = step_zero$trial$type,
-                                        theta = step_zero$trial$theta,
-                                        alpha = alpha[length(alpha)],
-                                        min_dose = step_zero$trial$min_dose,
-                                        max_dose = step_zero$trial$max_dose,
-                                        first_dose = step_zero$trial$first_dose,
-                                        last_dose = step_zero$trial$last_dose,
-                                        dose_set = step_zero$trial$dose_set,
-                                        max_increment = step_zero$trial$max_increment,
-                                        no_skip_dose = step_zero$trial$no_skip_dose,
-                                        rho_prior = step_zero$trial$rho_prior,
-                                        rounding = step_zero$trial$rounding)
+              if (is.null(stop_rule_sim)){
 
-              mtd_estimate <- update$next_dose
-              rho_estimate <- apply(update$rho, 2, median)
+                formula <- dlt ~ dose
+                update <- ewoc_d1extended(formula,
+                                          type = step_zero$trial$type,
+                                          theta = step_zero$trial$theta,
+                                          alpha = alpha[length(alpha)],
+                                          min_dose = step_zero$trial$min_dose,
+                                          max_dose = step_zero$trial$max_dose,
+                                          first_dose = step_zero$trial$first_dose,
+                                          last_dose = step_zero$trial$last_dose,
+                                          dose_set = step_zero$trial$dose_set,
+                                          max_increment = step_zero$trial$max_increment,
+                                          no_skip_dose = step_zero$trial$no_skip_dose,
+                                          rho_prior = step_zero$trial$rho_prior,
+                                          rounding = step_zero$trial$rounding)
+
+                mtd_estimate <- update$next_dose
+                rho_estimate <- median(update$rho)
+              } else {
+                if (!stop_rule_sim(update)){
+
+                  formula <- dlt ~ dose
+                  update <- ewoc_d1extended(formula,
+                                            type = step_zero$trial$type,
+                                            theta = step_zero$trial$theta,
+                                            alpha = alpha[length(alpha)],
+                                            min_dose = step_zero$trial$min_dose,
+                                            max_dose = step_zero$trial$max_dose,
+                                            first_dose = step_zero$trial$first_dose,
+                                            last_dose = step_zero$trial$last_dose,
+                                            dose_set = step_zero$trial$dose_set,
+                                            max_increment = step_zero$trial$max_increment,
+                                            no_skip_dose = step_zero$trial$no_skip_dose,
+                                            rho_prior = step_zero$trial$rho_prior,
+                                            rounding = step_zero$trial$rounding)
+
+                  mtd_estimate <- update$next_dose
+                  rho_estimate <- median(update$rho)
+                }
+              }
 
               list(dose, dlt, mtd_estimate, rho_estimate, alpha)
             }
@@ -571,6 +620,10 @@ ewoc_simulation.ewoc_d1ph <- function(step_zero, n_sim, sample_size, response_si
                   event_time[j] <- response_sim(dose = dose[j])
                 }
 
+              }
+
+              if (is.null(stop_rule_sim)){
+                formula <- cbind(time_cens, dlt) ~ dose
                 update <- ewoc_d1ph(formula,
                                     type = step_zero$trial$type,
                                     theta = step_zero$trial$theta,
@@ -589,9 +642,32 @@ ewoc_simulation.ewoc_d1ph <- function(step_zero, n_sim, sample_size, response_si
                                     distribution = step_zero$trial$distribution,
                                     rounding = step_zero$trial$rounding)
 
-
                 mtd_estimate <- update$next_dose
                 rho_estimate <- median(update$rho)
+              } else {
+                if (!stop_rule_sim(update)){
+                  formula <- cbind(time_cens, dlt) ~ dose
+                  update <- ewoc_d1ph(formula,
+                                      type = step_zero$trial$type,
+                                      theta = step_zero$trial$theta,
+                                      alpha = alpha[length(alpha)],
+                                      tau = step_zero$trial$tau,
+                                      min_dose = step_zero$trial$min_dose,
+                                      max_dose = step_zero$trial$max_dose,
+                                      first_dose = step_zero$trial$first_dose,
+                                      last_dose = step_zero$trial$last_dose,
+                                      dose_set = step_zero$trial$dose_set,
+                                      max_increment = step_zero$trial$max_increment,
+                                      no_skip_dose = step_zero$trial$no_skip_dose,
+                                      rho_prior = step_zero$trial$rho_prior,
+                                      mtd_prior = step_zero$trial$mtd_prior,
+                                      shape_prior = step_zero$trial$shape_prior,
+                                      distribution = step_zero$trial$distribution,
+                                      rounding = step_zero$trial$rounding)
+
+                  mtd_estimate <- update$next_dose
+                  rho_estimate <- median(update$rho)
+                }
               }
 
               list(event_time, dose, dlt, mtd_estimate, rho_estimate, alpha, current_time)
@@ -683,28 +759,28 @@ ewoc_simulation.ewoc_d1pos <- function(step_zero, n_sim, sample_size,
                                               step_zero$trial$tau, 1, 0))
 
                 if (j <= sample_size){
-                  alpha[j] <- feasibility(alpha = alpha[(j-1)],
-                                          strategy = alpha_strategy,
-                                          dlt = dlt[1:(j-1)],
-                                          resolution = resolution[1:(j-1)],
-                                          rate = alpha_rate)
+                  alpha[j] <- feasibility(alpha = alpha[1:(j-1)],
+                                        strategy = alpha_strategy,
+                                        dlt = dlt[1:(j-1)],
+                                        resolution = resolution[1:(j-1)],
+                                        rate = alpha_rate)
 
                   formula <- cbind(time_cens[1:(j-1)], dlt[1:(j-1)]) ~ dose[1:(j-1)]
                   update <- ewoc_d1pos(formula,
-                                       type = step_zero$trial$type,
-                                       theta = step_zero$trial$theta,
-                                       alpha = alpha[j],
-                                       tau = step_zero$trial$tau,
-                                       min_dose = step_zero$trial$min_dose,
-                                       max_dose = step_zero$trial$max_dose,
-                                       first_dose = step_zero$trial$first_dose,
-                                       last_dose = step_zero$trial$last_dose,
-                                       dose_set = step_zero$trial$dose_set,
-                                       rho_prior = step_zero$trial$rho_prior,
-                                       mtd_prior = step_zero$trial$mtd_prior,
-                                       shape_prior = step_zero$trial$shape_prior,
-                                       distribution = step_zero$trial$distribution,
-                                       rounding = step_zero$trial$rounding)
+                                     type = step_zero$trial$type,
+                                     theta = step_zero$trial$theta,
+                                     alpha = alpha[j],
+                                     tau = step_zero$trial$tau,
+                                     min_dose = step_zero$trial$min_dose,
+                                     max_dose = step_zero$trial$max_dose,
+                                     first_dose = step_zero$trial$first_dose,
+                                     last_dose = step_zero$trial$last_dose,
+                                     dose_set = step_zero$trial$dose_set,
+                                     rho_prior = step_zero$trial$rho_prior,
+                                     mtd_prior = step_zero$trial$mtd_prior,
+                                     shape_prior = step_zero$trial$shape_prior,
+                                     distribution = step_zero$trial$distribution,
+                                     rounding = step_zero$trial$rounding)
 
                   if (!is.null(stop_rule_sim))
                     if (stop_rule_sim(update)){
@@ -718,14 +794,61 @@ ewoc_simulation.ewoc_d1pos <- function(step_zero, n_sim, sample_size,
 
                   dose[j] <- update$next_dose
                   event_time[j] <- response_sim(dose = dose[j])
+                }
+
+              }
+
+              if (is.null(stop_rule_sim)){
+
+                formula <- cbind(time_cens, dlt) ~ dose
+                update <- ewoc_d1pos(formula,
+                                     type = step_zero$trial$type,
+                                     theta = step_zero$trial$theta,
+                                     alpha = alpha[sample_size],
+                                     tau = step_zero$trial$tau,
+                                     min_dose = step_zero$trial$min_dose,
+                                     max_dose = step_zero$trial$max_dose,
+                                     first_dose = step_zero$trial$first_dose,
+                                     last_dose = step_zero$trial$last_dose,
+                                     dose_set = step_zero$trial$dose_set,
+                                     rho_prior = step_zero$trial$rho_prior,
+                                     mtd_prior = step_zero$trial$mtd_prior,
+                                     shape_prior = step_zero$trial$shape_prior,
+                                     distribution = step_zero$trial$distribution,
+                                     rounding = step_zero$trial$rounding)
+
+                  mtd_estimate <- update$next_dose
+                  rho_estimate <- median(update$rho)
+              } else {
+                if (!stop_rule_sim(update)){
+
+                  formula <- cbind(time_cens, dlt) ~ dose
+                  update <- ewoc_d1pos(formula,
+                                       type = step_zero$trial$type,
+                                       theta = step_zero$trial$theta,
+                                       alpha = alpha[sample_size],
+                                       tau = step_zero$trial$tau,
+                                       min_dose = step_zero$trial$min_dose,
+                                       max_dose = step_zero$trial$max_dose,
+                                       first_dose = step_zero$trial$first_dose,
+                                       last_dose = step_zero$trial$last_dose,
+                                       dose_set = step_zero$trial$dose_set,
+                                       rho_prior = step_zero$trial$rho_prior,
+                                       mtd_prior = step_zero$trial$mtd_prior,
+                                       shape_prior = step_zero$trial$shape_prior,
+                                       distribution = step_zero$trial$distribution,
+                                       rounding = step_zero$trial$rounding)
+
                   mtd_estimate <- update$next_dose
                   rho_estimate <- median(update$rho)
                 }
               }
 
-               list(event_time, dose, dlt, mtd_estimate, rho_estimate, alpha)
+              list(event_time, dose, dlt,
+                   mtd_estimate, rho_estimate, alpha,
+                   current_time)
             }
-  # stopImplicitCluster()
+  stopImplicitCluster()
 
   time_sim <- matrix(as.numeric(result[[1]]), nrow = n_sim, ncol = sample_size)
   dose_sim <- matrix(as.numeric(result[[2]]), nrow = n_sim, ncol = sample_size)
