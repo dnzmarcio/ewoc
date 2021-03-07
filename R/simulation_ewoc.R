@@ -693,15 +693,18 @@ ewoc_simulation.ewoc_d1ph <- function(step_zero, n_sim, sample_size, response_si
 
 
 #'@importFrom foreach foreach %dopar%
+#'@importFrom doRNG %dorng%
 #'@importFrom doParallel registerDoParallel stopImplicitCluster
 #'@export
-ewoc_simulation.ewoc_d1pos <- function(step_zero, n_sim, sample_size,
-                                       alpha_strategy =
-                                         c("fixed", "increasing", "conditional"),
+ewoc_simulation.ewoc_d1pos <- function(step_zero, n_sim, sample_size, response_sim,
+                                       fixed_first_cohort = TRUE, n_cohort = 1,
+                                       alpha_strategy = "conditional",
                                        alpha_rate = 0.05,
-                                       response_sim = NULL,
                                        stop_rule_sim = NULL,
-                                       ncores = 1){
+                                       ncores = 1, seed = 1234, ...){
+
+  ndots <- list(...)
+  rate <- ifelse(!is.null(ndots$rate_sim), ndots$rate_sim, 1)
 
   if (is.null(response_sim))
     stop("'response_sim' function should be defined.")
@@ -717,11 +720,14 @@ ewoc_simulation.ewoc_d1pos <- function(step_zero, n_sim, sample_size,
   alpha_sim <- matrix(NA, ncol = sample_size, nrow = n_sim)
 
   registerDoParallel(ncores)
+  set.seed(seed)
   result <-
     foreach(i = 1:n_sim,
             .combine='comb',
             .multicombine=TRUE,
-            .init=list(list(), list(), list(), list(), list(), list())) %dopar% {
+            .init=list(list(), list(), list(), list(),
+                       list(), list(), list())
+            ) %dorng% {
 
               dlt <- as.numeric(step_zero$trial$response[, 2])
               dose <- as.numeric(step_zero$trial$first_dose)
@@ -737,7 +743,7 @@ ewoc_simulation.ewoc_d1pos <- function(step_zero, n_sim, sample_size,
 
               while ((current_time - initial_time[sample_size]) <= step_zero$trial$tau) {
 
-                current_time <- current_time + rexp(1, 1)
+                current_time <- current_time + rexp(1, rate)
 
                 j <- j + 1
 
