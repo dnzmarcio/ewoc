@@ -218,7 +218,7 @@ jags.d1pos <- function(data, n_adapt, burn_in,
       log((1-theta)*rho))*exp(-log(gamma))
 
       rho <- theta*r + 10^(-3)
-      gamma <-  g + 10^(-3)
+      gamma <-  g + 10^(-2)
 
       r ~ dbeta(rho_prior[1, 1], rho_prior[1, 2])
       g ~ dbeta(mtd_prior[1, 1], mtd_prior[1, 2])
@@ -269,7 +269,7 @@ jags.d1pos <- function(data, n_adapt, burn_in,
       beta <- (log((1-rho)*theta)-log((1-theta)*rho))*exp(-log(gamma))
 
       rho <- theta*r + 10^(-3)
-      gamma <-  g + 10^(-3)
+      gamma <-  g + 10^(-2)
 
       r ~ dbeta(rho_prior[1, 1], rho_prior[1, 2])
       g ~ dbeta(mtd_prior[1, 1], mtd_prior[1, 2])
