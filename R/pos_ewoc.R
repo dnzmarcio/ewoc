@@ -204,29 +204,31 @@ jags.d1pos <- function(data, n_adapt, burn_in,
 
       phi[i] <- -l[i] + C
 
-      l[i] <- status[i]*(log(h0[i] + 10^(-3)) - log(1 + s0[i]*(link[i] - 1)) + 10^(-3)) +
-      log(link[i] + 10^(-3)) + log(s0[i] + 10^(-3)) -
-      log(1 + s0[i]*(link[i] - 1) + 10^(-3))
+      l[i] <- status[i]*(log(h0[i]) - log(1 + s0[i]*(link[i] - 1))) +
+      log(link[i]) + log(s0[i]) -
+      log(1 + s0[i]*(link[i] - 1))
 
       h0[i] <- exp(log(shape) + shape*log(lambda) + (shape - 1)*log(time_cens[i]))
       s0[i] <- exp(-(lambda*time_cens[i])^shape)
       link[i] <- exp(-beta*design_matrix[i, 2])
     }
 
-      lambda <- (1/tau)*(-log(1-rho + 10^(-3)))^(1/shape)
-      beta <- (log((1-rho)*theta  + 10^(-3)) -
-      log((1-theta)*rho + 10^(-3)))*exp(-log(gamma + 10^(-3)))
+      lambda <- (1/tau)*(-log(1-rho))^(1/shape)
+      beta <- (log((1-rho)*theta) -
+      log((1-theta)*rho))*exp(-log(gamma))
 
-      rho <- theta*r
+      rho <- theta*r + 10^(-3)
+      gamma <-  g + 10^(-3)
+
       r ~ dbeta(rho_prior[1, 1], rho_prior[1, 2])
-      gamma ~ dbeta(mtd_prior[1, 1], mtd_prior[1, 2])
+      g ~ dbeta(mtd_prior[1, 1], mtd_prior[1, 2])
       shape ~ dgamma(shape_prior[1, 1], shape_prior[1, 2])
     }"
 
     inits <- function() {
       out <- list(r = rbeta(nrow(data$rho_prior),
                             data$rho_prior[, 1], data$rho_prior[, 2]),
-                  gamma = rbeta(nrow(data$mtd_prior),
+                  g = rbeta(nrow(data$mtd_prior),
                             data$mtd_prior[, 1], data$mtd_prior[, 2]),
                   shape = rgamma(nrow(data$shape_prior),
                              data$shape_prior[, 1], data$shape_prior[, 2]))
@@ -252,23 +254,22 @@ jags.d1pos <- function(data, n_adapt, burn_in,
 
       phi[i] <- -l[i] + C
 
-      l[i] <- status[i]*(log(h0[i] + 10^(-3)) -
-                         log(1 + s0[i]*(link[i] - 1) + 10^(-3))
+      l[i] <- status[i]*(log(h0[i]) -
+                         log(1 + s0[i]*(link[i] - 1))
                          ) +
-              log(link[i] + 10^(-3)) + log(s0[i] + 10^(-3)) -
-              log(1 + s0[i]*(link[i] - 1) + 10^(-3))
+              log(link[i]) + log(s0[i]) -
+              log(1 + s0[i]*(link[i] - 1))
 
       h0[i] <- lambda
       s0[i] <- exp(-lambda*time_cens[i])
       link[i] <- exp(-beta*design_matrix[i, 2])
     }
 
-      lambda <- (1/tau)*(-log(1-rho + 10^(-3)))
-      beta <- (log((1-rho)*theta + 10^(-3))-log((1-theta)*rho) +
-           10^(-3))*exp(-log(gamma + 10^(-3)))
+      lambda <- (1/tau)*(-log(1-rho))
+      beta <- (log((1-rho)*theta)-log((1-theta)*rho))*exp(-log(gamma))
 
-      rho <- theta*r
-      gamma <- g
+      rho <- theta*r + 10^(-3)
+      gamma <-  g + 10^(-3)
 
       r ~ dbeta(rho_prior[1, 1], rho_prior[1, 2])
       g ~ dbeta(mtd_prior[1, 1], mtd_prior[1, 2])
@@ -277,7 +278,7 @@ jags.d1pos <- function(data, n_adapt, burn_in,
       inits <- function() {
         out <- list(r = rbeta(nrow(data$rho_prior),
                               data$rho_prior[, 1], data$rho_prior[, 2]),
-                    gamma = rbeta(nrow(data$mtd_prior),
+                    g = rbeta(nrow(data$mtd_prior),
                                   data$mtd_prior[, 1], data$mtd_prior[, 2]))
         return(out)
       }

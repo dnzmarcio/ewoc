@@ -232,11 +232,13 @@ jags.d1ph <- function(data, n_adapt, burn_in,
 
       lambda <- log(-log(1 - rho)) - shape*log(tau)
       beta <- (log(-log(1 - theta)) -
-        log(-log(1 - rho)))*exp(-log(gamma + 10^(-2)))
+        log(-log(1 - rho)))*exp(-log(gamma))
 
       rho <- theta*r + 10^(-3)
+      gamma <-  g + 10^(-3)
+
       r ~ dbeta(rho_prior[1, 1], rho_prior[1, 2])
-      gamma ~ dbeta(mtd_prior[1, 1], mtd_prior[1, 2])
+      g ~ dbeta(mtd_prior[1, 1], mtd_prior[1, 2])
       shape ~ dgamma(shape_prior[1, 1], shape_prior[1, 2])
     }"
 
@@ -246,7 +248,7 @@ jags.d1ph <- function(data, n_adapt, burn_in,
 
       out <- list(r = rbeta(nrow(data$rho_prior),
                             data$rho_prior[, 1], data$rho_prior[, 2]),
-                  gamma = rbeta(nrow(data$mtd_prior),
+                  g = rbeta(nrow(data$mtd_prior),
                             data$mtd_prior[, 1], data$mtd_prior[, 2]),
                   shape = rgamma(nrow(data$shape_prior),
                                  data$shape_prior[, 1], data$shape_prior[, 2]),
@@ -273,11 +275,13 @@ jags.d1ph <- function(data, n_adapt, burn_in,
 
       lambda <- log(-log(1 - rho)) - log(tau)
       beta <- (log(-log(1 - theta)) - log(-log(1 - rho)))*
-        exp(-log(gamma + 10^(-2)))
+        exp(-log(gamma))
 
       rho <- theta*r + 10^(-3)
+      gamma <-  g + 10^(-3)
+
       r ~ dbeta(rho_prior[1, 1], rho_prior[1, 2])
-      gamma ~ dbeta(mtd_prior[1, 1], mtd_prior[1, 2])
+      g ~ dbeta(mtd_prior[1, 1], mtd_prior[1, 2])
     }"
 
       inits <- function() {
@@ -286,7 +290,7 @@ jags.d1ph <- function(data, n_adapt, burn_in,
 
       out <- list(r = rbeta(nrow(data$rho_prior),
                             data$rho_prior[, 1], data$rho_prior[, 2]),
-                  gamma = rbeta(nrow(data$mtd_prior),
+                  g = rbeta(nrow(data$mtd_prior),
                             data$mtd_prior[, 1], data$mtd_prior[, 2]),
                   time_mod = time_init)
       return(out)
