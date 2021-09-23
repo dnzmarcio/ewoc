@@ -64,7 +64,7 @@ pdlt <- pdlt_d1classical(rho = 0.05, mtd = 60, theta = 0.33,
                       min_dose = 20, max_dose = 100)
 
 opc(sim_list = list(sim), pdlt_list = list(pdlt),
-   mtd_list = list(60), toxicity_margin = 0.05, mtd_margin = 6)
+   mtd_list = list(60), toxicity_margin = 0.05, mtd_margin = 0.10)
 
 ### Two or more simulations
 
@@ -111,7 +111,7 @@ pdlt_list[[2]] <- pdlt_d1classical(rho = 0.05, mtd = mtd_list[[2]],
                                min_dose = 20, max_dose = 100)
 
 opc(sim_list = sim_list, pdlt_list = pdlt_list,
-   mtd_list = mtd_list, toxicity_margin = 0.05, mtd_margin = 6)
+   mtd_list = mtd_list, toxicity_margin = 0.05, mtd_margin = 0.10)
 }
 
 

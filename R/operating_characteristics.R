@@ -47,7 +47,7 @@
 #'                       min_dose = 20, max_dose = 100)
 #'
 #'opc(sim_list = list(sim), pdlt_list = list(pdlt),
-#'    mtd_list = list(60), toxicity_margin = 0.05, mtd_margin = 6)
+#'    mtd_list = list(60), toxicity_margin = 0.05, mtd_margin = 0.10)
 #'
 #'### Two or more simulations
 #'
@@ -94,7 +94,7 @@
 #'                                min_dose = 20, max_dose = 100)
 #'
 #'opc(sim_list = sim_list, pdlt_list = pdlt_list,
-#'    mtd_list = mtd_list, toxicity_margin = 0.05, mtd_margin = 6)
+#'    mtd_list = mtd_list, toxicity_margin = 0.05, mtd_margin = 0.10)
 #'}
 #'
 #'
@@ -282,7 +282,7 @@ opc.nocov <- function(sim, pdlt, mtd,
     if (!is.null(mtd_margin)){
       out <- as.data.frame(optimal_mtd(sim$dose_sim,
                                        true_mtd = true_mtd,
-                                       margin = mtd_margin))
+                                       margin = mtd_margin*true_mtd))
       colnames(out) <- c("dose.interval",
                          "dose.underdose",
                          "dose.overdose")
@@ -300,7 +300,7 @@ opc.nocov <- function(sim, pdlt, mtd,
     if (!is.null(mtd_margin)){
       out <- as.data.frame(optimal_mtd(sim$mtd_sim,
                                        true_mtd = true_mtd,
-                                       margin = mtd_margin))
+                                       margin = mtd_margin*true_mtd))
       colnames(out) <- c("mtd.interval",
                          "mtd.underdose",
                          "mtd.overdose")
