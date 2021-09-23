@@ -28,7 +28,7 @@ of doses as input and a numeric vector of probabilities as output.}
 
 \code{mtd_toxicity} See \code{\link[ewoc]{optimal_toxicity}}.
 
-\code{statistics} See \code{\link[ewoc]{mtd_bias}} and \code{\link[ewoc]{mtd_mse}}.
+\code{bias_mse} See \code{\link[ewoc]{mtd_bias}} and \code{\link[ewoc]{mtd_mse}}.
 
 \code{dose_efficiency} See \code{\link[ewoc]{optimal_mtd}}.
 

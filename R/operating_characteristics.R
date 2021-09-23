@@ -15,7 +15,7 @@
 #'@return \code{dlt_rate} See \code{\link[ewoc]{dlt_rate}}.
 #'@return \code{dose_toxicity} See \code{\link[ewoc]{optimal_toxicity}}.
 #'@return \code{mtd_toxicity} See \code{\link[ewoc]{optimal_toxicity}}.
-#'@return \code{statistics} See \code{\link[ewoc]{mtd_bias}} and \code{\link[ewoc]{mtd_mse}}.
+#'@return \code{bias_mse} See \code{\link[ewoc]{mtd_bias}} and \code{\link[ewoc]{mtd_mse}}.
 #'@return \code{dose_efficiency} See \code{\link[ewoc]{optimal_mtd}}.
 #'@return \code{mtd_efficiency} See \code{\link[ewoc]{optimal_mtd}}.
 #'@return \code{stop} See \code{\link[ewoc]{stop_rule}}.
@@ -275,7 +275,7 @@ opc.nocov <- function(sim, pdlt, mtd,
     out <- data.frame(bias = s1, mse = s2)
   }
 
-  statistics <- aux_statistical(sim, mtd)
+  bias_mse <- aux_statistical(sim, mtd)
 
   ### Dose Efficiency
   aux_dose_efficiency <- function(sim, true_mtd, mtd_margin){
@@ -319,7 +319,8 @@ opc.nocov <- function(sim, pdlt, mtd,
 
   stop<- aux_stop(sim)
 
-  out <- list(dlt_rate = dlt_rate,
+  out <- list(bias_mse = bias_mse,
+              dlt_rate = dlt_rate,
               dose_toxicity = dose_toxicity,
               mtd_toxicity = mtd_toxicity,
               dose_efficiency = dose_efficiency,
