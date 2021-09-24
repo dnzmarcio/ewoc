@@ -188,6 +188,8 @@ opc <- function(sim_list, pdlt_list, mtd_list,
                     SIMPLIFY = FALSE)
      dlt_rate <-
        Reduce(rbind, lapply(temp, function(x) x$dlt_rate))
+     bias_mse <-
+       Reduce(rbind, lapply(temp, function(x) x$bias_mse))
      dose_toxicity <-
        Reduce(rbind, lapply(temp, function(x) x$dose_toxicity))
      mtd_toxicity <-
@@ -199,7 +201,8 @@ opc <- function(sim_list, pdlt_list, mtd_list,
      stop <-
        Reduce(rbind, lapply(temp, function(x) x$stop))
 
-     out <- list(dlt_rate = dlt_rate,
+     out <- list(bias_mse = bias_mse,
+                 dlt_rate = dlt_rate,
                  dose_toxicity = dose_toxicity,
                  mtd_toxicity = mtd_toxicity,
                  dose_efficiency = dose_efficiency,
