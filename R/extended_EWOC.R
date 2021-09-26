@@ -278,7 +278,7 @@ mtd_rho_d1extended <- function(mtd = NULL, rho_1 = NULL, rho_0,
     if (is.null(rho_1)){
       gamma <- standard_dose(mtd, min_dose = min_dose, max_dose = max_dose)
 
-      rho_1 <- plogis((logit(theta) - (1+ gamma)*logit(rho_0))/gamma)
+      rho_1 <- plogis((logit(theta) + (gamma - 1)*logit(rho_0))/gamma)
 
       out <- list(mtd = mtd, rho_1 = rho_1)
     }
