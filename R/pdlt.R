@@ -23,6 +23,7 @@
 #'@export
 pdlt_d1classical <- function(rho, mtd, theta, min_dose, max_dose){
 
+  rho; theta;
   gamma <- standard_dose(dose = mtd,
                          min_dose = min_dose,
                          max_dose = max_dose)
@@ -66,6 +67,7 @@ pdlt_d1classical <- function(rho, mtd, theta, min_dose, max_dose){
 #'@export
 pdlt_d1extended <- function(rho, min_dose, max_dose){
 
+  rho; min_dose; max_dose;
   pdlt <- function(dose){
 
     dose <- standard_dose(dose = dose,
@@ -116,6 +118,7 @@ pdlt_d1extended <- function(rho, min_dose, max_dose){
 pdlt_d1ph <- function(rho, mtd, shape = NULL, theta, min_dose, max_dose,
                       tau, distribution) {
 
+  rho; theta; tau; distribution; shape;
   gamma <- standard_dose(dose = mtd,
                          min_dose = min_dose,
                          max_dose = max_dose)

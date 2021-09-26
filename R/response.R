@@ -23,6 +23,7 @@
 #'@export
 response_d1classical <- function(rho, mtd, theta, min_dose, max_dose) {
 
+  rho; theta;
   gamma <- standard_dose(dose = mtd,
                          min_dose = min_dose,
                          max_dose = max_dose)
@@ -70,6 +71,8 @@ response_d1classical <- function(rho, mtd, theta, min_dose, max_dose) {
 #'
 #'@export
 response_d1extended <- function(rho, min_dose, max_dose) {
+
+  rho; min_dose; max_dose;
 
   response_sim <- function(dose){
 
@@ -124,6 +127,8 @@ response_d1extended <- function(rho, min_dose, max_dose) {
 #'@export
 response_d1ph <- function(rho, mtd, theta, min_dose, max_dose,
                           tau, distribution, shape = NULL) {
+
+  rho; theta; tau; distribution; shape;
 
   gamma <- standard_dose(dose = mtd,
                          min_dose = min_dose,
