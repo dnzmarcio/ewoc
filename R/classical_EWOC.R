@@ -181,6 +181,7 @@ ewoc_d1classical <- function(formula, theta, alpha,
 }
 
 #'@importFrom rjags jags.model coda.samples
+#'@exportS3Method
 jags.d1classical <- function(data, n_adapt, burn_in,
                               n_mcmc, n_thin, n_chains) {
 

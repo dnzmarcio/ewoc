@@ -1,3 +1,4 @@
+#' @exportS3Method
 next_dose.ewoc_d1classical <- function(data){
 
   rho <- data$mcmc$rho
@@ -41,7 +42,7 @@ next_dose.ewoc_d1classical <- function(data){
   return(out)
 }
 
-
+#' @exportS3Method
 next_dose.ewoc_d1extended <- function(data){
 
   rho <- data$mcmc$rho
@@ -86,6 +87,7 @@ next_dose.ewoc_d1extended <- function(data){
   return(out)
 }
 
+#' @exportS3Method
 next_dose.ewoc_d1ph <- function(data){
 
   gamma <- data$mcmc$gamma - 10^(-2)

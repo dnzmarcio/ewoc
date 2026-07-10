@@ -210,6 +210,7 @@ ewoc_d1ph <- function(formula, theta, alpha, tau,
 }
 
 #'@importFrom rjags jags.model coda.samples
+#'@exportS3Method
 jags.d1ph <- function(data, n_adapt, burn_in,
                          n_mcmc, n_thin, n_chains) {
 

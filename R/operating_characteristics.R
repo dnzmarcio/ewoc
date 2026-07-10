@@ -176,12 +176,8 @@
 opc <- function(sim_list, pdlt_list, mtd_list,
                 toxicity_margin = NULL, mtd_margin = NULL){
 
-  aux_opc <- function(sim, pdlt, mtd, toxicity_margin, mtd_margin){
-    UseMethod("opc", sim)
-  }
-
   if (length(sim_list) > 1){
-     temp <- mapply(aux_opc, sim_list, pdlt_list, mtd_list,
+     temp <- mapply(calc_opc, sim_list, pdlt_list, mtd_list,
                     MoreArgs =
                     list(toxicity_margin = toxicity_margin,
                         mtd_margin = mtd_margin),
@@ -210,15 +206,20 @@ opc <- function(sim_list, pdlt_list, mtd_list,
                  stop = stop)
 
   } else {
-    out <- aux_opc(sim_list[[1]], pdlt_list[[1]], mtd_list[[1]],
+    out <- calc_opc(sim_list[[1]], pdlt_list[[1]], mtd_list[[1]],
                    toxicity_margin, mtd_margin)
   }
 
   return(out)
 }
 
-#'@export
-opc.nocov <- function(sim, pdlt, mtd,
+#'
+calc_opc <- function(sim, pdlt, mtd, toxicity_margin, mtd_margin){
+  UseMethod("calc_opc", sim)
+}
+
+#' @exportS3Method
+calc_opc.nocov <- function(sim, pdlt, mtd,
                       toxicity_margin, mtd_margin){
 
   ### DLT rate
@@ -470,7 +471,7 @@ dlt_rate <- function(dlt_matrix, trial = FALSE,
 #'@param digits a numerical value indicating the number of digits.
 #'
 #'@return A list consisting of
-#'\itemize{
+#'\describe{
 #' \item{\code{average}: }{Average number of patients to stop a trial.}
 #' \item{\code{min}: }{Minimum number of patients to stop a trial.}
 #' \item{\code{max}: }{Maximum number of patients to stop a trial.}
