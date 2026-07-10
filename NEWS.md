@@ -1,3 +1,6 @@
+# Version 0.3.1 (2026-07-10)
+- Fixed small issues and update maintainer details.
+
 # Version 0.3.0 (2020-03-29)
 
 - Introduced reproducible parallel processing.
