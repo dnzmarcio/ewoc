@@ -16,7 +16,7 @@ and for each trial (row).}
 }
 \value{
 A list consisting of
-\itemize{
+\describe{
 \item{\code{average}: }{Average number of patients to stop a trial.}
 \item{\code{min}: }{Minimum number of patients to stop a trial.}
 \item{\code{max}: }{Maximum number of patients to stop a trial.}

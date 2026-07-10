@@ -1,10 +1,10 @@
-#'Generating a stop rule function for EWOC classical model
+#'Generating a stopping rule function for EWOC classical model
 #
 #'@param step an object from the class 'ewoc_d1classical'.
 #'
-#'@details The stop rule function is evaluated at each step of the trial.
-#'It can defined based on any information contained in the object 'step' that
-#'is the output from one of the functions 'ewoc_d1classical'.
+#'@details The function is evaluated at each step of the trial.
+#'It can defined based on any information contained in the object \code{step} that
+#'is the output from one of the functions \code{ewoc_d1classical}.
 #'
 #'@return a logical character indicating if the trial should be stopped or not.
 #'
@@ -70,13 +70,13 @@ stop_rule_d1classical <- function(step){
 }
 
 
-#'Generating a stop rule function for EWOC extended model
+#'Generating a stopping rule function for EWOC extended model
 #
-#'@param step an object from the class 'ewoc_d1extended'.
+#'@param step an object from the class \code{ewoc_d1extended}.
 #'
-#'@details The stop rule function is evaluated at each step of the trial.
-#'It can defined based on any information contained in the object 'step' that
-#'is the output from one of the functions ewoc_d1extended'.
+#'@details The function is evaluated at each step of the trial.
+#'It can defined based on any information contained in the object \code{step} that
+#'is the output from one of the functions \code{ewoc_d1extended}.
 #'
 #'@return a logical character indicating if the trial should be stopped or not.
 #'
@@ -138,13 +138,13 @@ stop_rule_d1extended <- function(step){
 }
 
 
-#'Generating a stop rule function for EWOC proportional hazards model
+#'Generating a stopping rule function for EWOC proportional hazards model
 #
-#'@param step an object from the class 'ewoc_d1ph'.
+#'@param step an object from the class \code{ewoc_d1ph}.
 #'
-#'@details The stop rule function is evaluated at each step of the trial.
-#'It can defined based on any information contained in the object 'step' that
-#'is the output from one of the functions 'ewoc_d1ph'.
+#'@details The function is evaluated at each step of the trial.
+#'It can defined based on any information contained in the object \code{step} that
+#'is the output from one of the functions \code{ewoc_d1ph}.
 #'
 #'@return a logical character indicating if the trial should be stopped or not.
 #'

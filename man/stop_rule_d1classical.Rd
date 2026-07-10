@@ -2,7 +2,7 @@
 % Please edit documentation in R/stop_rule.R
 \name{stop_rule_d1classical}
 \alias{stop_rule_d1classical}
-\title{Generating a stop rule function for EWOC classical model}
+\title{Generating a stopping rule function for EWOC classical model}
 \usage{
 stop_rule_d1classical(step)
 }
@@ -13,12 +13,12 @@ stop_rule_d1classical(step)
 a logical character indicating if the trial should be stopped or not.
 }
 \description{
-Generating a stop rule function for EWOC classical model
+Generating a stopping rule function for EWOC classical model
 }
 \details{
-The stop rule function is evaluated at each step of the trial.
-It can defined based on any information contained in the object 'step' that
-is the output from one of the functions 'ewoc_d1classical'.
+The function is evaluated at each step of the trial.
+It can defined based on any information contained in the object \code{step} that
+is the output from one of the functions \code{ewoc_d1classical}.
 }
 \examples{
 \dontshow{
