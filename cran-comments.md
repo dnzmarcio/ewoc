@@ -190,10 +190,9 @@ Please fix and resubmit.
 ### R CMD check results
 
 R CMD check results
-0 errors | 0 warnings | 1 note
+0 errors ✔ | 0 warnings ✔ | 0 notes ✔
 
- Non-standard files/directories found at top level:
-    'README.Rmd' 'cran-comments.md'
+### Reverse dependencies
 
-README.Rmd: source file used to generate README.md
-cran-comments.md: comments for CRAN submission
+There is no reverse dependencies.
+ 
