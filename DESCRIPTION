@@ -9,6 +9,7 @@ License: GPL(>= 2)
 LazyData: TRUE
 URL: https://github.com/dnzmarcio/ewoc/
 BugReports: https://github.com/dnzmarcio/ewoc/issues
+Encoding: UTF-8
 Imports:
     Formula(>= 1.2-1),
     rjags(>= 4-6),
