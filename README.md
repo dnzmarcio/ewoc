@@ -3,7 +3,7 @@
 EWOC
 ====
 
-[![Travis-CI Build Status](https://travis-ci.org/dnzmarcio/ewoc.svg?branch=master)](https://travis-ci.org/dnzmarcio/ewoc) [![](http://cranlogs.r-pkg.org/badges/grand-total/ewoc)](https://CRAN.R-project.org/package=ewoc)
+[![Travis-CI Build Status](https://app.travis-ci.com/dnzmarcio/ewoc.svg?branch=master)](https://app.travis-ci.com/dnzmarcio/ewoc) [![](http://cranlogs.r-pkg.org/badges/grand-total/ewoc)](https://CRAN.R-project.org/package=ewoc)
 
 Escalation With Overdose Control is a dose escalation design for phase I clinical trials such that the probability of overdose is controlled explicitly.
 
@@ -12,7 +12,7 @@ It was first introduced by Babb et al. (1998) and several modifications have bee
 Installation
 ------------
 
-Before installing the R-package EWOC, you may need to install [Just Another Gibbs Sampler](http://mcmc-jags.sourceforge.net/).
+Before installing the R-package EWOC, you may need to install [Just Another Gibbs Sampler](https://mcmc-jags.sourceforge.io/).
 
 The R-package EWOC can be installed from GitHub with:
 
