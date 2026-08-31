@@ -18,7 +18,8 @@ plot.d1classical <- function(x, ...){
                linetype = 2, size = 1.2) +
     geom_ribbon(data = shade[shade$x > sm$hpd_dose[1] &
                                shade$x < sm$hpd_dose[2], ],
-                aes(ymax = y, x = x), ymin = 0, fill="red", alpha=0.3) +
+                aes(ymax = .data[["y"]], x = .data[["x"]]),
+                ymin = 0, fill="red", alpha=0.3) +
     labs(y = "Density", x = "MTD") +
     annotate("text",
              x = sm$next_dose,
@@ -50,7 +51,8 @@ plot.d1extended <- function(x, ...){
     geom_ribbon(data = shade[
       shade$x > max(sm$hpd_dose[1], object$trial$min_dose) &
         shade$x < min(sm$hpd_dose[2], object$trial$max_dose), ],
-      aes(ymax = y, x = x), ymin = 0, fill = "red", alpha = 0.3) +
+      aes(ymax = .data[["y"]], x = .data[["x"]]),
+      ymin = 0, fill = "red", alpha = 0.3) +
     labs(y = "Density", x = "MTD") +
     annotate("text", x = sm$next_dose,
              y = max(shade$y)/2, hjust = -0.20,
@@ -80,7 +82,8 @@ plot.d1ph <- function(x, ...){
                linetype = 2, size = 1.2) +
     geom_ribbon(data = shade[shade$x > sm$hpd_dose[1] &
                                shade$x < sm$hpd_dose[2], ],
-                aes(ymax = y, x = x), ymin = 0, fill="red", alpha=0.3) +
+                aes(ymax = .data[["y"]], x = .data[["x"]]),
+                ymin = 0, fill="red", alpha=0.3) +
     labs(y = "Density", x = "MTD") +
     annotate("text", x = sm$next_dose,
              y = max(shade$y)/2, hjust = -0.20,
