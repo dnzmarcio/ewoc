@@ -43,9 +43,9 @@ and for each trial (row).}
 }
 \description{
 Calculate the DLT rate for each trial, the average DLT rate, the percent
-of trials which have \eqn{DLT rate > target_rate + margin}, the percent
-of trials which have \eqn{DLT rate < target_rate - margin} and the percent
-of trials which have \eqn{target_rate - margin < DLT rate < target_rate + margin}.
+of trials which have \code{DLT rate > target_rate + margin}, the percent
+of trials which have \code{DLT rate < target_rate - margin} and the percent
+of trials which have \code{target_rate - margin < DLT rate < target_rate + margin}.
 }
 \examples{
 \dontrun{
