@@ -16,8 +16,9 @@
 #'@return \code{dose_toxicity} See \code{\link[ewoc]{optimal_toxicity}}.
 #'@return \code{mtd_toxicity} See \code{\link[ewoc]{optimal_toxicity}}.
 #'@return \code{bias_mse} See \code{\link[ewoc]{mtd_bias}} and \code{\link[ewoc]{mtd_mse}}.
-#'@return \code{dose_efficiency} See \code{\link[ewoc]{optimal_mtd}}.
-#'@return \code{mtd_efficiency} See \code{\link[ewoc]{optimal_mtd}}.
+#'@return \code{dose_allocation} See \code{\link[ewoc]{avg_perc_dose_allocation}}.
+#'@return \code{dose_efficiency} See \code{\link[ewoc]{optimal_dose}}.
+#'@return \code{mtd_efficiency} See \code{\link[ewoc]{optimal_dose}}.
 #'@return \code{stop} See \code{\link[ewoc]{stop_rule}}.
 #'
 #'@references Diniz, M. A., Tighiouart, M., & Rogatko, A. (2019). Comparison between continuous and discrete doses for model based designs in cancer dose finding. PloS one, 14(1).
@@ -192,6 +193,8 @@ opc <- function(sim_list, pdlt_list, mtd_list,
        Reduce(rbind, lapply(temp, function(x) x$mtd_toxicity))
      dose_efficiency <-
        Reduce(rbind, lapply(temp, function(x) x$dose_efficiency))
+     dose_allocation <-
+       Reduce(rbind, lapply(temp, function(x) x$dose_allocation))
      mtd_efficiency <-
        Reduce(rbind, lapply(temp, function(x) x$mtd_efficiency))
      stop <-
@@ -201,6 +204,7 @@ opc <- function(sim_list, pdlt_list, mtd_list,
                  dlt_rate = dlt_rate,
                  dose_toxicity = dose_toxicity,
                  mtd_toxicity = mtd_toxicity,
+                 dose_allocation = dose_allocation,
                  dose_efficiency = dose_efficiency,
                  mtd_efficiency = mtd_efficiency,
                  stop = stop)
@@ -220,7 +224,7 @@ calc_opc <- function(sim, pdlt, mtd, toxicity_margin, mtd_margin){
 
 #' @exportS3Method
 calc_opc.nocov <- function(sim, pdlt, mtd,
-                      toxicity_margin, mtd_margin){
+                           toxicity_margin, mtd_margin){
 
   ### DLT rate
   aux_dlt <- function(sim, pdlt = NULL, toxicity_margin = NULL){
@@ -284,12 +288,12 @@ calc_opc.nocov <- function(sim, pdlt, mtd,
   ### Dose Efficiency
   aux_dose_efficiency <- function(sim, true_mtd, mtd_margin){
     if (!is.null(mtd_margin)){
-      out <- as.data.frame(optimal_mtd(sim$dose_sim,
+      out <- as.data.frame(optimal_dose(sim$dose_sim,
                                        true_mtd = true_mtd,
                                        margin = mtd_margin*true_mtd))
-      colnames(out) <- c("dose.interval",
-                         "dose.underdose",
-                         "dose.overdose")
+      colnames(out) <- c("dose_interval",
+                         "dose_underdose",
+                         "dose_overdose")
     } else {
       out <- NULL
     }
@@ -298,16 +302,23 @@ calc_opc.nocov <- function(sim, pdlt, mtd,
 
   dose_efficiency <- aux_dose_efficiency(sim, mtd, mtd_margin)
 
-  ### MTD Eficiency
+  ### Dose Selection
+  if(sim$trial$type == "discrete"){
+    dose_allocation <- avg_perc_dose_allocation(sim)
+  } else {
+    dose_allocation <- NULL
+  }
 
+
+  ### MTD Efficiency
   aux_mtd_efficiency <- function(sim, true_mtd, mtd_margin){
     if (!is.null(mtd_margin)){
-      out <- as.data.frame(optimal_mtd(sim$mtd_sim,
+      out <- as.data.frame(optimal_dose(sim$mtd_sim,
                                        true_mtd = true_mtd,
                                        margin = mtd_margin*true_mtd))
-      colnames(out) <- c("mtd.interval",
-                         "mtd.underdose",
-                         "mtd.overdose")
+      colnames(out) <- c("mtd_interval",
+                         "mtd_underdose",
+                         "mtd_overdose")
     } else {
       out <- NULL
     }
@@ -327,6 +338,7 @@ calc_opc.nocov <- function(sim, pdlt, mtd,
               dlt_rate = dlt_rate,
               dose_toxicity = dose_toxicity,
               mtd_toxicity = mtd_toxicity,
+              dose_allocation = dose_allocation,
               dose_efficiency = dose_efficiency,
               mtd_efficiency = mtd_efficiency,
               stop = stop)
@@ -343,9 +355,9 @@ overdose_loss <- function (mtd_estimate, true_mtd, alpha) {
 #'Evaluation of the DLT rate
 #'
 #'Calculate the DLT rate for each trial, the average DLT rate, the percent
-#'of trials which have \eqn{DLT rate > target_rate + margin}, the percent
-#'of trials which have \eqn{DLT rate < target_rate - margin} and the percent
-#'of trials which have \eqn{target_rate - margin < DLT rate < target_rate + margin}.
+#'of trials which have \code{DLT rate > target_rate + margin}, the percent
+#'of trials which have \code{DLT rate < target_rate - margin} and the percent
+#'of trials which have \code{target_rate - margin < DLT rate < target_rate + margin}.
 #'
 #'@param dlt_matrix a matrix of the number of DLT for each step of the trial (column)
 #'and for each trial (row).
@@ -584,8 +596,8 @@ stop_rule <- function(dlt_matrix, sample_size, digits = 2) {
 #'                        alpha_strategy = "increasing",
 #'                        response_sim = response_sim,
 #'                        ncores = 2)
-#'optimal_mtd(sim$mtd_sim, true_mtd = 20, margin = 0.1*20)
-#'optimal_mtd(sim$dose_sim, true_mtd = 20, margin = 0.1*20)
+#'optimal_dose(sim$mtd_sim, true_mtd = 20, margin = 0.1*20)
+#'optimal_dose(sim$dose_sim, true_mtd = 20, margin = 0.1*20)
 #'}
 #'
 #'\dontrun{
@@ -605,12 +617,12 @@ stop_rule <- function(dlt_matrix, sample_size, digits = 2) {
 #'                        alpha_strategy = "increasing",
 #'                        response_sim = response_sim,
 #'                        ncores = 2)
-#'optimal_mtd(sim$mtd_sim, true_mtd = 20, margin = 0.1*20)
-#'optimal_mtd(sim$dose_sim, true_mtd = 20, margin = 0.1*20)
+#'optimal_dose(sim$mtd_sim, true_mtd = 20, margin = 0.1*20)
+#'optimal_dose(sim$dose_sim, true_mtd = 20, margin = 0.1*20)
 #'}
 #'
 #'@export
-optimal_mtd <- function(dose_matrix, true_mtd, margin, digits = 2) {
+optimal_dose <- function(dose_matrix, true_mtd, margin, digits = 2) {
 
   if (!is.matrix(dose_matrix))
     dose_matrix <- matrix(dose_matrix, nrow = 1)
@@ -932,7 +944,6 @@ accuracy_index <- function (mtd_estimate, dose_set, true_prob, theta,
 #'@references Cheung, Y. K. (2011). Dose finding by the continual reassessment method. CRC Press.
 #'
 #'@return Average Toxicity Number.
-#'
 average_toxicity <- function (dose, dose_set, true_prob, theta) {
 
   aux_toxicity <- function (x, dose_set, true_prob) {
@@ -949,6 +960,24 @@ average_toxicity <- function (dose, dose_set, true_prob, theta) {
   out <- list(observed_average = mean(observed_trial),
               expected_average = expected_average)
 
+  return(out)
+}
+
+#'Average Percentage of Dose Allocation
+#'
+#'Calculate the Average Percentage of Dose Allocation.
+#'
+#'@param sim_list an 'ewoc_simulation' object created using the \code{\link[ewoc]{ewoc_simulation}} function.
+#'
+#'@return Average Percentage of Dose Allocation.
+#'@export
+avg_perc_dose_allocation <- function(sim){
+
+  aux <- function(d){
+    out <- mean(rowSums(sim$dose_sim == d)/sim$trial$sample_size)
+  }
+
+  out <- 100*sapply(sim$trial$dose_set, aux)
   return(out)
 }
 

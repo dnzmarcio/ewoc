@@ -295,6 +295,9 @@ ewoc_simulation.ewoc_d1classical <- function(step_zero, n_sim, sample_size, resp
   mtd_sim <- as.numeric(result[[3]])
   rho_sim <- as.numeric(result[[4]])
   alpha_sim <- matrix(as.numeric(result[[5]]), nrow = n_sim, ncol = sample_size)
+  step_zero$trial$sample_size <- sample_size
+  step_zero$trial$response <- NULL
+  step_zero$trial$design_matrix <- NULL
 
   out <- list(trial = step_zero$trial,
               dose_sim = dose_sim, dlt_sim = dlt_sim,
@@ -415,6 +418,9 @@ ewoc_simulation.ewoc_d1extended <- function(step_zero, n_sim, sample_size, respo
   mtd_sim <- as.numeric(result[[3]])
   rho_sim <- matrix(as.numeric(result[[4]]), nrow = n_sim, ncol = 2)
   alpha_sim <- matrix(as.numeric(result[[5]]), nrow = n_sim, ncol = sample_size)
+  step_zero$trial$sample_size <- sample_size
+  step_zero$trial$response <- NULL
+  step_zero$trial$design_matrix <- NULL
 
   out <- list(trial = step_zero$trial,
               dose_sim = dose_sim, dlt_sim = dlt_sim,
@@ -566,7 +572,9 @@ ewoc_simulation.ewoc_d1ph <- function(step_zero, n_sim, sample_size, response_si
   rho_sim <- as.numeric(result[[5]])
   alpha_sim <- matrix(as.numeric(result[[6]]), nrow = n_sim, ncol = sample_size)
   total_time <- as.numeric(result[[7]])
-
+  step_zero$trial$sample_size <- sample_size
+  step_zero$trial$response <- NULL
+  step_zero$trial$design_matrix <- NULL
 
   out <- list(trial = step_zero$trial,
               time_sim = time_sim, dose_sim = dose_sim, dlt_sim = dlt_sim,

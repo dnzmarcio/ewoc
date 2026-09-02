@@ -30,9 +30,11 @@ of doses as input and a numeric vector of probabilities as output.}
 
 \code{bias_mse} See \code{\link[ewoc]{mtd_bias}} and \code{\link[ewoc]{mtd_mse}}.
 
-\code{dose_efficiency} See \code{\link[ewoc]{optimal_mtd}}.
+\code{dose_allocation} See \code{\link[ewoc]{avg_perc_dose_allocation}}.
 
-\code{mtd_efficiency} See \code{\link[ewoc]{optimal_mtd}}.
+\code{dose_efficiency} See \code{\link[ewoc]{optimal_dose}}.
+
+\code{mtd_efficiency} See \code{\link[ewoc]{optimal_dose}}.
 
 \code{stop} See \code{\link[ewoc]{stop_rule}}.
 }
