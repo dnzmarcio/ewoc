@@ -1,3 +1,9 @@
+# ewoc (development version)
+- Added P(DLT|dose) when type == "discrete".
+- Added Average Percentage Dose Allocation as operating characteristic.
+- Replaced deprecated ggplot functions.
+
+
 # Version 0.3.1 (2026-07-10)
 - Fixed small issues and updated maintainer details.
 
