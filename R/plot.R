@@ -15,7 +15,7 @@ plot.d1classical <- function(x, ...){
 
   out <- ggplot(data_plot, aes(x = mtd)) + geom_density() +
     geom_vline(xintercept = as.numeric(sm$next_dose),
-               linetype = 2, size = 1.2) +
+               linetype = 2, linewidth = 1.2) +
     geom_ribbon(data = shade[shade$x > sm$hpd_dose[1] &
                                shade$x < sm$hpd_dose[2], ],
                 aes(ymax = .data[["y"]], x = .data[["x"]]),
@@ -47,7 +47,7 @@ plot.d1extended <- function(x, ...){
 
   out <- ggplot(data_plot, aes(x = mtd)) + geom_density() +
     geom_vline(xintercept = as.numeric(sm$next_dose),
-               linetype = 2, size = 1.2) +
+               linetype = 2, linewidth = 1.2) +
     geom_ribbon(data = shade[
       shade$x > max(sm$hpd_dose[1], object$trial$min_dose) &
         shade$x < min(sm$hpd_dose[2], object$trial$max_dose), ],
@@ -79,7 +79,7 @@ plot.d1ph <- function(x, ...){
 
   out <- ggplot(data_plot, aes(x = mtd)) + geom_density() +
     geom_vline(xintercept = as.numeric(sm$next_dose),
-               linetype = 2, size = 1.2) +
+               linetype = 2, linewidth = 1.2) +
     geom_ribbon(data = shade[shade$x > sm$hpd_dose[1] &
                                shade$x < sm$hpd_dose[2], ],
                 aes(ymax = .data[["y"]], x = .data[["x"]]),
