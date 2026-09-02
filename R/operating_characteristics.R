@@ -302,12 +302,21 @@ calc_opc.nocov <- function(sim, pdlt, mtd,
 
   dose_efficiency <- aux_dose_efficiency(sim, mtd, mtd_margin)
 
-  ### Dose Selection
+  ### Dose Allocation
   if(sim$trial$type == "discrete"){
     dose_allocation <- avg_perc_dose_allocation(sim)
   } else {
     dose_allocation <- NULL
   }
+  names(dose_allocation) <- sim$trial$dose_set
+
+  ### MTD Selection
+  if(sim$trial$type == "discrete"){
+    mtd_selection <- mtd_selection(sim)
+  } else {
+    mtd_selection <- NULL
+  }
+  names(mtd_selection) <- sim$trial$dose_set
 
 
   ### MTD Efficiency
@@ -340,6 +349,7 @@ calc_opc.nocov <- function(sim, pdlt, mtd,
               mtd_toxicity = mtd_toxicity,
               dose_allocation = dose_allocation,
               dose_efficiency = dose_efficiency,
+              mtd_selection = mtd_selection,
               mtd_efficiency = mtd_efficiency,
               stop = stop)
 }
@@ -967,7 +977,7 @@ average_toxicity <- function (dose, dose_set, true_prob, theta) {
 #'
 #'Calculate the Average Percentage of Dose Allocation.
 #'
-#'@param sim_list an 'ewoc_simulation' object created using the \code{\link[ewoc]{ewoc_simulation}} function.
+#'@param sim an 'ewoc_simulation' object created using the \code{\link[ewoc]{ewoc_simulation}} function.
 #'
 #'@return Average Percentage of Dose Allocation.
 #'@export
@@ -978,6 +988,22 @@ avg_perc_dose_allocation <- function(sim){
   }
 
   out <- 100*sapply(sim$trial$dose_set, aux)
+  return(out)
+}
+
+
+#'Percentage of MTD Selection
+#'
+#'Calculate the APercentage of MTD Selectionn.
+#'
+#'@param sim an 'ewoc_simulation' object created using the \code{\link[ewoc]{ewoc_simulation}} function.
+#'
+#'@return Percentage of MTD Selection.
+#'@export
+mtd_selection <- function(sim){
+
+  tmp <- factor(sim$dose_sim, levels = sim$trial$dose_set)
+  out <- 100*prop.table(table(tmp))
   return(out)
 }
 
