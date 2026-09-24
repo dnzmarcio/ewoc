@@ -13,5 +13,5 @@ mtd_selection(sim)
 Percentage of MTD Selection.
 }
 \description{
-Calculate the APercentage of MTD Selectionn.
+Calculate the Percentage of MTD Selectionn.
 }

@@ -994,7 +994,7 @@ avg_perc_dose_allocation <- function(sim){
 
 #'Percentage of MTD Selection
 #'
-#'Calculate the APercentage of MTD Selectionn.
+#'Calculate the Percentage of MTD Selectionn.
 #'
 #'@param sim an 'ewoc_simulation' object created using the \code{\link[ewoc]{ewoc_simulation}} function.
 #'
@@ -1002,7 +1002,7 @@ avg_perc_dose_allocation <- function(sim){
 #'@export
 mtd_selection <- function(sim){
 
-  tmp <- factor(sim$dose_sim, levels = sim$trial$dose_set)
+  tmp <- factor(sim$mtd_sim, levels = sim$trial$dose_set)
   out <- 100*prop.table(table(tmp))
   return(out)
 }
